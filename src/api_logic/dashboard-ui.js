@@ -1,0 +1,226 @@
+// sentinel-api/src/dashboard-ui.js
+// Servim paginile HTML ale dashboard-ului direct din Worker
+// Fără Cloudflare Pages suplimentar — totul în același Worker
+
+export function getDashboardLoginPage() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sentinel Dashboard — Login</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a0d12;color:#e6edf3;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+  .card{background:#111621;border:1px solid #21262d;border-radius:16px;padding:48px;width:100%;max-width:420px;text-align:center}
+  .logo{font-size:2rem;margin-bottom:8px}
+  h1{font-size:1.5rem;font-weight:700;margin-bottom:8px}
+  p{color:#7d8590;font-size:0.9rem;margin-bottom:28px}
+  input{width:100%;padding:12px 16px;background:#0a0d12;border:1px solid #21262d;border-radius:8px;color:#e6edf3;font-size:1rem;margin-bottom:16px;outline:none;transition:border-color .2s}
+  input:focus{border-color:#39d0dc}
+  button{width:100%;padding:14px;background:#238636;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+  button:hover{opacity:.85}
+  #msg{margin-top:16px;font-size:0.88rem;padding:12px;border-radius:8px;display:none}
+  .success{background:rgba(63,185,80,0.1);color:#3fb950;border:1px solid rgba(63,185,80,0.2)}
+  .error{background:rgba(248,81,73,0.1);color:#f85149;border:1px solid rgba(248,81,73,0.2)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">&#x1F6E1;</div>
+  <h1>Compliance Dashboard</h1>
+  <p>Enter your registered email to receive an Automated Compliance Link.</p>
+  <input type="email" id="email" placeholder="you@company.com" autocomplete="email">
+  <button onclick="requestLink()">Send Magic Link</button>
+  <div id="msg"></div>
+</div>
+<script>
+async function requestLink() {
+  const email = document.getElementById('email').value.trim();
+  const msg = document.getElementById('msg');
+  if (!email) { showMsg('Please enter your email.', false); return; }
+  try {
+    const r = await fetch('/dashboard/auth/request', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email })
+    });
+    const d = await r.json();
+    showMsg(d.message || 'Check your inbox!', true);
+  } catch { showMsg('Network error. Please try again.', false); }
+}
+function showMsg(text, ok) {
+  const el = document.getElementById('msg');
+  el.textContent = text; el.className = ok ? 'success' : 'error'; el.style.display = 'block';
+}
+document.getElementById('email').addEventListener('keypress', e => { if(e.key==='Enter') requestLink(); });
+</script>
+</body></html>`;
+}
+
+export function getDashboardPage() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sentinel — Compliance Dashboard</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a0d12;color:#e6edf3;font-family:system-ui,sans-serif}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:#111621;border-bottom:1px solid #21262d}
+  .logo{font-weight:700;font-size:1.1rem}
+  .logo span{color:#39d0dc}
+  .btn-sm{padding:8px 16px;border-radius:6px;border:1px solid #21262d;background:transparent;color:#e6edf3;cursor:pointer;font-size:0.85rem;transition:border-color .2s}
+  .btn-sm:hover{border-color:#39d0dc}
+  main{max-width:900px;margin:40px auto;padding:0 24px;display:grid;gap:20px}
+  .card{background:#111621;border:1px solid #21262d;border-radius:12px;padding:28px}
+  .card h2{font-size:1rem;font-weight:700;color:#7d8590;text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px}
+  .key-box{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:14px 18px;font-family:monospace;font-size:0.85rem;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:12px;word-break:break-all}
+  .btn-copy{padding:8px 16px;background:#238636;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:0.82rem;font-weight:600;white-space:nowrap;transition:opacity .2s}
+  .btn-copy:hover{opacity:.85}
+  .btn-rotate{padding:10px 20px;background:transparent;color:#f85149;border:1px solid rgba(248,81,73,0.3);border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:600;margin-top:12px;transition:all .2s}
+  .btn-rotate:hover{background:rgba(248,81,73,0.1)}
+  .meta{color:#7d8590;font-size:0.82rem;margin-top:8px}
+  .meta strong{color:#e6edf3}
+  canvas{width:100%;height:180px}
+  .stripe-btn{display:inline-block;padding:12px 24px;background:#635bff;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.9rem;transition:opacity .2s}
+  .stripe-btn:hover{opacity:.85}
+  #new-key-box{display:none;background:rgba(63,185,80,0.06);border:1px solid rgba(63,185,80,0.2);border-radius:8px;padding:14px 18px;font-family:monospace;font-size:0.85rem;color:#3fb950;margin-top:12px;word-break:break-all}
+  .warning{color:#d29922;font-size:0.82rem;margin-top:8px}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">&#x1F6E1; <span>Compliance</span> Dashboard</div>
+  <form action="/dashboard/auth/logout" method="POST" style="display:inline">
+    <button type="submit" class="btn-sm">Sign out</button>
+  </form>
+</nav>
+
+<main>
+  <!-- API KEY -->
+  <div class="card">
+    <h2>Your API Infrastructure</h2>
+    <div class="key-box">
+      <span id="key-display">Loading...</span>
+      <button class="btn-copy" onclick="copyKey()">Copy</button>
+    </div>
+    <div class="meta" id="key-meta"></div>
+    <div class="meta" style="color:#d29922;margin-top:4px" id="limit-warning"></div>
+    <br>
+    <button class="btn-rotate" onclick="rotateKey()">&#x21bb; Regenerate Key</button>
+    <div class="warning">⚠️ Rotating will immediately invalidate your Immutable Audit Trail key.</div>
+    <div id="new-key-box"></div>
+  </div>
+
+  <!-- USAGE CHART -->
+  <div class="card">
+    <h2>Automated Compliance Logs (30 Days)</h2>
+    <canvas id="usageChart"></canvas>
+  </div>
+
+  <!-- COMPLIANCE REPORTS -->
+  <div class="card">
+    <h2>Automated Compliance Reports</h2>
+    <p style="color:#7d8590;font-size:0.9rem;margin-bottom:20px">
+      Generate audit-grade PDF reports including:
+      <br>&bull; <strong>Immutable Audit UUID</strong> (from Edge)
+      <br>&bull; <strong>Cloudflare-Native Timestamp</strong>
+      <br>&bull; <strong>Ruleset Version:</strong> 2026-Q1.1
+      <br>&bull; <strong>Diagnostic Verdict</strong>
+    </p>
+    <button class="btn-copy" style="width:100%;background:#39d0dc;color:#0a0d12;padding:12px;margin-bottom:12px" onclick="alert('Feature coming soon for Pro B2B accounts.')">
+      Download Latest Report (PDF)
+    </button>
+    <hr style="border:0;border-top:1px solid #21262d;margin:20px 0">
+    <h2 style="font-size:0.8rem">Subscription & Billing</h2>
+    <a class="stripe-btn" href="https://billing.stripe.com/p/login/price_1T6REpLdQnniVbKWgXNTc7W9" target="_blank" style="width:100%;text-align:center">
+      &#x1F4CB; Manage Subscription &rarr;
+    </a>
+  </div>
+</main>
+<footer>
+  <div style="max-width:900px;margin:0 auto;padding:40px 24px;text-align:center;border-top:1px solid #21262d;margin-top:40px">
+    <p style="color:#7d8590;font-size:0.75rem">
+      &copy; 2026 Sentinel API — Technical Compliance Infrastructure.
+      <br><br>
+      <strong>Software as a Tool Disclaimer:</strong> Sentinel is a technical analysis utility and does not constitute legal advice. High-risk AI compliance remains the sole responsibility of the provider.
+    </p>
+  </div>
+</footer>
+
+<script>
+let currentKey = null;
+
+async function loadKey() {
+  try {
+    const r = await fetch('/dashboard/api/key');
+    if (r.status === 401) { window.location = '/dashboard/login'; return; }
+    const d = await r.json();
+    currentKey = d.api_key_masked;
+    document.getElementById('key-display').textContent = d.api_key_masked || 'No key found';
+    document.getElementById('key-meta').innerHTML = 
+      '<strong>Plan:</strong> ' + (d.plan === 'developer' ? 'Developer (Free)' : 'Pro B2B') + 
+      ' &nbsp;&bull;&nbsp; <strong>Protection:</strong> Immutable Audit Trail active';
+    if (d.plan === 'developer') {
+      document.getElementById('limit-warning').innerHTML = 
+        '⚠️ Developer Tier: 1,000 requests/month limit. <a href="https://buy.stripe.com/p/subscribe/price_1T6REpLdQnniVbKWgXNTc7W9" style="color:#39d0dc;text-decoration:none">Upgrade for unlimited &rarr;</a>';
+    }
+  } catch(e) { document.getElementById('key-display').textContent = 'Error loading key'; }
+}
+
+async function copyKey() {
+  if (currentKey) {
+    await navigator.clipboard.writeText(currentKey);
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000);
+  }
+}
+
+async function rotateKey() {
+  if (!confirm('Are you sure? Your current key will stop working immediately.')) return;
+  const r = await fetch('/dashboard/api/rotate', { method: 'POST' });
+  const d = await r.json();
+  if (d.new_key) {
+    const box = document.getElementById('new-key-box');
+    box.textContent = 'New key: ' + d.new_key;
+    box.style.display = 'block';
+    currentKey = d.new_key;
+    document.getElementById('key-display').textContent = d.new_key.slice(0, 16) + '••••••••••••••••••••';
+  }
+}
+
+async function loadUsage() {
+  try {
+    const r = await fetch('/dashboard/api/usage');
+    const d = await r.json();
+    const usage = d.usage || [];
+    if (!usage.length) { document.getElementById('usageChart').parentElement.querySelector('h2').textContent += ' — No data yet'; return; }
+    drawChart(usage);
+  } catch {}
+}
+
+function drawChart(data) {
+  const canvas = document.getElementById('usageChart');
+  canvas.width = canvas.offsetWidth * 2; canvas.height = 360;
+  const ctx = canvas.getContext('2d');
+  const max = Math.max(...data.map(d => d.requests), 1);
+  const W = canvas.width, H = canvas.height;
+  const pad = 40; const barW = Math.floor((W - pad * 2) / data.length * 0.7);
+  const gap = Math.floor((W - pad * 2) / data.length);
+  ctx.fillStyle = '#0a0d12'; ctx.fillRect(0, 0, W, H);
+  data.forEach((d, i) => {
+    const x = pad + i * gap; const h = ((d.requests / max) * (H - pad * 2));
+    const y = H - pad - h;
+    ctx.fillStyle = '#1f6feb'; ctx.fillRect(x, y, barW, h);
+    if (d.non_compliant > 0) {
+      const rh = ((d.non_compliant / max) * (H - pad * 2));
+      ctx.fillStyle = '#f85149'; ctx.fillRect(x, H - pad - rh, barW, rh);
+    }
+    ctx.fillStyle = '#484f58'; ctx.font = '20px system-ui';
+    ctx.fillText(d.date?.slice(5) || '', x, H - 10);
+  });
+}
+
+loadKey(); loadUsage();
+</script>
+</body></html>`;
+}

@@ -1,0 +1,103 @@
+---
+import Layout from '../../layouts/Layout.astro';
+export const prerender = true;
+
+const resources = [
+  {
+    id: "eu-ai-act-guide",
+    title: "Sentinel Onboarding: EU AI Act Implementation Guide",
+    desc: "50-page practitioner guide covering Articles 6–14, high-risk classification, and how to map Sentinel audit trails to each article obligation.",
+    badge: "PDF · 50 pages",
+    color: "var(--color-emerald)",
+    icon: "📋",
+    href: "/docs"
+  },
+  {
+    id: "api-checklist",
+    title: "Technical API Integration Checklist",
+    desc: "Step-by-step checklist for integrating the Sentinel Audit API into CI/CD pipelines, LLM serving stacks, and MLOps platforms.",
+    badge: "Checklist · 2 pages",
+    color: "var(--color-cyan)",
+    icon: "✅",
+    href: "/docs"
+  },
+  {
+    id: "audit-templates",
+    title: "Deterministic Audit Proof Templates",
+    desc: "JSON templates for structured audit proofs, ready for submission to EU supervisory authorities and internal compliance registers (GDPR Art. 30).",
+    badge: "JSON Templates · v3",
+    color: "#a78bfa",
+    icon: "⚖️",
+    href: "/docs"
+  }
+];
+---
+
+<Layout title="Welcome to Sentinel — Your Access is Ready">
+  <main class="max-w-screen-md mx-auto px-6 pt-24 pb-32 text-center">
+
+    <!-- Success state -->
+    <div class="w-20 h-20 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-4xl mx-auto mb-8">
+      🛡️
+    </div>
+
+    <div class="section-label justify-center mb-4">ACCESS PROVISIONED</div>
+    <h1 class="text-4xl md:text-5xl text-white mb-6">
+      Welcome to<br /><span style="color: var(--color-emerald);">Sentinel Infrastructure</span>
+    </h1>
+    <p class="text-slate-400 text-lg mb-12 max-w-lg mx-auto leading-relaxed">
+      Your API keys are being provisioned. You'll receive your credentials by email within 60 seconds. In the meantime, get started with these resources.
+    </p>
+
+    <!-- Resource Downloads -->
+    <div class="space-y-4 mb-16 text-left">
+      {resources.map((r, i) => (
+        <a href={r.href}
+           class="glass flex items-start gap-6 p-6 rounded-2xl hover:border-emerald-500/30 transition-all group block">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform"
+               style={`background: ${r.color}18;`}>
+            {r.icon}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div class="font-semibold text-slate-200 text-sm leading-tight">{r.title}</div>
+              <span class="mono text-[10px] px-2 py-1 rounded shrink-0 mt-0.5"
+                    style={`background: ${r.color}15; color: ${r.color};`}>
+                {r.badge}
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">{r.desc}</p>
+          </div>
+          <div class="text-slate-600 group-hover:text-emerald-400 transition-colors shrink-0 mt-1">↓</div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Next steps -->
+    <div class="glass p-8 rounded-2xl text-left mb-10">
+      <div class="mono text-[10px] text-slate-500 tracking-widest uppercase mb-6">Next Steps</div>
+      <ol class="space-y-5">
+        {[
+          { n: "01", title: "Access your Dashboard", desc: "Log in to retrieve your API key and view your live audit logs." },
+          { n: "02", title: "Run your first audit", desc: "POST a manifest to /api/audit with your API key. Expect a verdict in under 3ms." },
+          { n: "03", title: "Set up D1 Webhooks", desc: "Configure webhook alerts for non-compliant verdicts in your Slack or PagerDuty workspace." },
+          { n: "04", title: "Generate your first PDF Report", desc: "Use the /api/audit?format=pdf endpoint to generate a compliance certificate for regulators." },
+        ].map(s => (
+          <li class="flex items-start gap-4">
+            <span class="mono text-xs font-black shrink-0 mt-0.5" style="color: var(--color-emerald);">{s.n}</span>
+            <div>
+              <div class="font-semibold text-slate-200 text-sm">{s.title}</div>
+              <div class="text-xs text-slate-500 mt-1">{s.desc}</div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <a href="/dashboard/login" class="btn-emerald !py-5 !px-12 !text-base mx-auto">
+      Open Compliance Dashboard →
+    </a>
+    <p class="mono text-[10px] text-slate-600 mt-4">Problems? Reply to your welcome email or contact support@sentinel.dev</p>
+
+  </main>
+</Layout>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sentinel-landing-20h.pages.dev/sitemap.xml

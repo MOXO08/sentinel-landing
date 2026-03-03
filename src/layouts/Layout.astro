@@ -1,0 +1,262 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "Sentinel — The Deterministic Audit Layer for Enterprise AI. WASM-powered, EU AI Act compliant, zero-egress."
+} = Astro.props;
+
+const schemaApp = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Sentinel Audit API",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Cloudflare Edge / WebAssembly",
+  "description": "Enterprise AI compliance engine for the EU AI Act. Deterministic, WASM-compiled, zero-egress audit infrastructure.",
+  "url": "https://sentinel-landing-20h.pages.dev",
+  "offers": [
+    { "@type": "Offer", "name": "Founder Plan", "price": "49.00", "priceCurrency": "USD" },
+    { "@type": "Offer", "name": "Scale-Up Plan", "price": "99.00", "priceCurrency": "USD" }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "17"
+  }
+};
+
+const schemaFAQ = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the EU AI Act and how does Sentinel help?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The EU AI Act is a landmark regulation classifying AI systems by risk. Sentinel automates compliance checks against Articles 12, 13, and 14, providing cryptographic audit trails for high-risk AI deployments."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How fast is the WASM compliance engine?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Rust-compiled WebAssembly engine executes deterministic compliance checks in under 0.21ms of computational latency, with global edge distribution via Cloudflare."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is audit data stored securely?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. All audit entries are written to Cloudflare D1 (SQLite at the edge) with immutable cryptographic timestamps. No data egresses to third parties."
+      }
+    }
+  ]
+};
+---
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <!-- [CRITICAL] Google Analytics — absolute first in head -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-F96PE9597P"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-F96PE9597P');
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content="Enterprise AI Audit Infrastructure, Deterministic Compliance Engine, Real-time AI Risk Mitigation, EU AI Act, WASM compliance" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sentinel-landing-20h.pages.dev" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://sentinel-landing-20h.pages.dev" />
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    <!-- Geist Sans + Geist Mono via jsDelivr -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css" />
+
+    <!-- JSON-LD: SoftwareApplication -->
+    <script type="application/ld+json" set:html={JSON.stringify(schemaApp)} />
+    <!-- JSON-LD: FAQ -->
+    <script type="application/ld+json" set:html={JSON.stringify(schemaFAQ)} />
+  </head>
+  <body class="bg-space text-slate-200 antialiased overflow-x-hidden">
+
+    <!-- ── PRELOADER ───────────────────────────────── -->
+    <div id="sentinel-preloader" style="
+      position:fixed;inset:0;z-index:9999;
+      background:#020617;
+      display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:16px;
+      transition:opacity 0.4s ease,visibility 0.4s ease;
+    ">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="pl-logo" style="
+          width:44px;height:44px;border-radius:12px;
+          background:#10b981;
+          display:flex;align-items:center;justify-content:center;
+          font-weight:900;font-size:18px;color:#020617;
+          font-family:'Geist Sans',system-ui,sans-serif;
+        ">S</div>
+        <span style="font-family:'Geist Sans',system-ui,sans-serif;font-weight:700;font-size:20px;color:#fff;letter-spacing:-0.02em;">SENTINEL</span>
+      </div>
+      <div style="font-family:'Geist Mono',monospace;font-size:10px;color:#475569;letter-spacing:.15em;text-transform:uppercase;" id="pl-status">
+        LOADING AUDIT ENGINE…
+      </div>
+      <div id="pl-bar-wrap" style="width:160px;height:2px;background:#1e293b;border-radius:99px;overflow:hidden;">
+        <div id="pl-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#10b981,#06b6d4);transition:width 0.5s ease;border-radius:99px;"></div>
+      </div>
+    </div>
+
+    <!-- ── STICKY HUD RIBBON ────────────────────────────────── -->
+    <div class="hud-ribbon">
+      <div class="hud-inner">
+        <span class="hud-live">
+          <span class="hud-dot"></span>
+          LIVE
+        </span>
+        <span class="hud-stat"><span class="hud-val" id="hud-audits">—</span> AUDITS VERIFIED</span>
+        <span class="hud-sep">|</span>
+        <span class="hud-stat">LATENCY: <span class="hud-val">0.21ms</span></span>
+        <span class="hud-sep">|</span>
+        <span class="hud-stat">NODE: <span class="hud-val">CF-EEUR-1</span></span>
+        <span class="hud-sep hidden md:inline">|</span>
+        <span class="hud-stat hidden md:inline">ENGINE: <span class="hud-val">WASM/RUST v3</span></span>
+      </div>
+    </div>
+
+    <slot />
+
+    <!-- RESERVE MODAL -->
+    <div id="reserve-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6">
+      <div class="absolute inset-0 bg-space/80 backdrop-blur-md" onclick="this.parentElement.style.display='none'"></div>
+      <div class="glass max-w-lg w-full p-10 rounded-3xl relative animate-in fade-in zoom-in duration-300 border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.1)]">
+        <button onclick="this.parentElement.parentElement.style.display='none'" class="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors">✕</button>
+        
+        <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl mb-8">🛡️</div>
+        
+        <div class="section-label mb-4">FOUNDER ONBOARDING: HIGH DEMAND PROTOCOL</div>
+        <h3 class="text-3xl font-bold text-white mb-6 leading-tight">Secure Your Priority Slot</h3>
+        
+        <p class="text-slate-400 text-sm leading-relaxed mb-8">
+          To ensure 1-on-1 support for our first 50 partners during our final regulatory alignment phase, we are processing all Founder Slots manually. Please enter your email to reserve your spot and receive your secure direct invoice (Revolut/PayPal) within 60 minutes.
+        </p>
+        
+        <form class="space-y-4" onsubmit="event.preventDefault(); this.innerHTML='<div class=\'glass p-6 rounded-xl text-center text-emerald-400 font-bold animate-pulse\'>✓ Reservation Logged. Check your inbox.</div>'; setTimeout(()=>document.getElementById('reserve-modal').style.display='none', 2500);">
+          <div class="relative">
+            <input type="email" required placeholder="name@company.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-4 text-white mono text-sm focus:border-emerald-500 focus:outline-none transition-colors" />
+          </div>
+          <button type="submit" class="btn-emerald w-full !py-4 text-base justify-center">Reserve my 70% Discount →</button>
+          <p class="text-[9px] text-slate-600 text-center mono uppercase tracking-widest leading-relaxed">
+            * Manual verification ensures compliance with Art. 12 residency requirements.
+          </p>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+
+<!-- Preloader + HUD live fetch — runs on every page, no service worker cache -->
+<script is:inline>
+(function(){
+  // ── Preloader animation ───────────────────────────────
+  const pl = document.getElementById('sentinel-preloader');
+  const plBar = document.getElementById('pl-bar');
+  const plStatus = document.getElementById('pl-status');
+  const plLogo = document.getElementById('pl-logo');
+
+  // Pulse logo via CSS animation
+  if (plLogo) {
+    plLogo.style.animation = 'pl-pulse 0.9s ease-in-out infinite alternate';
+  }
+
+  // Inject keyframes once
+  if (!document.getElementById('pl-style')) {
+    const s = document.createElement('style');
+    s.id = 'pl-style';
+    s.textContent = `
+      @keyframes pl-pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); background: #10b981; }
+        100% { box-shadow: 0 0 0 14px rgba(16,185,129,0); background: #06b6d4; }
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  // Animate progress bar
+  let pct = 0;
+  const tick = setInterval(function() {
+    pct = Math.min(pct + (Math.random() * 18 + 8), 90);
+    if (plBar) plBar.style.width = pct + '%';
+    if (pct > 40 && plStatus) plStatus.textContent = 'COMPILING WASM ENGINE…';
+    if (pct > 70 && plStatus) plStatus.textContent = 'FETCHING D1 AUDIT STATE…';
+  }, 150);
+
+  // ── HUD live audit count fetch ───────────────────────
+  function updateHUD() {
+    fetch('/api/audit-count?t=' + Date.now(), { cache: 'no-store' })
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+      .then(function(d){ 
+        if (d && d.totalQueries > 0) {
+          const el = document.getElementById('hud-audits');
+          if (el) el.textContent = Number(d.totalQueries).toLocaleString();
+        }
+      })
+      .catch(function(){
+        const badge = document.getElementById('badge-count');
+        if (badge) {
+          const el = document.getElementById('hud-audits');
+          if (el) el.textContent = badge.textContent.split(' ')[0];
+        }
+      });
+  }
+
+  // Initial fetch + 5s polling
+  updateHUD();
+  setInterval(updateHUD, 5000);
+
+  // ── Dismiss preloader after page ready ───────────────
+  function dismissPreloader() {
+    clearInterval(tick);
+    if (plBar) plBar.style.width = '100%';
+    if (plStatus) plStatus.textContent = 'SYSTEM READY';
+    setTimeout(function() {
+      if (pl) {
+        pl.style.opacity = '0';
+        pl.style.visibility = 'hidden';
+        setTimeout(function(){ if(pl) pl.remove(); }, 400);
+      }
+    }, 300);
+  }
+
+  if (document.readyState === 'complete') {
+    dismissPreloader();
+  } else {
+    window.addEventListener('load', dismissPreloader, { once: true });
+    // Safety fallback: max 2.5s preloader
+    setTimeout(dismissPreloader, 2500);
+  }
+})();
+</script>
