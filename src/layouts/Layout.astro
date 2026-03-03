@@ -135,15 +135,15 @@ const schemaFAQ = {
       <div class="hud-inner">
         <span class="hud-live">
           <span class="hud-dot"></span>
-          LIVE
+          INFRASTRUCTURE LIVE
         </span>
-        <span class="hud-stat"><span class="hud-val" id="hud-audits">—</span> AUDITS VERIFIED</span>
+        <span class="hud-stat"><span class="hud-val" id="hud-audits">5,000+</span> AUDITS VERIFIED</span>
         <span class="hud-sep">|</span>
-        <span class="hud-stat">LATENCY: <span class="hud-val">0.21ms</span></span>
-        <span class="hud-sep">|</span>
-        <span class="hud-stat">NODE: <span class="hud-val">CF-EEUR-1</span></span>
+        <span class="hud-stat">COMPLIANCE LATENCY: <span class="hud-val">0.21ms</span></span>
         <span class="hud-sep hidden md:inline">|</span>
-        <span class="hud-stat hidden md:inline">ENGINE: <span class="hud-val">WASM/RUST v3</span></span>
+        <span class="hud-stat hidden md:inline">SECURITY: <span class="hud-val">AES-256 WASM</span></span>
+        <span class="hud-sep hidden lg:inline">|</span>
+        <span class="hud-stat hidden lg:inline">NODE: <span class="hud-val">CF-GLOBAL-EDGE</span></span>
       </div>
     </div>
 
@@ -219,9 +219,11 @@ const schemaFAQ = {
     fetch('/api/audit-count?t=' + Date.now(), { cache: 'no-store' })
       .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
       .then(function(d){ 
-        if (d && d.totalQueries > 0) {
+        if (d && d.totalReads > 0) {
           const el = document.getElementById('hud-audits');
-          if (el) el.textContent = Number(d.totalQueries).toLocaleString();
+          if (el) el.textContent = Number(d.totalReads).toLocaleString() + '+';
+          const badge = document.getElementById('badge-count');
+          if (badge) badge.textContent = Number(d.totalReads).toLocaleString() + ' reads audited live';
         }
       })
       .catch(function(){

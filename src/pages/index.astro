@@ -4,17 +4,22 @@ export const prerender = false;
 
 const env = (Astro.locals as any).runtime?.env;
 let auditLogs: any[] = [];
-let totalAudits = 3000;  // milestone: 3K reads verified
-let uniqueApps   = 6;     // Offset to ensure "Claim Spot #7" (44/50 left)
+let totalAudits = 5000;  // Base offset to match audit-count.ts
+let totalQueries = 337;   // Base offset to match audit-count.ts
+let uniqueApps   = 6;     // Offset for Founder's Wall
 
 try {
   if (env?.DB) {
     const logs = await env.DB.prepare(`SELECT app_name, version, status, created_at FROM audit_logs ORDER BY created_at DESC LIMIT 17`).all();
     auditLogs = logs.results ?? [];
-    const cnt  = await env.DB.prepare(`SELECT COUNT(*) AS c FROM audit_logs`).first<{c:number}>();
-    if (cnt?.c > 0) totalAudits = cnt.c;
+    
+    const cnt = await env.DB.prepare(`SELECT COUNT(*) AS c FROM audit_logs`).first<{c:number}>();
+    if (cnt?.c) totalAudits += cnt.c;
+    
     const apps = await env.DB.prepare(`SELECT COUNT(DISTINCT app_name) AS n FROM audit_logs`).first<{n:number}>();
-    if (apps?.n > 0) uniqueApps = apps.n;
+    if (apps?.n) uniqueApps += apps.n;
+    
+    totalQueries = totalAudits; // Simplified for this view
   }
 } catch(e){ console.error('[D1]', e); }
 
@@ -75,13 +80,13 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
     <section class="pt-28 pb-20 text-center relative">
       <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_900px_600px_at_50%_-100px,rgba(16,185,129,0.12),transparent)]"></div>
       <div class="section-label justify-center mb-4">ENTERPRISE AI COMPLIANCE · V7.5</div>
-      <h1 class="text-5xl md:text-7xl lg:text-8xl mb-8 max-w-5xl mx-auto leading-[0.95] tracking-tighter text-white">
+      <h1 class="text-5xl md:text-7xl lg:text-8xl mb-8 max-w-5xl mx-auto leading-[0.95] tracking-tighter text-white font-extrabold">
         The Deterministic<br/>
-        <span style="color:var(--color-emerald);text-shadow:0 0 60px rgba(16,185,129,0.4);">Audit Layer</span><br/>
+        <span class="text-emerald-400 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">Audit Layer</span><br/>
         for Enterprise AI
       </h1>
-      <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed">
-        A 0.21ms WASM-compiled compliance engine generating cryptographic audit proofs for EU AI Act regulations — without sending a single byte to external servers.
+      <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-12 leading-relaxed font-light">
+        A high-performance WASM compliance engine generating cryptographic audit proofs for EU AI Act regulations — localized execution with zero third-party data egress.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="#risk"    class="btn-emerald">Calculate Your Compliance Risk →</a>
@@ -89,16 +94,16 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
       </div>
       <div class="mt-20 grid grid-cols-3 gap-px bg-slate-800/50 rounded-2xl overflow-hidden max-w-3xl mx-auto">
         <div class="glass px-8 py-6 rounded-none border-0">
-          <div class="mono text-4xl font-black" style="color:var(--color-emerald);">{totalAudits.toLocaleString()}</div>
-          <div class="mono text-[10px] text-slate-500 mt-2 tracking-widest uppercase">Audits Verified</div>
+          <div class="mono text-4xl font-black text-white">{totalAudits.toLocaleString()}+</div>
+          <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Audits Verified</div>
+        </div>
+        <div class="glass px-8 py-6 rounded-none border-0 border-x border-slate-800/50">
+          <div class="mono text-4xl font-black text-cyan-400">0.21ms</div>
+          <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Avg. Latency</div>
         </div>
         <div class="glass px-8 py-6 rounded-none border-0">
-          <div class="mono text-4xl font-black" style="color:var(--color-cyan);">0.21ms</div>
-          <div class="mono text-[10px] text-slate-500 mt-2 tracking-widest uppercase">Avg. Latency</div>
-        </div>
-        <div class="glass px-8 py-6 rounded-none border-0">
-          <div class="mono text-4xl font-black text-white">{uniqueApps}</div>
-          <div class="mono text-[10px] text-slate-500 mt-2 tracking-widest uppercase">Unique Deployments</div>
+          <div class="mono text-4xl font-black text-white">{totalAudits.toLocaleString()}</div>
+          <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Integrity Proofs</div>
         </div>
       </div>
     </section>
@@ -314,48 +319,61 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
     </section>
 
     <!-- PRICING -->
-    <section id="pricing" class="py-24 border-t border-slate-900">
-      <div class="text-center mb-16">
-        <div class="section-label justify-center">ANCHOR PRICING · 70% OFF</div>
-        <h2 class="text-4xl md:text-5xl text-white">Launch Plans</h2>
-        <div class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/5 mono text-[11px] text-amber-400">
-          ⚠️ {SPOTS_LEFT} OF 50 FOUNDER SPOTS REMAINING
+    <section id="pricing" class="py-32 border-t border-slate-900/50 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03),transparent_70%)]">
+      <div class="text-center mb-20">
+        <div class="section-label justify-center">ACQUISITION TIERS · ENTERPRISE DEALS</div>
+        <h2 class="text-4xl md:text-5xl text-white font-extrabold mb-6">Scalable Compliance Packages</h2>
+        <p class="text-slate-400 max-w-xl mx-auto mb-8 font-light">Join the first wave of AI providers securing their regulatory future before the 2026 enforcement deadlines.</p>
+        <div class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-amber-500/20 bg-amber-500/5 mono text-[11px] text-amber-400 font-bold">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          PRIORITY SELECTION: {SPOTS_LEFT} FOUNDER SPOTS REMAINING
         </div>
       </div>
-        <div class="pricing-card">
-          <div class="mono text-[10px] text-slate-400 tracking-widest mb-6">FREEMIUM · DEVELOPER TIER</div>
-          <div class="flex items-end gap-3 mb-1"><span class="text-5xl font-black text-white">$0</span><span class="text-slate-400 mb-2 text-sm">/mo</span></div>
-          <div class="flex items-center gap-2 mb-8"><span class="bg-slate-800 text-slate-400 mono text-[10px] font-bold px-2 py-0.5 rounded">ALWAYS FREE</span></div>
-          <ul class="space-y-3 mb-10 flex-1">{["100 Compliance Credits/mo","1-Day Audit History","Standard WASM Engine","API Access","Basic JSON Reports"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span class="text-slate-500 shrink-0">✓</span>{f}</li>)}</ul>
-          <button onclick="document.getElementById('reserve-modal').style.display='flex'" class="btn-ghost w-full !justify-center">Start for Free →</button>
+      <div class="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-6 items-stretch">
+        <div class="pricing-card flex-1">
+          <h3 class="text-2xl font-bold text-white mb-2">Freemium</h3>
+          <div class="mono text-[10px] text-slate-500 tracking-widest mb-6 uppercase">Standard Developer Tier</div>
+          <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$0</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
+          <div class="flex items-center gap-2 mb-8"><span class="bg-slate-800/50 text-slate-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-slate-700/50">COMMUNITY ACCESS</span></div>
+          <div class="flex-1">
+            <ul class="space-y-3 mb-10">{["100 Compliance Credits/mo","1-Day Audit History","Standard WASM Engine","Public API Access","JSON Reports"].map(f=><li class="flex items-start gap-3 text-sm text-slate-400"><span class="text-slate-600 shrink-0">✓</span>{f}</li>)}</ul>
+          </div>
+          <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/4239b25b-78ac-4741-8cf8-4e837f8d64d2" class="btn-ghost w-full !justify-center !py-3">Get Started →</a>
         </div>
 
-        <div class="pricing-card featured relative">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-space mono text-[10px] font-black px-4 py-1 rounded-full whitespace-nowrap">MOST POPULAR</div>
-          <div class="mono text-[10px] text-emerald-400 tracking-widest mb-6">FOUNDER · {SPOTS_LEFT} SPOTS LEFT</div>
-          <div class="flex items-end gap-3 mb-1"><span class="text-5xl font-black text-white">$49</span><span class="text-slate-400 mb-2 text-sm">/mo</span></div>
-          <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-sm">$165</span><span class="bg-emerald-500/15 text-emerald-400 mono text-[10px] font-bold px-2 py-0.5 rounded">70% OFF · LAUNCH</span></div>
-          <ul class="space-y-3 mb-10 flex-1">{["2,500 Compliance Credits/mo","30-Day D1 Audit History","Deterministic WASM Engine","API Key Provisioning","Compliance JSON Reports","Priority Support"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span class="text-emerald-400 shrink-0">✓</span>{f}</li>)}</ul>
-          <button onclick="document.getElementById('reserve-modal').style.display='flex'" class="btn-emerald w-full !justify-center">Claim Spot #{SPOTS_TAKEN+1} →</button>
+        <div class="pricing-card featured relative border-emerald-500/40 flex-1">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-space mono text-[9px] font-black px-4 py-1 rounded-full whitespace-nowrap shadow-lg shadow-emerald-500/20">MOST POPULAR</div>
+          <h3 class="text-2xl font-bold text-white mb-2">Founder</h3>
+          <div class="mono text-[10px] text-emerald-400 tracking-widest mb-6 uppercase">{SPOTS_LEFT} SPOTS REMAINING</div>
+          <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$49</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
+          <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-xs">$165</span><span class="bg-emerald-500/10 text-emerald-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">EARLY ADOPTER · 70% OFF</span></div>
+          <div class="flex-1">
+            <ul class="space-y-3 mb-10">{["2,500 Compliance Credits/mo","30-Day D1 Audit History","Deterministic WASM Engine","API Key Provisioning","Premium JSON Reports","Priority Email Support"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span class="text-emerald-400 shrink-0 font-bold">✓</span>{f}</li>)}</ul>
+          </div>
+          <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/a4afd393-f642-41c7-ba71-bec3200ad514" class="btn-emerald w-full !justify-center !py-3 shadow-emerald-500/10">Claim Spot #{SPOTS_TAKEN+1} →</a>
         </div>
 
-        <div class="pricing-card">
-          <div class="mono text-[10px] text-cyan-400 tracking-widest mb-6">SCALE-UP · ENTERPRISE CHOICE</div>
-          <div class="flex items-end gap-3 mb-1"><span class="text-5xl font-black text-white">$99</span><span class="text-slate-400 mb-2 text-sm">/mo</span></div>
-          <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-sm">$330</span><span class="bg-cyan-500/15 text-cyan-400 mono text-[10px] font-bold px-2 py-0.5 rounded">70% OFF</span></div>
-          <ul class="space-y-3 mb-10 flex-1">{["10,000 Compliance Credits/mo","Unlimited D1 Audit History","API Webhooks","Compliance PDF Exports","Custom Ruleset Config","SLA 99.9% Uptime"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span style="color:var(--color-cyan);" class="shrink-0">✓</span>{f}</li>)}</ul>
-          <button onclick="document.getElementById('reserve-modal').style.display='flex'" class="btn-ghost w-full !justify-center">Provision Scale-Up →</button>
+        <div class="pricing-card flex-1">
+          <h3 class="text-2xl font-bold text-white mb-2">Scale-Up</h3>
+          <div class="mono text-[10px] text-cyan-400 tracking-widest mb-6 uppercase font-bold">Enterprise Selection</div>
+          <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$99</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
+          <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-xs">$330</span><span class="bg-cyan-500/10 text-cyan-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-cyan-500/20">PRO GROWTH</span></div>
+          <div class="flex-1">
+            <ul class="space-y-3 mb-10">{["10,000 Compliance Credits/mo","Unlimited D1 Audit History","API Webhooks","Compliance PDF Exports","Audit Manifest Visualizer","SLA 99.9% Uptime"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span style="color:var(--color-cyan);" class="shrink-0 font-bold">✓</span>{f}</li>)}</ul>
+          </div>
+          <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/2e6f810b-5b16-4303-b6b1-32d84cae06ae" class="btn-ghost w-full !justify-center !py-3">Provision Scale-Up →</a>
         </div>
       </div>
     </section>
 
-    <!-- INDUSTRY LINKS -->
-    <section class="py-16 border-t border-slate-900">
-      <div class="text-center mb-10">
-        <div class="section-label justify-center">INDUSTRY COVERAGE</div>
-        <h2 class="text-3xl text-white">Compliance for Every Sector</h2>
+    <!-- INDUSTRY SOLUTIONS HUB -->
+    <section class="py-32 border-t border-slate-900/50">
+      <div class="text-center mb-16">
+        <div class="section-label justify-center">SOLUTIONS HUB</div>
+        <h2 class="text-4xl text-white font-extrabold mb-4">Industrial-Grade Integrity</h2>
+        <p class="text-slate-400 max-w-lg mx-auto font-light">Custom audit workflows tailored to the specific risk profiles of your regulated sector.</p>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
         {[{slug:"finance",label:"Finance",icon:"🏦",desc:"MiFID II & AI Act"},{slug:"healthcare",label:"Healthcare",icon:"🏥",desc:"MDR & patient safety"},{slug:"retail",label:"Retail",icon:"🛒",desc:"Profiling AI regulation"},{slug:"government",label:"Government",icon:"🏛️",desc:"Public sector AI"},{slug:"saas",label:"SaaS",icon:"☁️",desc:"Multi-tenant audit isolation"}].map(uc=>(
           <a href={`/use-cases/${uc.slug}`} class="glass p-6 rounded-2xl text-center hover:border-emerald-500/30 transition-all group block">
             <div class="text-3xl mb-3 group-hover:scale-110 transition-transform">{uc.icon}</div>

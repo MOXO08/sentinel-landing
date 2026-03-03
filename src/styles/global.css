@@ -2,15 +2,16 @@
 
 /* ── Design Tokens ─────────────────────────────────────── */
 @theme {
-    --color-space: #020617;
-    --color-space-surface: #060d1f;
-    --color-space-card: #0a1628;
+    --color-space: #0b0f1a;
+    --color-space-surface: #0f172a;
+    --color-space-card: #1e293b;
     --color-emerald: #10b981;
-    --color-emerald-dim: rgba(16, 185, 129, 0.15);
+    --color-emerald-pro: #059669;
+    --color-emerald-dim: rgba(16, 185, 129, 0.1);
     --color-cyan: #06b6d4;
-    --color-cyan-dim: rgba(6, 182, 212, 0.15);
-    --color-border: rgba(30, 41, 59, 0.8);
-    --color-border-glow: rgba(16, 185, 129, 0.3);
+    --color-cyan-dim: rgba(6, 182, 212, 0.1);
+    --color-border: rgba(30, 41, 59, 0.5);
+    --color-border-hover: rgba(16, 185, 129, 0.3);
     --font-ui: 'Geist Sans', 'Inter', system-ui, sans-serif;
     --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
 }
@@ -138,7 +139,8 @@
 
     .btn-emerald:hover {
         transform: translateY(-2px);
-        box-shadow: 0 0 40px rgba(16, 185, 129, 0.5);
+        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+        background: var(--color-emerald-pro);
     }
 
     .btn-ghost {
@@ -234,24 +236,33 @@
 
     /* Pricing */
     .pricing-card {
-        background: rgba(10, 22, 40, 0.6);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--color-border);
-        border-radius: 20px;
-        padding: 40px;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        border-radius: 24px;
+        padding: 48px 40px;
         display: flex;
         flex-direction: column;
-        transition: all 0.25s;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        height: 100%;
+        position: relative;
     }
 
     .pricing-card:hover {
+        transform: translateY(-8px);
         border-color: rgba(16, 185, 129, 0.2);
-        box-shadow: 0 20px 60px rgba(16, 185, 129, 0.05);
+        background: rgba(15, 23, 42, 0.6);
+        box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(16, 185, 129, 0.05);
     }
 
     .pricing-card.featured {
-        border-color: var(--color-emerald);
-        box-shadow: 0 0 60px rgba(16, 185, 129, 0.1), inset 0 0 60px rgba(16, 185, 129, 0.02);
+        background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), rgba(15, 23, 42, 0.4));
+        border-color: rgba(16, 185, 129, 0.3);
+        box-shadow: 0 0 60px rgba(16, 185, 129, 0.05), inset 0 0 40px rgba(16, 185, 129, 0.02);
+    }
+
+    .pricing-card.featured:hover {
+        border-color: rgba(16, 185, 129, 0.5);
     }
 }
 

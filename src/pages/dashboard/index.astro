@@ -89,9 +89,9 @@ export const partial = false;
     </button>
     <hr style="border:0;border-top:1px solid #21262d;margin:20px 0">
     <h2 style="font-size:0.8rem">Subscription & Billing</h2>
-    <button class="stripe-btn" onclick="document.getElementById('reserve-modal').style.display='flex'" style="width:100%;text-align:center">
-      &#x1F4CB; Contact Support for Billing &rarr;
-    </button>
+    <a href="https://radumuresanu.lemonsqueezy.com/billing" class="stripe-btn" style="width:100%;text-align:center">
+      &#x1F4CB; Manage Subscription & Billing &rarr;
+    </a>
   </div>
 </main>
 <footer>
@@ -117,10 +117,8 @@ async function loadKey() {
     document.getElementById('key-meta').innerHTML = 
       '<strong>Plan:</strong> ' + (d.plan === 'developer' ? 'Developer (Free)' : 'Pro B2B') + 
       ' &nbsp;&bull;&nbsp; <strong>Protection:</strong> Immutable Audit Trail active';
-    if (d.plan === 'developer') {
       document.getElementById('limit-warning').innerHTML = 
-        '⚠️ Developer Tier: 1,000 requests/month limit. <button onclick="document.getElementById(\'reserve-modal\').style.display=\'flex\'" style="color:#39d0dc;background:none;border:none;cursor:pointer;font:inherit;padding:0;text-decoration:none">Reserve Upgrade &rarr;</button>';
-    }
+        '⚠️ Developer Tier: 1,000 requests/month limit. <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/a4afd393-f642-41c7-ba71-bec3200ad514" style="color:#39d0dc;text-decoration:none">Upgrade to Founder &rarr;</a>';
   } catch(e) { document.getElementById('key-display').textContent = 'Error loading key'; }
 }
 
