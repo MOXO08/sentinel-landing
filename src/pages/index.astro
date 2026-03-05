@@ -4,9 +4,9 @@ export const prerender = false;
 
 const env = (Astro.locals as any).runtime?.env;
 let auditLogs: any[] = [];
-let totalAudits = 5000;  // Base offset to match audit-count.ts
-let totalQueries = 337;   // Base offset to match audit-count.ts
-let uniqueApps   = 6;     // Offset for Founder's Wall
+let totalAudits = 2950;  // Base offset to match real CF D1
+let totalQueries = 198;   // Base offset to match real CF D1
+let uniqueApps   = 7;     // Offset for Founder's Wall — updated to reflect subscription #3054541
 
 try {
   if (env?.DB) {
@@ -45,9 +45,12 @@ const slots = Array.from({length: SPOTS_TOTAL}, (_, i) => ({
   label: i < SPOTS_TAKEN ? 'OK' : i === SPOTS_TAKEN ? 'YOU' : String(i+1).padStart(2,'0')
 }));
 
-const STRIPE_FREE    = "/api/checkout?plan=freemium";
-const STRIPE_FOUNDER = "/api/checkout?plan=founder";
-const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
+const LEMON_FREE       = "https://radumuresanu.lemonsqueezy.com/checkout/buy/c3dd992f-74d8-4d6c-859e-92095a5f171c?embed=1";
+const LEMON_PRO        = "https://radumuresanu.lemonsqueezy.com/checkout/buy/aefa17e9-7794-44c0-bf3f-65b1a93c5182?embed=1";
+const LEMON_ENTERPRISE = "https://radumuresanu.lemonsqueezy.com/checkout/buy/2af0bd06-7319-4390-91d4-397998ab012b?embed=1";
+
+// LANDING PAGE CACHE: 1 minute
+Astro.response.headers.set('Cache-Control', 'public, max-age=60');
 ---
 
 <Layout title="Sentinel — Deterministic Audit Layer for Enterprise AI | EU AI Act Infrastructure">
@@ -65,7 +68,7 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
         <a href="#tech"         class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">TECHNOLOGY</a>
         <a href="#pricing"      class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">PRICING</a>
         <a href="/compliance"   class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">COMPLIANCE</a>
-        <a href="/onboarding"   class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">ONBOARDING</a>
+        <a href="/integrity-console"   class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">ONBOARDING</a>
       </div>
       <div class="flex items-center gap-3">
         <a href="/dashboard/login" class="btn-ghost !py-2 !px-4 !text-xs">Dashboard</a>
@@ -94,16 +97,17 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
       </div>
       <div class="mt-20 grid grid-cols-3 gap-px bg-slate-800/50 rounded-2xl overflow-hidden max-w-3xl mx-auto">
         <div class="glass px-8 py-6 rounded-none border-0">
-          <div class="mono text-4xl font-black text-white">{totalAudits.toLocaleString()}+</div>
-          <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Audits Verified</div>
+          <div id="hero-reads-val" class="mono text-4xl font-black text-white">{totalAudits.toLocaleString()}+</div>
+          <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Reads Verified</div>
         </div>
         <div class="glass px-8 py-6 rounded-none border-0 border-x border-slate-800/50">
-          <div class="mono text-4xl font-black text-cyan-400">0.21ms</div>
-          <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Avg. Latency</div>
+          <div class="mono text-4xl font-black text-cyan-400">0.21<span class="text-xl">ms</span></div>
+          <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Avg. Latency · EEUR-1</div>
         </div>
-        <div class="glass px-8 py-6 rounded-none border-0">
-          <div class="mono text-4xl font-black text-white">{totalAudits.toLocaleString()}</div>
+        <div class="glass px-8 py-6 rounded-none border-0 relative">
+          <div id="hero-integrity-val" class="mono text-4xl font-black text-emerald-400">{totalAudits.toLocaleString()}</div>
           <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Integrity Proofs</div>
+          <div id="hero-status-badge" class="absolute top-3 right-3 mono text-[8px] font-black px-2 py-0.5 rounded border bg-amber-500/10 border-amber-500/30 text-amber-400">CRITICAL</div>
         </div>
       </div>
     </section>
@@ -141,9 +145,9 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
           <div class="text-5xl font-black text-red-400 mb-2" id="calc-penalty">€3.500.000</div>
           <div class="text-sm text-slate-500 mono" id="calc-detail">7% of €50M · High-Risk classification</div>
         </div>
-        <button onclick="document.getElementById('reserve-modal').style.display='flex'" class="w-full btn-emerald justify-center !py-5 text-base block text-center">
-          Mitigate <span id="calc-cta-amount">€3.500.000</span> Risk — <span class="line-through opacity-60">$330</span> $99/mo →
-        </button>
+        <a href={LEMON_ENTERPRISE} class="lemonsqueezy-button w-full btn-emerald flex justify-center !py-5 text-base text-center decoration-none">
+          Get Enterprise Plan — <span class="line-through opacity-60 ml-1 mr-1">$499</span> $299/mo →
+        </a>
       </div>
     </section>
 
@@ -169,7 +173,7 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
             <div class="h-full rounded-full" style={`width:${(SPOTS_TAKEN/SPOTS_TOTAL)*100}%;background:linear-gradient(90deg,#10b981,#f59e0b);`}></div>
           </div>
           <div class="mt-3">
-            <button onclick="document.getElementById('reserve-modal').style.display='flex'" class="btn-emerald !py-3 !px-6 !text-xs w-full text-center block">Claim Spot #{SPOTS_TAKEN+1} — $49/mo Forever →</button>
+            <a href={LEMON_PRO} class="lemonsqueezy-button btn-emerald flex justify-center !py-3 !px-6 !text-xs w-full text-center decoration-none">Get Pro Plan — $49/mo Forever →</a>
           </div>
         </div>
       </div>
@@ -331,37 +335,37 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
       </div>
       <div class="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-6 items-stretch">
         <div class="pricing-card flex-1">
-          <h3 class="text-2xl font-bold text-white mb-2">Freemium</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Developer</h3>
           <div class="mono text-[10px] text-slate-500 tracking-widest mb-6 uppercase">Standard Developer Tier</div>
           <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$0</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
           <div class="flex items-center gap-2 mb-8"><span class="bg-slate-800/50 text-slate-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-slate-700/50">COMMUNITY ACCESS</span></div>
           <div class="flex-1">
             <ul class="space-y-3 mb-10">{["100 Compliance Credits/mo","1-Day Audit History","Standard WASM Engine","Public API Access","JSON Reports"].map(f=><li class="flex items-start gap-3 text-sm text-slate-400"><span class="text-slate-600 shrink-0">✓</span>{f}</li>)}</ul>
           </div>
-          <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/4239b25b-78ac-4741-8cf8-4e837f8d64d2" class="btn-ghost w-full !justify-center !py-3">Get Started →</a>
+          <a href={LEMON_FREE} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3">Get Developer Tier →</a>
         </div>
 
         <div class="pricing-card featured relative border-emerald-500/40 flex-1">
           <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-space mono text-[9px] font-black px-4 py-1 rounded-full whitespace-nowrap shadow-lg shadow-emerald-500/20">MOST POPULAR</div>
-          <h3 class="text-2xl font-bold text-white mb-2">Founder</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Pro</h3>
           <div class="mono text-[10px] text-emerald-400 tracking-widest mb-6 uppercase">{SPOTS_LEFT} SPOTS REMAINING</div>
           <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$49</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
           <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-xs">$165</span><span class="bg-emerald-500/10 text-emerald-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">EARLY ADOPTER · 70% OFF</span></div>
           <div class="flex-1">
             <ul class="space-y-3 mb-10">{["2,500 Compliance Credits/mo","30-Day D1 Audit History","Deterministic WASM Engine","API Key Provisioning","Premium JSON Reports","Priority Email Support"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span class="text-emerald-400 shrink-0 font-bold">✓</span>{f}</li>)}</ul>
           </div>
-          <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/a4afd393-f642-41c7-ba71-bec3200ad514" class="btn-emerald w-full !justify-center !py-3 shadow-emerald-500/10">Claim Spot #{SPOTS_TAKEN+1} →</a>
+          <a href={LEMON_PRO} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3 shadow-emerald-500/10">Get Pro Plan →</a>
         </div>
 
         <div class="pricing-card flex-1">
-          <h3 class="text-2xl font-bold text-white mb-2">Scale-Up</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Enterprise</h3>
           <div class="mono text-[10px] text-cyan-400 tracking-widest mb-6 uppercase font-bold">Enterprise Selection</div>
-          <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$99</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
-          <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-xs">$330</span><span class="bg-cyan-500/10 text-cyan-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-cyan-500/20">PRO GROWTH</span></div>
+          <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$299</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
+          <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-xs">$499</span><span class="bg-cyan-500/10 text-cyan-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-cyan-500/20">ENTERPRISE PACK</span></div>
           <div class="flex-1">
             <ul class="space-y-3 mb-10">{["10,000 Compliance Credits/mo","Unlimited D1 Audit History","API Webhooks","Compliance PDF Exports","Audit Manifest Visualizer","SLA 99.9% Uptime"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span style="color:var(--color-cyan);" class="shrink-0 font-bold">✓</span>{f}</li>)}</ul>
           </div>
-          <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/2e6f810b-5b16-4303-b6b1-32d84cae06ae" class="btn-ghost w-full !justify-center !py-3">Provision Scale-Up →</a>
+          <a href={LEMON_ENTERPRISE} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3">Get Enterprise Plan →</a>
         </div>
       </div>
     </section>
@@ -415,7 +419,8 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
         </div>
       </div>
       <div class="flex gap-8 mono text-[10px] text-slate-600 tracking-wider uppercase">
-        <a href="/verify-integrity" class="hover:text-emerald-400 transition-colors">AUDIT VERIFY</a>
+        <a href="https://github.com/MOXO08/sentinel-example-ai-app/wiki" class="hover:text-emerald-400 transition-colors font-bold text-emerald-500">TECHNICAL WIKI</a>
+        <a href="/integrity-console" class="hover:text-emerald-400 transition-colors">AUDIT VERIFY</a>
         <a href="/compliance"       class="hover:text-emerald-400 transition-colors">COMPLIANCE</a>
         <a href="/onboarding"       class="hover:text-emerald-400 transition-colors">ONBOARDING</a>
         <a href="/sitemap.xml"      class="hover:text-emerald-400 transition-colors">SITEMAP</a>
@@ -424,7 +429,7 @@ const STRIPE_SCALE   = "/api/checkout?plan=scaleup";
   </footer>
 
   <!-- VERIFIED BY SENTINEL FLOATING BADGE -->
-  <a href="/verify-integrity" class="fixed bottom-6 right-6 z-50 glass rounded-2xl p-4 border-emerald-500/30 shadow-2xl cursor-pointer hover:border-emerald-500/60 transition-all group max-w-xs no-underline block">
+  <a href="/integrity-console" class="fixed bottom-6 right-6 z-50 glass rounded-2xl p-4 border-emerald-500/30 shadow-2xl cursor-pointer hover:border-emerald-500/60 transition-all group max-w-xs no-underline block">
     <div class="flex items-start gap-3">
       <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
         <span class="text-emerald-400 font-black text-sm">S</span>

@@ -38,7 +38,7 @@ const resources = [
 const steps = [
   { n: "01", title: "Generate Your API Key", body: "In your Sentinel Dashboard, navigate to Settings → API Keys → Create New. Save this — it will not be shown again.", link: "/dashboard", cta: "Open Dashboard →" },
   { n: "02", title: "Send Your First Audit", body: "POST your model manifest JSON to /api/audit with your API key in the Authorization header. Your first audit should return a COMPLIANT verdict within 0.21ms.", link: "/compliance", cta: "See API Reference →" },
-  { n: "03", title: "Verify Your Audit Trail", body: "Check the Integrity Console to confirm your audit was written to the immutable D1 ledger. You now have legally-defensible evidence.", link: "/verify-integrity", cta: "Open Integrity Console →" },
+  { n: "03", title: "Verify Your Audit Trail", body: "Check the Integrity Console to confirm your audit was written to the immutable D1 ledger. You now have legally-defensible evidence.", link: "/integrity-console", cta: "Open Integrity Console →" },
   { n: "04", title: "Download Your Proof Package", body: "Use the Compliance Proof Templates below to generate your Article 12 record-keeping documentation for supervisory authority review.", link: "#downloads", cta: "Get Templates →" },
 ];
 ---
@@ -53,7 +53,7 @@ const steps = [
         <span class="mono text-[10px] text-emerald-400 ml-1">ONBOARDING</span>
       </a>
       <div class="flex gap-3">
-        <a href="/verify-integrity" class="btn-ghost !py-2 !px-4 !text-xs">Integrity Console</a>
+        <a href="/integrity-console" class="btn-ghost !py-2 !px-4 !text-xs">Integrity Console</a>
         <a href="/dashboard" class="btn-emerald !py-2 !px-4 !text-xs">Open Dashboard →</a>
       </div>
     </nav>
@@ -103,14 +103,8 @@ const steps = [
               <h3 class="text-base font-bold text-white mb-2">{r.title}</h3>
               <p class="text-slate-400 text-sm leading-relaxed">{r.desc}</p>
             </div>
-            <div class="mt-auto pt-4 border-t border-slate-800">
-              <a
-                href={`/downloads/${r.filename}`}
-                download={r.filename}
-                class="btn-ghost w-full !justify-center !text-xs"
-              >
-                Download PDF — {r.size} ↓
-              </a>
+            <div class="mt-auto pt-4 border-t border-slate-800 text-center">
+              <span class="mono text-[9px] text-amber-400">Available after manual verification</span>
             </div>
           </div>
         ))}
@@ -122,8 +116,8 @@ const steps = [
       <h2 class="text-2xl font-bold text-white mb-3">Questions? We Ship Fast.</h2>
       <p class="text-slate-400 text-sm mb-6">Founder Plan customers get priority email support with 4-hour response SLA. Enterprise customers get a dedicated Slack channel.</p>
       <div class="flex flex-col sm:flex-row justify-center gap-4">
-        <a href="/verify-integrity" class="btn-emerald">View Your Live Audit Trail →</a>
-        <a href="mailto:support@sentinel.dev?subject=Onboarding%20Support%20Request" class="btn-ghost">Email Support</a>
+        <a href="/integrity-console" class="btn-emerald">View Your Live Audit Trail →</a>
+        <a href="mailto:support@sentinel.dev?subject=Onboarding%20Support%20Request" class="btn-emerald">Email Support</a>
       </div>
     </section>
 

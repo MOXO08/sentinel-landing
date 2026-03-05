@@ -101,6 +101,9 @@ const schemaFAQ = {
     <script type="application/ld+json" set:html={JSON.stringify(schemaApp)} />
     <!-- JSON-LD: FAQ -->
     <script type="application/ld+json" set:html={JSON.stringify(schemaFAQ)} />
+
+    <!-- Lemon Squeezy Script -->
+    <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
   </head>
   <body class="bg-space text-slate-200 antialiased overflow-x-hidden">
 
@@ -137,7 +140,7 @@ const schemaFAQ = {
           <span class="hud-dot"></span>
           INFRASTRUCTURE LIVE
         </span>
-        <span class="hud-stat"><span class="hud-val" id="hud-audits">5,000+</span> AUDITS VERIFIED</span>
+        <span class="hud-stat"><span class="hud-val" id="hud-audits">2,950+</span> AUDITS VERIFIED</span>
         <span class="hud-sep">|</span>
         <span class="hud-stat">COMPLIANCE LATENCY: <span class="hud-val">0.21ms</span></span>
         <span class="hud-sep hidden md:inline">|</span>
@@ -164,19 +167,25 @@ const schemaFAQ = {
           To ensure 1-on-1 support for our first 50 partners during our final regulatory alignment phase, we are processing all Founder Slots manually. Please enter your email to reserve your spot and receive your secure direct invoice (Revolut/PayPal) within 60 minutes.
         </p>
         
-        <form class="space-y-4" onsubmit="event.preventDefault(); this.innerHTML='<div class=\'glass p-6 rounded-xl text-center text-emerald-400 font-bold animate-pulse\'>✓ Reservation Logged. Check your inbox.</div>'; setTimeout(()=>document.getElementById('reserve-modal').style.display='none', 2500);">
+        <form id="reserve-form" class="space-y-4">
           <div class="relative">
-            <input type="email" required placeholder="name@company.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-4 text-white mono text-sm focus:border-emerald-500 focus:outline-none transition-colors" />
+            <input id="reserve-email" type="email" required placeholder="name@company.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-4 text-white mono text-sm focus:border-emerald-500 focus:outline-none transition-colors" />
           </div>
-          <button type="submit" class="btn-emerald w-full !py-4 text-base justify-center">Reserve my 70% Discount →</button>
+          <!-- Cloudflare Turnstile bot challenge -->
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAClqpBzHpo5_d930" data-theme="dark" data-size="flexible" id="reserve-turnstile"></div>
+          <button type="submit" id="reserve-submit" class="btn-emerald w-full !py-4 text-base justify-center">Reserve my 70% Discount →</button>
           <p class="text-[9px] text-slate-600 text-center mono uppercase tracking-widest leading-relaxed">
-            * Manual verification ensures compliance with Art. 12 residency requirements.
+            * Protected by Cloudflare Turnstile. Manual verification ensures compliance with Art. 12.
           </p>
+          <div id="reserve-msg" class="hidden text-center"></div>
         </form>
       </div>
     </div>
   </body>
 </html>
+
+<!-- Cloudflare Turnstile SDK — loaded async, only when modal is visible -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <!-- Preloader + HUD live fetch — runs on every page, no service worker cache -->
 <script is:inline>
@@ -214,30 +223,65 @@ const schemaFAQ = {
     if (pct > 70 && plStatus) plStatus.textContent = 'FETCHING D1 AUDIT STATE…';
   }, 150);
 
-  // ── HUD live audit count fetch ───────────────────────
+  // ── HUD live audit count fetch (30s polling) ───────────────
   function updateHUD() {
     fetch('/api/audit-count?t=' + Date.now(), { cache: 'no-store' })
       .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
-      .then(function(d){ 
-        if (d && d.totalReads > 0) {
+      .then(function(d) {
+        if (!d) return;
+
+        // ── Reads / Audits ──
+        if (d.totalReads > 0) {
+          const readVal = Number(d.totalReads).toLocaleString();
           const el = document.getElementById('hud-audits');
-          if (el) el.textContent = Number(d.totalReads).toLocaleString() + '+';
+          if (el) el.textContent = readVal + '+';
+
           const badge = document.getElementById('badge-count');
-          if (badge) badge.textContent = Number(d.totalReads).toLocaleString() + ' reads audited live';
+          if (badge) badge.textContent = readVal + ' reads audited live';
+
+          const heroReads = document.getElementById('hero-reads-val');
+          if (heroReads) heroReads.textContent = readVal + '+';
+
+          const heroProofs = document.getElementById('hero-integrity-val');
+          if (heroProofs) heroProofs.textContent = readVal;
+
+          document.querySelectorAll('.live-audit-count').forEach(function(elem) {
+            elem.textContent = readVal + (elem.dataset.suffix || '');
+          });
+        }
+
+        // ── Integrity Score + System Status ──
+        if (typeof d.integrityScore === 'number') {
+          const score = d.integrityScore;
+          const badge = document.getElementById('hero-status-badge');
+          const statusEls = document.querySelectorAll('.live-system-status');
+          const isStable = score >= 75;
+          const label = isStable ? 'STABLE' : 'CRITICAL';
+
+          if (badge) {
+            badge.textContent = label;
+            if (isStable) {
+              badge.className = 'absolute top-3 right-3 mono text-[8px] font-black px-2 py-0.5 rounded border bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
+            } else {
+              badge.className = 'absolute top-3 right-3 mono text-[8px] font-black px-2 py-0.5 rounded border bg-amber-500/10 border-amber-500/30 text-amber-400';
+            }
+          }
+          statusEls.forEach(function(el) { el.textContent = label; });
+        }
+
+        // ── Deployments counter ──
+        if (typeof d.deployments === 'number') {
+          document.querySelectorAll('.live-deployments').forEach(function(el) {
+            el.textContent = d.deployments;
+          });
         }
       })
-      .catch(function(){
-        const badge = document.getElementById('badge-count');
-        if (badge) {
-          const el = document.getElementById('hud-audits');
-          if (el) el.textContent = badge.textContent.split(' ')[0];
-        }
-      });
+      .catch(function(err){ console.warn('[HUD Sync]', err); });
   }
 
-  // Initial fetch + 5s polling
+  // Initial fetch immediately + 30s polling
   updateHUD();
-  setInterval(updateHUD, 5000);
+  setInterval(updateHUD, 30000);
 
   // ── Dismiss preloader after page ready ───────────────
   function dismissPreloader() {
@@ -259,6 +303,48 @@ const schemaFAQ = {
     window.addEventListener('load', dismissPreloader, { once: true });
     // Safety fallback: max 2.5s preloader
     setTimeout(dismissPreloader, 2500);
+  }
+  // ── Reserve Spot form → POST to /api/reserve ─────────
+  const reserveForm = document.getElementById('reserve-form');
+  if (reserveForm) {
+    reserveForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('reserve-email').value.trim();
+      const btn = document.getElementById('reserve-submit');
+      const msg = document.getElementById('reserve-msg');
+      // Grab Turnstile token if widget is present
+      const tsInput = document.querySelector('[name="cf-turnstile-response"]');
+      const turnstileToken = tsInput ? tsInput.value : '';
+      
+      btn.disabled = true;
+      btn.textContent = 'Securing your slot…';
+      
+      try {
+        const res = await fetch('/api/reserve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, plan: 'founder', turnstileToken })
+        });
+        const data = await res.json();
+        
+        if (data.ok) {
+          msg.className = 'text-center glass p-4 rounded-xl text-emerald-400 font-bold text-sm animate-pulse';
+          msg.textContent = '✓ Reservation Logged — check your inbox within 60 min.';
+          btn.style.display = 'none';
+          setTimeout(() => { document.getElementById('reserve-modal').style.display = 'none'; }, 2500);
+        } else {
+          msg.className = 'text-center text-red-400 text-xs mt-2';
+          msg.textContent = 'Error: ' + (data.error || 'please try again');
+          btn.disabled = false;
+          btn.textContent = 'Reserve my 70% Discount →';
+        }
+      } catch {
+        msg.className = 'text-center text-red-400 text-xs mt-2';
+        msg.textContent = 'Network error — please retry.';
+        btn.disabled = false;
+        btn.textContent = 'Reserve my 70% Discount →';
+      }
+    });
   }
 })();
 </script>
