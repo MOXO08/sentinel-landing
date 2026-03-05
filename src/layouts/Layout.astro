@@ -133,22 +133,6 @@ const schemaFAQ = {
       </div>
     </div>
 
-    <!-- ── STICKY HUD RIBBON ────────────────────────────────── -->
-    <div class="hud-ribbon">
-      <div class="hud-inner">
-        <span class="hud-live">
-          <span class="hud-dot"></span>
-          INFRASTRUCTURE LIVE
-        </span>
-        <span class="hud-stat"><span class="hud-val" id="hud-audits">2,950+</span> AUDITS VERIFIED</span>
-        <span class="hud-sep">|</span>
-        <span class="hud-stat">COMPLIANCE LATENCY: <span class="hud-val">0.21ms</span></span>
-        <span class="hud-sep hidden md:inline">|</span>
-        <span class="hud-stat hidden md:inline">SECURITY: <span class="hud-val">AES-256 WASM</span></span>
-        <span class="hud-sep hidden lg:inline">|</span>
-        <span class="hud-stat hidden lg:inline">NODE: <span class="hud-val">CF-GLOBAL-EDGE</span></span>
-      </div>
-    </div>
 
     <slot />
 
@@ -282,6 +266,23 @@ const schemaFAQ = {
   // Initial fetch immediately + 30s polling
   updateHUD();
   setInterval(updateHUD, 30000);
+
+  // ── Lemon Squeezy Setup ───────────────────────────────
+  window.createLemonSqueezy = function() {
+    if (window.LemonSqueezy) {
+      window.LemonSqueezy.Setup({
+        eventHandler: (data) => {
+          if (data.event === 'Checkout.Success') {
+            console.log('Sentinel: Payment Successful', data);
+          }
+        }
+      });
+    }
+  };
+  
+  // Try to setup immediately and on load
+  window.createLemonSqueezy();
+  window.addEventListener('load', window.createLemonSqueezy);
 
   // ── Dismiss preloader after page ready ───────────────
   function dismissPreloader() {

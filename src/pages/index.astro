@@ -45,9 +45,9 @@ const slots = Array.from({length: SPOTS_TOTAL}, (_, i) => ({
   label: i < SPOTS_TAKEN ? 'OK' : i === SPOTS_TAKEN ? 'YOU' : String(i+1).padStart(2,'0')
 }));
 
-const LEMON_FREE       = "https://radumuresanu.lemonsqueezy.com/checkout/buy/c3dd992f-74d8-4d6c-859e-92095a5f171c?embed=1";
-const LEMON_PRO        = "https://radumuresanu.lemonsqueezy.com/checkout/buy/aefa17e9-7794-44c0-bf3f-65b1a93c5182?embed=1";
-const LEMON_ENTERPRISE = "https://radumuresanu.lemonsqueezy.com/checkout/buy/2af0bd06-7319-4390-91d4-397998ab012b?embed=1";
+const LEMON_FREE       = "https://radumuresanu.lemonsqueezy.com/checkout/buy/89ca9ead-179c-497d-b2b7-2a474814ba80";
+const LEMON_PRO        = "https://radumuresanu.lemonsqueezy.com/checkout/buy/aefa17e9-7794-44c0-bf3f-65b1a93c5182";
+const LEMON_ENTERPRISE = "https://radumuresanu.lemonsqueezy.com/checkout/buy/2af0bd06-7319-4390-91d4-397998ab012b";
 
 // LANDING PAGE CACHE: 1 minute
 Astro.response.headers.set('Cache-Control', 'public, max-age=60');
@@ -80,9 +80,14 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
   <main class="max-w-screen-xl mx-auto px-6">
 
     <!-- HERO -->
-    <section class="pt-28 pb-20 text-center relative">
+    <section class="pt-28 pb-20 text-center relative overflow-hidden">
+      <!-- Premium Aurora Effect -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] -z-20 opacity-30 blur-[120px] pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-emerald-500/40 rounded-full animate-pulse"></div>
+        <div class="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] bg-cyan-500/30 rounded-full animate-pulse" style="animation-delay: 2s;"></div>
+      </div>
       <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_900px_600px_at_50%_-100px,rgba(16,185,129,0.12),transparent)]"></div>
-      <div class="section-label justify-center mb-4">ENTERPRISE AI COMPLIANCE · V7.5</div>
+      <div class="section-label justify-center mb-4">DETERMINISTIC COMPLIANCE LAYER</div>
       <h1 class="text-5xl md:text-7xl lg:text-8xl mb-8 max-w-5xl mx-auto leading-[0.95] tracking-tighter text-white font-extrabold">
         The Deterministic<br/>
         <span class="text-emerald-400 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">Audit Layer</span><br/>
@@ -93,7 +98,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="#risk"    class="btn-emerald">Calculate Your Compliance Risk →</a>
-        <a href="#founders" class="btn-ghost">{SPOTS_LEFT} Founder Spots Remaining</a>
+        <a href="#pricing" class="btn-ghost">View Subscription Tiers</a>
       </div>
       <div class="mt-20 grid grid-cols-3 gap-px bg-slate-800/50 rounded-2xl overflow-hidden max-w-3xl mx-auto">
         <div class="glass px-8 py-6 rounded-none border-0">
@@ -104,11 +109,24 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
           <div class="mono text-4xl font-black text-cyan-400">0.21<span class="text-xl">ms</span></div>
           <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Avg. Latency · EEUR-1</div>
         </div>
-        <div class="glass px-8 py-6 rounded-none border-0 relative">
-          <div id="hero-integrity-val" class="mono text-4xl font-black text-emerald-400">{totalAudits.toLocaleString()}</div>
-          <div class="mono text-[10px] text-slate-400 mt-2 tracking-widest uppercase font-bold">Integrity Proofs</div>
-          <div id="hero-status-badge" class="absolute top-3 right-3 mono text-[8px] font-black px-2 py-0.5 rounded border bg-amber-500/10 border-amber-500/30 text-amber-400">CRITICAL</div>
         </div>
+      </div>
+    </section>
+
+    <!-- QUICK INTEGRATION STEPS -->
+    <section class="py-16">
+      <div class="grid md:grid-cols-3 gap-8">
+        {[
+          {step: "01", title: "Connect Repository", desc: "Link your GitHub repository or use our CLI to initialize the compliance manifest."},
+          {step: "02", title: "Automated Scan", desc: "Our WASM engine audits every inference and commit against Art. 10-14 in 0.21ms."},
+          {step: "03", title: "Get Compliance Badge", desc: "Display your dynamic 'EU AI Act Compliant' badge and secure your audit trail in D1."}
+        ].map(s => (
+          <div class="glass p-6 rounded-2xl relative border-slate-800/40 hover:border-emerald-500/20 transition-all group">
+            <div class="mono text-[10px] text-emerald-500/50 mb-4 font-bold tracking-widest">{s.step}</div>
+            <h3 class="text-sm font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">{s.title}</h3>
+            <p class="text-[11px] text-slate-500 leading-relaxed font-light">{s.desc}</p>
+          </div>
+        ))}
       </div>
     </section>
 
@@ -151,41 +169,6 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
       </div>
     </section>
 
-    <!-- FOUNDER'S WALL -->
-    <section id="founders" class="py-24 border-t border-slate-900">
-      <div class="text-center mb-12">
-        <div class="section-label justify-center">URGENCY · LIMITED ACCESS</div>
-        <h2 class="text-4xl md:text-5xl text-white">Join the<br/><span style="color:var(--color-emerald);">First 50 Companies</span></h2>
-        <p class="text-slate-400 mt-4 max-w-xl mx-auto text-sm">Founder Plan locks you in at $49/mo forever. Access closes when the 50th company joins.</p>
-      </div>
-      <div class="max-w-2xl mx-auto mb-10 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6 flex items-center justify-between gap-6">
-        <div>
-          <div class="mono text-[10px] text-amber-400 tracking-widest uppercase mb-1">🔥 SPOTS REMAINING</div>
-          <div class="text-6xl font-black text-white">{SPOTS_LEFT}</div>
-          <div class="mono text-xs text-slate-500 mt-1">of {SPOTS_TOTAL} total Founder slots</div>
-        </div>
-        <div class="flex-1">
-          <div class="mb-3 flex justify-between items-center">
-            <span class="mono text-[10px] text-slate-500">{SPOTS_TAKEN} companies provisioned</span>
-            <span class="mono text-[10px] text-amber-400 font-bold">{Math.round((SPOTS_TAKEN/SPOTS_TOTAL)*100)}% claimed</span>
-          </div>
-          <div class="h-3 bg-slate-800 rounded-full overflow-hidden">
-            <div class="h-full rounded-full" style={`width:${(SPOTS_TAKEN/SPOTS_TOTAL)*100}%;background:linear-gradient(90deg,#10b981,#f59e0b);`}></div>
-          </div>
-          <div class="mt-3">
-            <a href={LEMON_PRO} class="lemonsqueezy-button btn-emerald flex justify-center !py-3 !px-6 !text-xs w-full text-center decoration-none">Get Pro Plan — $49/mo Forever →</a>
-          </div>
-        </div>
-      </div>
-      <div class="grid grid-cols-5 sm:grid-cols-10 gap-2 max-w-2xl mx-auto">
-        {slots.map((s) => (
-          <div class={`h-10 rounded-lg flex items-center justify-center mono text-[10px] font-bold border ${s.cls}`}>
-            {s.label}
-          </div>
-        ))}
-      </div>
-      <div class="mt-4 mono text-[10px] text-slate-600 text-center">Green = active company. Your spot is next.</div>
-    </section>
 
     <!-- EU AI ACT -->
     <section id="law" class="py-24 border-t border-slate-900">
@@ -328,14 +311,31 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
         <div class="section-label justify-center">ACQUISITION TIERS · ENTERPRISE DEALS</div>
         <h2 class="text-4xl md:text-5xl text-white font-extrabold mb-6">Scalable Compliance Packages</h2>
         <p class="text-slate-400 max-w-xl mx-auto mb-8 font-light">Join the first wave of AI providers securing their regulatory future before the 2026 enforcement deadlines.</p>
-        <div class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-amber-500/20 bg-amber-500/5 mono text-[11px] text-amber-400 font-bold">
-          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-          PRIORITY SELECTION: {SPOTS_LEFT} FOUNDER SPOTS REMAINING
+        <div class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 mono text-[11px] text-emerald-400 font-bold">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          INFRASTRUCTURE STATUS: OPERATIONAL
+        </div>
+        
+        <!-- Trust Badge -->
+        <div class="mt-8 flex items-center justify-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+            <span class="mono text-[10px] uppercase tracking-tighter text-slate-400">Secure Lemon Squeezy Checkout</span>
+          </div>
+          <div class="w-px h-4 bg-slate-800"></div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.9L10 1.554L17.834 4.9c.4.17.666.546.666.956V11c0 5.234-3.66 9.805-8.5 11-4.84-1.195-8.5-5.766-8.5-11V5.856c0-.41.266-.786.666-.956z" clip-rule="evenodd"></path></svg>
+            <span class="mono text-[10px] uppercase tracking-tighter text-slate-400">EU AI ACT Compliant Logic</span>
+          </div>
         </div>
       </div>
       <div class="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-6 items-stretch">
-        <div class="pricing-card flex-1">
-          <h3 class="text-2xl font-bold text-white mb-2">Sentinel Developer (Free)</h3>
+        <div class="pricing-card flex-1 group hover:border-emerald-500/30 transition-all duration-500">
+          <div class="mb-6 relative overflow-hidden rounded-2xl aspect-square bg-slate-900/50 border border-slate-800/50 flex items-center justify-center group-hover:bg-emerald-500/5">
+            <img src="/images/developer-plan.png" alt="Sentinel Developer" class="w-4/5 h-4/5 object-contain transition-transform duration-700 group-hover:scale-110" />
+            <div class="absolute inset-0 bg-gradient-to-t from-space/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-2">Sentinel Developer</h3>
           <div class="mono text-[10px] text-slate-500 tracking-widest mb-6 uppercase">Standard Developer Tier</div>
           <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$0</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
           <div class="flex items-center gap-2 mb-8"><span class="bg-slate-800/50 text-slate-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-slate-700/50">COMMUNITY ACCESS</span></div>
@@ -345,10 +345,14 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
           <a href={LEMON_FREE} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3">Get Developer Tier →</a>
         </div>
 
-        <div class="pricing-card featured relative border-emerald-500/40 flex-1">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-space mono text-[9px] font-black px-4 py-1 rounded-full whitespace-nowrap shadow-lg shadow-emerald-500/20">MOST POPULAR</div>
+        <div class="pricing-card featured relative border-emerald-500/40 flex-1 group hover:border-emerald-500 transition-all duration-500">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-emerald-500 text-space mono text-[9px] font-black px-4 py-1 rounded-full whitespace-nowrap shadow-lg shadow-emerald-500/20">MOST POPULAR</div>
+          <div class="mb-6 relative overflow-hidden rounded-2xl aspect-square bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/20">
+            <img src="/images/pro-plan.png" alt="Sentinel Pro" class="w-4/5 h-4/5 object-contain transition-transform duration-700 group-hover:scale-110" />
+            <div class="absolute inset-0 bg-gradient-to-t from-space/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
           <h3 class="text-2xl font-bold text-white mb-2">Sentinel Pro</h3>
-          <div class="mono text-[10px] text-emerald-400 tracking-widest mb-6 uppercase">{SPOTS_LEFT} SPOTS REMAINING</div>
+          <div class="mono text-[10px] text-slate-500 tracking-widest mb-6 uppercase">Professional Audit Tier</div>
           <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$49</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
           <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-xs">$165</span><span class="bg-emerald-500/10 text-emerald-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">EARLY ADOPTER · 70% OFF</span></div>
           <div class="flex-1">
@@ -357,7 +361,11 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
           <a href={LEMON_PRO} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3 shadow-emerald-500/10">Get Pro Plan →</a>
         </div>
 
-        <div class="pricing-card flex-1">
+        <div class="pricing-card flex-1 group hover:border-cyan-500/30 transition-all duration-500">
+          <div class="mb-6 relative overflow-hidden rounded-2xl aspect-square bg-slate-900/50 border border-slate-800/50 flex items-center justify-center group-hover:bg-cyan-500/5">
+            <img src="/images/enterprise-plan.png" alt="Sentinel Enterprise" class="w-4/5 h-4/5 object-contain transition-transform duration-700 group-hover:scale-110" />
+            <div class="absolute inset-0 bg-gradient-to-t from-space/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
           <h3 class="text-2xl font-bold text-white mb-2">Sentinel Enterprise</h3>
           <div class="mono text-[10px] text-cyan-400 tracking-widest mb-6 uppercase font-bold">Enterprise Selection</div>
           <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$299</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
