@@ -1,13 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-export const prerender = true;
+export const prerender = false;
 
 const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Sentinel Compliance Architecture",
   "description": "Government-grade compliance architecture: Zero-Egress, WASM Immutability, and Cloudflare D1 Strong Consistency for EU AI Act compliance.",
-  "url": "https://sentinel-landing-20h.pages.dev/compliance",
+  "url": "https://gettingsentinel.com/compliance",
   "publisher": {
     "@type": "Organization",
     "name": "Sentinel Technical Infrastructure"
@@ -24,7 +24,7 @@ const sections = [
     content: [
       { label: "Definition", body: "Zero-egress means that no data submitted to the Sentinel audit engine ever leaves the computational boundary of your Cloudflare Worker. Model manifests, training metadata, inference parameters — all are processed in-process and immediately discarded after verdict generation." },
       { label: "Technical Implementation", body: "Sentinel's WASM module is loaded directly into the Worker V8 isolate. Input data is passed via in-memory pointer (not serialized over a socket). The module executes, writes the verdict hash to D1, and the raw input is garbage-collected within the same event-loop tick." },
-      { label: "Why It Matters for Compliance", body: "GDPR Article 46 transfer restrictions, the EU AI Act's downstream provider obligations, and sector-specific data localization requirements (DORA, MDR) all require proof that sensitive AI inputs do not cross data-processing boundaries. Sentinel's architecture makes this certifiable by design — not just by policy." },
+      { label: "Why It Matters for Compliance", body: "GDPR Article 46 transfer restrictions, the EU AI Act's downstream provider obligations, and sector-specific data localization requirements (DORA, MDR) all require proof that sensitive AI inputs do not cross data-processing boundaries. Sentinel's architecture makes this evidence gathering built-in — not just by policy." },
       { label: "Evidence Artifact", body: "Cloudflare publishes network egress logs per Worker endpoint. Sentinel generates zero outbound bytes on the audit path. You can validate this in your Cloudflare Dashboard > Workers > Sentinel > Analytics > Egress." },
     ]
   },
@@ -35,7 +35,7 @@ const sections = [
     color: "#06b6d4",
     icon: "🧱",
     content: [
-      { label: "Determinism Defined", body: "A deterministic audit engine produces the exact same verdict for the exact same input — always. This is mathematically guaranteed by the Rust-to-WASM compilation model: there are no stochastic operations, no probabilistic classifiers, and no runtime model weights that could shift between calls." },
+      { label: "Determinism Defined", body: "A deterministic audit engine produces the exact same verdict for the exact same input — always. This is technically validated by the Rust-to-WASM compilation model: there are no stochastic operations, no probabilistic classifiers, and no runtime model weights that could shift between calls." },
       { label: "Why LLM-based Auditors Fail the Determinism Standard", body: "LLM-based compliance tools use transformer inference, which is inherently probabilistic. The same prompt submitted twice may produce different verdicts. This makes them inadmissible for legal evidence because opposing counsel can trivially demonstrate inconsistency. Sentinel's output is reproducible by any third party with access to the same WASM binary and input." },
       { label: "Version-Pinned Rule Trees", body: "Each compliance check runs against a pinned version of Sentinel's EU AI Act rule tree. The version number is embedded in every D1 audit record. If the EU passes an Amendment, we release a new WASM minor version — and all prior audit records remain verifiable against the rule set that was in effect at the time of audit." },
       { label: "Tamper Evidence", body: "The WASM binary itself has a SHA-256 content hash that is published to our transparency log. Any modification to the audit logic changes the binary hash, making tampering trivially detectable. Enterprise customers receive a signed attestation document containing this hash for their compliance registers." },

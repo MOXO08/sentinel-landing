@@ -46,7 +46,7 @@ function generateApiToken() {
 }
 
 async function sendWelcomeEmail(toEmail: string, apiToken: string) {
-    const curlSnippet = `curl -X POST https://sentinel-landing-20h.pages.dev/api/audit \\
+    const curlSnippet = `curl -X POST https://gettingsentinel.com/api/audit \\
   -H "Authorization: Bearer ${apiToken}" \\
   -H "Content-Type: application/json" \\
   -d '{"app_name":"my-app","version":"1.0","risk_category":"High","declared_flags":["human_oversight_enabled"]}'`;
@@ -67,12 +67,12 @@ h1 { color: #0d1117; }
   <p>⚠️ <strong>Păstrează această cheie în siguranță.</strong> Nu o publica în cod sursă public.</p>
   <h2>Integrare rapidă (cURL)</h2>
   <div class="snippet">${curlSnippet}</div>
-  <a class="btn" href="https://sentinel-landing-20h.pages.dev/docs">Documentație completă →</a>
-  <p style="color:#666;font-size:12px;">Sentinel API · EU AI Act Compliance Engine · <a href="https://sentinel-landing-20h.pages.dev">sentinel-landing-20h.pages.dev</a></p>
+  <a class="btn" href="https://gettingsentinel.com/docs">Documentație completă →</a>
+  <p style="color:#666;font-size:12px;">Sentinel API · EU AI Act Compliance Engine · <a href="https://gettingsentinel.com">gettingsentinel.com</a></p>
 </body>
 </html>`;
 
-    const text = `Bine ai venit la Sentinel API!\n\nCheia ta API:\n${apiToken}\n\nIntegrare rapidă:\n${curlSnippet}\n\nDocumentație: https://sentinel-landing-20h.pages.dev/docs`;
+    const text = `Bine ai venit la Sentinel API!\n\nCheia ta API:\n${apiToken}\n\nIntegrare rapidă:\n${curlSnippet}\n\nDocumentație: https://gettingsentinel.com/docs`;
 
     const response = await fetch('https://api.mailchannels.net/tx/v1/send', {
         method: 'POST',

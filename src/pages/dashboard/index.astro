@@ -43,6 +43,7 @@ export const partial = false;
   #new-key-box{display:none;background:rgba(63,185,80,0.06);border:1px solid rgba(63,185,80,0.2);border-radius:8px;padding:14px 18px;font-family:monospace;font-size:0.85rem;color:#3fb950;margin-top:12px;word-break:break-all}
   .warning{color:#d29922;font-size:0.82rem;margin-top:8px}
 </style>
+<script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
 </head>
 <body>
 <nav>
@@ -118,7 +119,7 @@ async function loadKey() {
       '<strong>Plan:</strong> ' + (d.plan === 'developer' ? 'Developer (Free)' : 'Pro B2B') + 
       ' &nbsp;&bull;&nbsp; <strong>Protection:</strong> Immutable Audit Trail active';
       document.getElementById('limit-warning').innerHTML = 
-        '⚠️ Developer Tier: 1,000 requests/month limit. <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/a4afd393-f642-41c7-ba71-bec3200ad514" style="color:#39d0dc;text-decoration:none">Upgrade to Founder &rarr;</a>';
+        '⚠️ Developer Tier: 1,000 requests/month limit. <a href="https://radumuresanu.lemonsqueezy.com/checkout/buy/a4afd393-f642-41c7-ba71-bec3200ad514" class="lemonsqueezy-button" style="color:#39d0dc;text-decoration:none">Upgrade to Founder &rarr;</a>';
   } catch(e) { document.getElementById('key-display').textContent = 'Error loading key'; }
 }
 

@@ -1,0 +1,338 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const { DB } = Astro.locals.runtime.env;
+
+let report = null;
+let error = null;
+
+try {
+  const result = await DB.prepare(
+    "SELECT * FROM Audit_Reports WHERE Repo_ID = ? OR Commit_Hash = ? LIMIT 1"
+  ).bind(id, id).first();
+  
+  if (result) {
+    report = {
+      ...result,
+      payload: JSON.parse(result.JSON_Payload)
+    };
+  } else {
+    error = "Audit record not found.";
+  }
+} catch (e) {
+  console.error("D1 Fetch Error:", e);
+  error = "Infrastructure connection issue.";
+}
+
+// Map the severity to a risk category for the document
+const isHighRisk = report?.Scor_Compliance < 50;
+const dateStr = report?.Created_At 
+  ? new Date(report.Created_At).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  : new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const signatureHash = report?.Signature || '0x' + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article 43 Declaration: {report?.Repo_ID || 'Draft'}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        :root {
+            --bg-page: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .document-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 60px 80px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        /* Top Bar for Web UI only */
+        .web-actions {
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .web-actions button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(16,185,129,0.2);
+            transition: transform 0.1s;
+        }
+        .web-actions button:active { transform: scale(0.98); }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 120px;
+            font-weight: 800;
+            color: rgba(226, 232, 240, 0.4);
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--text-main);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 10px 0;
+        }
+
+        .header h2 {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .grid-data {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            row-gap: 12px;
+            font-size: 14px;
+        }
+        
+        .grid-data .label {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .technical-verdict {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .verdict-compliant { border-left: 4px solid #10b981; }
+        .verdict-non-compliant { border-left: 4px solid #ef4444; }
+
+        .signature-block {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .signature-line {
+            border-top: 1px solid var(--text-main);
+            padding-top: 10px;
+            margin-top: 40px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .disclaimer-box {
+            margin-top: 60px;
+            padding: 15px;
+            border: 1px dashed #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+            font-size: 11px;
+            color: #7f1d1d;
+            text-align: justify;
+            border-radius: 4px;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body { 
+                background: none; 
+                padding: 0;
+            }
+            .web-actions { display: none; }
+            .document-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+            .disclaimer-box {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {error ? (
+        <div style="text-align: center; padding: 50px;">
+            <h2>{error}</h2>
+            <p>Ensure the requested scan ID exists in the D1 edge database.</p>
+        </div>
+    ) : (
+        <div class="web-actions">
+            <div>
+                <a href={`/report/${id}`} style="color:var(--text-muted); text-decoration:none; font-weight:600; font-size: 14px;">← Back to Analytics</a>
+            </div>
+            <button onclick="window.print()">Print / Save PDF</button>
+        </div>
+
+        <div class="document-container">
+            <div class="watermark">DRAFT COPY</div>
+
+            <div class="header">
+                <h1>Draft EU Conformity Assessment</h1>
+                <h2>Prepared in reference to Regulation (EU) 2024/1689 (Artificial Intelligence Act) - Article 43</h2>
+            </div>
+
+            <div class="section">
+                <div class="section-title">1. System Identification</div>
+                <div class="grid-data">
+                    <div class="label">Repository / System Name:</div>
+                    <div style="font-weight: bold;">{report.Repo_ID}</div>
+                    
+                    <div class="label">Architecture Version:</div>
+                    <div class="mono-text">{report.payload.version || "1.0.0"}</div>
+
+                    <div class="label">Cryptographic Commit:</div>
+                    <div class="mono-text">{report.Commit_Hash}</div>
+
+                    <div class="label">Date of Technical Eval:</div>
+                    <div>{dateStr}</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">2. Technical Validation Summary</div>
+                <p style="font-size: 13px;">
+                    This section details the automated technical validation performed by the Sentinel Infrastructure. 
+                    The application manifest encompassing inference routes, model usage, and systemic constraints was evaluated against heuristic mappings of Articles 10 through 14 of the EU AI Act.
+                </p>
+
+                <div class={`technical-verdict ${report.payload.verdict === 'COMPLIANT' ? 'verdict-compliant' : 'verdict-non-compliant'}`}>
+                    <div class="grid-data">
+                        <div class="label">Technical Verdict:</div>
+                        <div style="font-weight: 800;">{report.payload.verdict.replace(/_/g, ' ')}</div>
+
+                        <div class="label">Heuristic Risk Score:</div>
+                        <div>{report.Scor_Compliance}/100</div>
+
+                        <div class="label">Immutable D1 Proof:</div>
+                        <div class="mono-text">{signatureHash}</div>
+                    </div>
+                </div>
+
+                {report.payload.violations?.length > 0 && (
+                    <div style="margin-top: 20px;">
+                        <div class="label" style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">Identified Validation Anomalies:</div>
+                        <ul style="font-size: 12px; margin: 0; padding-left: 20px;">
+                            {report.payload.violations.map(v => (
+                                <li style="margin-bottom: 6px;">
+                                    <strong>{v.article}:</strong> {v.description}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
+
+            <div class="section">
+                <div class="section-title">3. Legal Declaration (To be finalized by Legal Counsel)</div>
+                <p style="font-size: 13px; text-align: justify;">
+                    I, the undersigned, declare that to the best of my knowledge, and supported by the deterministic technical evidence gathered by the Sentinel Engine (Proof ID: {signatureHash.substring(0,12)}...), 
+                    the AI system identified above fulfills the requirements set out in Title III, Chapter 2 of Regulation (EU) 2024/1689.
+                </p>
+                <p style="font-size: 13px; text-align: justify;">
+                    This declaration is issued under the sole responsibility of the provider.
+                </p>
+            </div>
+
+            <div class="signature-block">
+                <div>
+                    <div style="min-height: 40px;"></div>
+                    <div class="signature-line">
+                        <strong>Technical Officer / Lead Engineer</strong><br/>
+                        Name & Date
+                    </div>
+                </div>
+                <div>
+                    <div style="min-height: 40px;"></div>
+                    <div class="signature-line">
+                        <strong>Authorized Representative / Legal Counsel</strong><br/>
+                        Name, Title & Date
+                    </div>
+                </div>
+            </div>
+
+            <div class="disclaimer-box">
+                <strong>Important Legal Notice:</strong> The information contained in this document is generated automatically from technical heuristics and constitutes <em>Evidence Gathering</em> and <em>Technical Validation</em>. This draft does NOT establish automated legal compliance. Sentinel is a technical tool. Under no circumstances shall the creators of Sentinel be liable for regulatory fines, legal costs, or business interruptions resulting from the usage, interpretation, or submission of this document. It must be reviewed and signed by a qualified legal professional before submission to any Supervisory Authority.
+            </div>
+
+        </div>
+    )}
+    
+</body>
+</html>

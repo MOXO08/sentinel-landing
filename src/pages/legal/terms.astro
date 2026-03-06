@@ -1,0 +1,52 @@
+---
+import Layout from '../../layouts/Layout.astro';
+export const prerender = true;
+---
+
+<Layout title="Terms of Service | Sentinel">
+  <main class="min-h-screen pt-32 pb-20 px-6 container mx-auto max-w-3xl">
+    <div class="glass p-8 md:p-12 rounded-[2rem] border border-slate-800/50">
+      <div class="section-label mb-4">LEGAL</div>
+      <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight mb-8">
+        Terms of Service
+      </h1>
+      
+      <div class="space-y-8 text-slate-300 font-light leading-relaxed">
+        <section>
+          <h2 class="text-xl font-bold text-white mb-4">1. Acceptance of Terms</h2>
+          <p>
+            By accessing or using the Sentinel compliance tool and API ("Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold text-white mb-4">2. Description of Service</h2>
+          <p>
+            Sentinel provides technical infrastructure for generating deterministic audit trails, evidence gathering, and risk mapping. The Service analyzes system architectures and model manifests against specific heuristic rules derived from the EU AI Act framework.
+          </p>
+        </section>
+
+        <section class="bg-red-500/10 border border-red-500/30 p-6 rounded-2xl">
+          <h2 class="text-xl font-bold text-red-400 mb-4">3. No Legal Advice & Limitation of Liability</h2>
+          <p class="mb-4">
+            Sentinel provides <strong>Technical Validation</strong> and <strong>Evidence Gathering</strong> tools. The outputs of our service do not establish automated legal compliance, nor do they replace the counsel of a qualified legal professional.
+          </p>
+          <p class="font-bold text-white uppercase tracking-wide text-sm">
+            Sentinel is a technical tool. Under no circumstances shall Sentinel be liable for regulatory fines, legal costs, or business interruptions.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold text-white mb-4">4. Customer Responsibilities</h2>
+          <p>
+            You are entirely responsible for the inputs you provide to the Service. The technical validation metrics provided by Sentinel cover specific heuristics and rulesets, which may not encompass the entirety of your legal or regulatory obligations.
+          </p>
+        </section>
+      </div>
+      
+      <div class="mt-12 pt-8 border-t border-slate-800">
+        <a href="/" class="text-emerald-400 hover:text-emerald-300 font-bold transition-colors">← Return Home</a>
+      </div>
+    </div>
+  </main>
+</Layout>

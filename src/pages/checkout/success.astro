@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-export const prerender = true;
+export const prerender = false;
 
 const resources = [
   {
@@ -81,7 +81,7 @@ const resources = [
           { n: "01", title: "Access your Dashboard", desc: "Log in to retrieve your API key and view your live audit logs." },
           { n: "02", title: "Run your first audit", desc: "POST a manifest to /api/audit with your API key. Expect a verdict in under 3ms." },
           { n: "03", title: "Set up D1 Webhooks", desc: "Configure webhook alerts for non-compliant verdicts in your Slack or PagerDuty workspace." },
-          { n: "04", title: "Generate your first PDF Report", desc: "Use the /api/audit?format=pdf endpoint to generate a compliance certificate for regulators." },
+          { n: "04", title: "Generate your first PDF Report", desc: "Use the /api/audit?format=pdf endpoint to generate a technical validation report for regulators." },
         ].map(s => (
           <li class="flex items-start gap-4">
             <span class="mono text-xs font-black shrink-0 mt-0.5" style="color: var(--color-emerald);">{s.n}</span>

@@ -11,6 +11,10 @@ const {
   description = "Sentinel — The Deterministic Audit Layer for Enterprise AI. WASM-powered, EU AI Act compliant, zero-egress."
 } = Astro.props;
 
+// Detect US traffic via Cloudflare Proxy
+const country = Astro.request.headers.get('cf-ipcountry') || 'XX';
+const isUS = country === 'US';
+
 const schemaApp = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -18,7 +22,7 @@ const schemaApp = {
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Cloudflare Edge / WebAssembly",
   "description": "Enterprise AI compliance engine for the EU AI Act. Deterministic, WASM-compiled, zero-egress audit infrastructure.",
-  "url": "https://sentinel-landing-20h.pages.dev",
+  "url": "https://gettingsentinel.com",
   "offers": [
     { "@type": "Offer", "name": "Founder Plan", "price": "49.00", "priceCurrency": "USD" },
     { "@type": "Offer", "name": "Scale-Up Plan", "price": "99.00", "priceCurrency": "USD" }
@@ -83,13 +87,13 @@ const schemaFAQ = {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://sentinel-landing-20h.pages.dev" />
+    <meta property="og:url" content="https://gettingsentinel.com" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
 
     <!-- Canonical -->
-    <link rel="canonical" href="https://sentinel-landing-20h.pages.dev" />
+    <link rel="canonical" href="https://gettingsentinel.com" />
     <link rel="sitemap" href="/sitemap.xml" />
 
     <!-- Geist Sans + Geist Mono via jsDelivr -->
@@ -106,6 +110,18 @@ const schemaFAQ = {
     <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
   </head>
   <body class="bg-space text-slate-200 antialiased overflow-x-hidden">
+
+    <!-- ── US BANNER ───────────────────────────────── -->
+    {isUS && (
+      <div class="bg-emerald-500/10 backdrop-blur-md border-b border-emerald-500/20 text-center py-3 px-4 relative z-[9000]">
+        <div class="max-w-4xl mx-auto flex items-center justify-center gap-2">
+          <span class="text-lg">🦅</span>
+          <span class="text-sm font-medium text-emerald-400 tracking-wide">
+            Exporting AI to Europe? <a href="/wiki/us-companies" class="text-white hover:text-emerald-300 underline decoration-emerald-500/40 underline-offset-4 transition-colors ml-1 font-semibold">Ensure EU AI Act Compliance in minutes →</a>
+          </span>
+        </div>
+      </div>
+    )}
 
     <!-- ── PRELOADER ───────────────────────────────── -->
     <div id="sentinel-preloader" style="
