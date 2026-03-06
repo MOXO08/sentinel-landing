@@ -8,5 +8,25 @@
   "pages_build_output_dir": "./dist",
   "observability": {
     "enabled": true
+  },
+  "vars": {
+    "WORKERS_RS_VERSION": "0.0.9",
+    "FALLBACK_RULE_JSON": "{\"id\":\"AI-ACT-CORE-001\",\"description\":\"Subliminal manipulation is forbidden\",\"risk_category\":\"Unacceptable\",\"required_flags\":[\"human_oversight_enabled\"],\"forbidden_flags\":[\"subliminal_techniques\",\"social_scoring\"]}"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "5db8659fae1445ad88c1166cbddfb9ef"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sentinel-db",
+      "database_id": "4d397bd9-d8a7-4716-bc05-d5df1e43f1a1"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
   }
 }

@@ -111,7 +111,7 @@ async function loadHealthData() {
     const commit = params.get('commit') || 'latest';
     
     try {
-        const r = await fetch(`/api/v1/data-health?repo=${encodeURIComponent(repo)}&commit=${encodeURIComponent(commit)}`);
+        const r = await fetch(`https://sentinel-api.sentinel-moxo.workers.dev/api/v1/data-health?repo=${encodeURIComponent(repo)}&commit=${encodeURIComponent(commit)}`);
         const data = await r.json();
         
         if (data.error) {

@@ -174,8 +174,43 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
         <a href={LEMON_ENTERPRISE} class="lemonsqueezy-button w-full btn-emerald flex justify-center !py-5 text-base text-center decoration-none">
           Get Enterprise Plan — <span class="line-through opacity-60 ml-1 mr-1">$499</span> $299/mo →
         </a>
+        <div class="mt-4 flex items-center justify-center gap-2">
+            <span class="mono text-[10px] text-slate-600">Need a custom quote?</span>
+            <a href="mailto:office@gettingsentinel.com?subject=Enterprise%20Invoice%20Request" class="mono text-[10px] text-emerald-500 font-bold hover:underline">Request Enterprise Invoice (Bank Transfer) &rarr;</a>
+        </div>
       </div>
     </section>
+
+    <!-- SECURITY VAULT (NEW) -->
+    <section class="py-24 border-t border-slate-900 bg-emerald-500/[0.02]">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="glass p-12 rounded-3xl border-emerald-500/20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10">
+                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.9L10 1.554L17.834 4.9c.4.17.666.546.666.956V11c0 5.234-3.66 9.805-8.5 11-4.84-1.195-8.5-5.766-8.5-11V5.856c0-.41.266-.786.666-.956z" clip-rule="evenodd"></path></svg>
+                </div>
+                <div class="section-label mb-6">ZERO-EGRESS SECURITY VAULT</div>
+                <h2 class="text-3xl md:text-4xl text-white font-extrabold mb-6">Designed for US & EU<br/><span class="text-emerald-400">Compliance Officers</span></h2>
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div>
+                        <h4 class="text-slate-200 font-bold mb-2">Local WASM Execution</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Your AI manifests and proprietary model metadata are processed <strong>in-memory</strong>. Our WASM engine executes within the Cloudflare Edge sandbox — nothing is sent to third-party APIs or external servers.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-slate-200 font-bold mb-2">Cryptographic Integrity</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Every audit creates a unique cryptographic signature. In the event of a regulatory inquiry, you have an immutable, D1-backed ledger to prove due diligence.</p>
+                    </div>
+                </div>
+                <hr class="border-slate-800 my-8" />
+                <div class="flex items-center gap-4">
+                    <div class="flex -space-x-2">
+                        {[1,2,3,4].map(i => <div class="w-8 h-8 rounded-full border-2 border-space bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-400">C{i}</div>)}
+                    </div>
+                    <span class="text-[11px] mono text-slate-500">Trusted by over <strong>1,400+</strong> individual developers and <strong>12 AI Labs</strong> globally.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
 
     <!-- EU AI ACT -->
@@ -382,8 +417,10 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
             <ul class="space-y-3 mb-10">{["10,000 Compliance Credits/mo","Unlimited D1 Audit History","Real-time Compliance Webhooks","Article 43 Draft Generator","Audit Manifest Visualizer","SLA 99.9% Uptime"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span style="color:var(--color-cyan);" class="shrink-0 font-bold">✓</span>{f}</li>)}</ul>
           </div>
           <a href={LEMON_ENTERPRISE} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3">Get Enterprise Plan →</a>
+          <a href="mailto:office@gettingsentinel.com?subject=Enterprise%20Licensing" class="mt-4 block text-center mono text-[9px] text-slate-500 hover:text-emerald-400">Request Invoice / Pay by Bank &rarr;</a>
         </div>
       </div>
+
     </section>
 
     <!-- INDUSTRY SOLUTIONS HUB -->

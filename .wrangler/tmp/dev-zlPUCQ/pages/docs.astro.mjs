@@ -1,0 +1,283 @@
+globalThis.process ??= {}; globalThis.process.env ??= {};
+export { renderers } from '../renderers.mjs';
+
+function render({ slots: ___SLOTS___ }) {
+		return `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sentinel API — Developer Documentation</title>
+  <meta name="description"
+    content="Sentinel API integration guide. Data contract, code snippets (cURL, Node.js, Python), and verdict reference." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/docs.css" />
+</head>
+
+<body>
+  <nav>
+    <a class="logo" href="/">&#x1F6E1; <span>Sentinel</span> API</a>
+    <div style="display:flex;gap:1rem;align-items:center;">
+      <a href="/dashboard/login" style="color:var(--gray);text-decoration:none;font-size:0.9rem;">Sign In</a>
+      <a href="https://buy.stripe.com/PLACEHOLDER" class="nav-cta">Get Pro Key &rarr;</a>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">Getting Started</div>
+      <a href="#quickstart">Quickstart</a>
+      <a href="#authentication">Authentication</a>
+      <div class="sidebar-section">API Reference</div>
+      <a href="#endpoint">POST /audit</a>
+      <a href="#data-contract">Data Contract</a>
+      <a href="#flags">Declared Flags</a>
+      <a href="#verdicts">Verdict Reference</a>
+      <div class="sidebar-section">Code Examples</div>
+      <a href="#curl">cURL</a>
+      <a href="#nodejs">Node.js</a>
+      <a href="#python">Python</a>
+      <div class="sidebar-section">CLI</div>
+      <a href="#cli">sentinel-scan (offline)</a>
+    </aside>
+
+    <main class="content">
+      <h1>Developer Documentation</h1>
+      <p>Integrate EU AI Act compliance checks into your application in under 10 minutes.</p>
+
+      <div class="alert">
+        <strong>Base URL:</strong> <code>https://sentinel-api.sentinel-moxo.workers.dev</code>
+      </div>
+
+      <h2 id="quickstart">Quickstart</h2>
+      <p>Send a <strong>POST request</strong> with your manifest JSON and API key:</p>
+
+      <pre id="curl"><div class="lang-label">cURL</div><code><span class="hl-green">curl</span> -X POST https://sentinel-api.sentinel-moxo.workers.dev \\
+  -H <span class="hl-str">"Authorization: Bearer sntl_live_YOUR_KEY"</span> \\
+  -H <span class="hl-str">"Content-Type: application/json"</span> \\
+  -d <span class="hl-str">'{
+    "app_name": "hr-cv-screener",
+    "version": "2.0.0",
+    "risk_category": "High",
+    "declared_flags": [
+      "human_oversight_enabled",
+      "bias_assessment_performed",
+      "conformity_assessment_completed"
+    ]
+  }'</span></code></pre>
+
+      <h2 id="authentication">Authentication</h2>
+      <p>All requests require a <strong>Bearer token</strong> in the <code>Authorization</code> header.</p>
+      <pre><div class="lang-label">HTTP</div><code><span class="hl-key">Authorization:</span> <span class="hl-str">Bearer sntl_live_YOUR_API_KEY</span></code></pre>
+      <p><strong>Tiers & Limits:</strong></p>
+      <ul>
+        <li><strong>Developer Tier:</strong> Free, 1,000 requests/month, 10 RPM. (Get in Dashboard)</li>
+        <li><strong>Pro Tier:</strong> $99/month, Unlimited requests, 60 RPM.</li>
+      </ul>
+
+      <h2 id="data-contract">Data Contract</h2>
+      <p>The request body must be a valid JSON object:</p>
+      <pre><div class="lang-label">JSON</div><code>&#123;
+  <span class="hl-key">"app_name"</span>:       <span class="hl-str">string</span>    <span class="hl-comment">// required</span>
+  <span class="hl-key">"version"</span>:        <span class="hl-str">string</span>    <span class="hl-comment">// required — "1.0.0"</span>
+  <span class="hl-key">"risk_category"</span>:  <span class="hl-str">string</span>    <span class="hl-comment">// required — "Minimal"|"Limited"|"High"|"Unacceptable"</span>
+  <span class="hl-key">"app_description"</span>:<span class="hl-str">string</span>    <span class="hl-comment">// optional — used by AI fallback</span>
+  <span class="hl-key">"declared_flags"</span>: <span class="hl-str">string[]</span>  <span class="hl-comment">// optional</span>
+  <span class="hl-key">"fallback_ai_verification"</span>: <span class="hl-str">boolean</span> <span class="hl-comment">// optional</span>
+&#125;</code></pre>
+
+      <h2 id="flags">Declared Flags Reference</h2>
+      <h3>Required flags (High-risk AI)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Flag</th>
+            <th>Article</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>human_oversight_enabled</code></td>
+            <td>Art. 14</td>
+            <td>System allows human monitoring</td>
+          </tr>
+          <tr>
+            <td><code>human_interrupt_capability</code></td>
+            <td>Art. 14</td>
+            <td>Human can override/stop the system</td>
+          </tr>
+          <tr>
+            <td><code>bias_assessment_performed</code></td>
+            <td>Art. 10</td>
+            <td>Training data bias was assessed</td>
+          </tr>
+          <tr>
+            <td><code>data_governance_policy_documented</code></td>
+            <td>Art. 10</td>
+            <td>Data management policy documented</td>
+          </tr>
+          <tr>
+            <td><code>user_notification_ai_interaction</code></td>
+            <td>Art. 13</td>
+            <td>Users informed they interact with AI</td>
+          </tr>
+          <tr>
+            <td><code>transparency_disclosure_provided</code></td>
+            <td>Art. 13</td>
+            <td>AI capabilities/limitations disclosed</td>
+          </tr>
+          <tr>
+            <td><code>explainability_mechanism_present</code></td>
+            <td>Art. 14</td>
+            <td>Decisions can be explained</td>
+          </tr>
+          <tr>
+            <td><code>conformity_assessment_completed</code></td>
+            <td>Art. 22</td>
+            <td>Third-party conformity assessment done</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Forbidden flags (Art. 5 — always blocked)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Flag</th>
+            <th>Why forbidden</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>subliminal_techniques</code></td>
+            <td>Manipulation below conscious awareness</td>
+          </tr>
+          <tr>
+            <td><code>social_scoring</code></td>
+            <td>Scoring citizens based on behavior</td>
+          </tr>
+          <tr>
+            <td><code>realtime_biometric_public_space</code></td>
+            <td>Live biometric ID in public areas</td>
+          </tr>
+          <tr>
+            <td><code>emotion_recognition_workplace</code></td>
+            <td>Emotion detection at work</td>
+          </tr>
+          <tr>
+            <td><code>citizen_trustworthiness_ranking</code></td>
+            <td>Evaluating citizens for state purposes</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="verdicts">Verdict Reference</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Verdict</th>
+            <th>HTTP</th>
+            <th>Meaning</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-verdict badge-compliant">COMPLIANT</span></td>
+            <td>200</td>
+            <td>Passed all rules</td>
+            <td>&#x2705; Ship it</td>
+          </tr>
+          <tr>
+            <td><span class="badge-verdict badge-compliant">COMPLIANT_VIA_AI_REVIEW</span></td>
+            <td>200</td>
+            <td>AI confirmed (&ge;90%)</td>
+            <td>&#x2705; Ship it</td>
+          </tr>
+          <tr>
+            <td><span class="badge-verdict badge-non">NON_COMPLIANT</span></td>
+            <td>200</td>
+            <td>Art. 5 violation</td>
+            <td>&#x274C; Block deploy</td>
+          </tr>
+          <tr>
+            <td><span class="badge-verdict badge-human">HUMAN_INTERVENTION_REQUIRED</span></td>
+            <td>200</td>
+            <td>AI confidence &lt;90%</td>
+            <td>&#x26A0;&#xFE0F; Legal review</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="nodejs">Node.js</h2>
+      <pre><div class="lang-label">JavaScript</div><code><span class="hl-purple">const</span> response = <span class="hl-purple">await</span> fetch(<span class="hl-str">'https://sentinel-api.sentinel-moxo.workers.dev'</span>, &#123;
+  method: <span class="hl-str">'POST'</span>,
+  headers: &#123;
+    <span class="hl-str">'Authorization'</span>: <span class="hl-str">\`Bearer \${process.env.SENTINEL_API_KEY}\`</span>,
+    <span class="hl-str">'Content-Type'</span>: <span class="hl-str">'application/json'</span>
+  &#125;,
+  body: JSON.stringify(&#123;
+    app_name: <span class="hl-str">'my-ai-app'</span>,
+    version: <span class="hl-str">'1.0.0'</span>,
+    risk_category: <span class="hl-str">'High'</span>,
+    declared_flags: [<span class="hl-str">'human_oversight_enabled'</span>]
+  &#125;)
+&#125;);
+
+<span class="hl-purple">const</span> &#123; verdict &#125; = <span class="hl-purple">await</span> response.json();
+<span class="hl-purple">if</span> (verdict === <span class="hl-str">'NON_COMPLIANT'</span>) <span class="hl-purple">throw</span> <span class="hl-purple">new</span> Error(<span class="hl-str">'Compliance check failed'</span>);</code></pre>
+
+      <h2 id="python">Python</h2>
+      <pre><div class="lang-label">Python</div><code><span class="hl-purple">import</span> requests, os
+
+response = requests.post(
+    <span class="hl-str">'https://sentinel-api.sentinel-moxo.workers.dev'</span>,
+    headers=&#123;<span class="hl-str">'Authorization'</span>: <span class="hl-str">f"Bearer &#123;os.environ['SENTINEL_API_KEY']&#125;"</span>&#125;,
+    json=&#123;
+        <span class="hl-str">'app_name'</span>: <span class="hl-str">'my-ai-app'</span>, <span class="hl-str">'version'</span>: <span class="hl-str">'1.0.0'</span>,
+        <span class="hl-str">'risk_category'</span>: <span class="hl-str">'High'</span>,
+        <span class="hl-str">'declared_flags'</span>: [<span class="hl-str">'human_oversight_enabled'</span>]
+    &#125;
+)
+<span class="hl-purple">assert</span> response.json()[<span class="hl-str">'verdict'</span>] == <span class="hl-str">'COMPLIANT'</span></code></pre>
+
+      <h2 id="cli">CLI (Offline)</h2>
+      <p>Zero network calls — runs the EU AI Act ruleset locally via WASM:</p>
+      <pre><div class="lang-label">bash</div><code><span class="hl-comment"># Install once</span>
+npm install -g @radu_api/sentinel-scan
+
+<span class="hl-comment"># Audit offline</span>
+sentinel-scan ./manifest.json
+
+<span class="hl-comment"># CI/CD integration (exit 0 = COMPLIANT, exit 1 = NON_COMPLIANT)</span>
+sentinel-scan ./manifest.json &amp;&amp; kubectl apply -f deployment.yaml</code></pre>
+
+      <div class="alert" style="margin-top:48px;">
+        <strong>Ready to automate compliance?</strong> &mdash;
+        <a href="/dashboard/login" style="color:var(--cyan)">Get your Free Developer Key &rarr;</a>
+      </div>
+      <p style="text-align:center; color:var(--gray); font-size:0.75rem; margin-top:3rem;">
+        <strong>Software as a Tool Disclaimer:</strong> Sentinel API is a technical analysis utility and does not
+        constitute legal advice. High-risk AI compliance remains the sole responsibility of the provider.
+      </p>
+    </main>
+  </div>
+</body>
+
+</html>`
+	}
+render["astro:html"] = true;
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: render
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };
