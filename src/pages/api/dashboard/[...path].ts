@@ -53,12 +53,11 @@ async function getClientByEmail(env: any, email: string) {
 }
 
 // ── AUTH REQUEST ──────────────────────────────────────────────────────────
-export const POST: APIRoute = async ({ request, locals, url: reqUrl }) => {
+export const POST: APIRoute = async ({ request, locals, params }) => {
     const env = (locals as any).runtime.env;
-    const url = new URL(request.url);
-    const path = url.pathname;
+    const path = params.path;
 
-    if (path === '/api/dashboard/auth/request') {
+    if (path === 'auth/request') {
         let email;
         try {
             const body = await request.json() as any;
@@ -92,7 +91,7 @@ export const POST: APIRoute = async ({ request, locals, url: reqUrl }) => {
         });
     }
 
-    if (path === '/api/dashboard/auth/logout') {
+    if (path === 'auth/logout') {
         const cookie = request.headers.get('Cookie') || '';
         const match = cookie.match(/sentinel_session=([^;]+)/);
         if (match) await env.CACHE.delete(`session:${match[1]}`);
@@ -106,7 +105,7 @@ export const POST: APIRoute = async ({ request, locals, url: reqUrl }) => {
         });
     }
 
-    if (path === '/api/dashboard/api/rotate') {
+    if (path === 'api/rotate') {
         const session = await requireSession(request, env);
         if (!session) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
 
@@ -133,12 +132,11 @@ export const POST: APIRoute = async ({ request, locals, url: reqUrl }) => {
     return new Response('Not Found', { status: 404 });
 };
 
-export const GET: APIRoute = async ({ request, locals, url: reqUrl }) => {
+export const GET: APIRoute = async ({ request, locals, params }) => {
     const env = (locals as any).runtime.env;
-    const url = new URL(request.url);
-    const path = url.pathname;
+    const path = params.path;
 
-    if (path === '/api/dashboard/auth/verify') {
+    if (path === 'auth/verify') {
         const token = url.searchParams.get('token');
         if (!token) return new Response(null, { status: 302, headers: { 'Location': '/dashboard/login?error=missing_token' } });
 
@@ -169,7 +167,7 @@ export const GET: APIRoute = async ({ request, locals, url: reqUrl }) => {
 
     const client = await getClientByEmail(env, session.email);
 
-    if (path === '/api/dashboard/api/key') {
+    if (path === 'api/key') {
         if (!client) return new Response(JSON.stringify({ error: 'Client not found' }), { status: 404 });
         const maskedKey = client.api_key ? `${client.api_key.slice(0, 16)}${'•'.repeat(20)}` : null;
         return new Response(JSON.stringify({
@@ -179,7 +177,7 @@ export const GET: APIRoute = async ({ request, locals, url: reqUrl }) => {
         }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
 
-    if (path === '/api/dashboard/api/usage') {
+    if (path === 'api/usage') {
         if (!env.DB || !client) {
             return new Response(JSON.stringify({ usage: [] }), { status: 200 });
         }
