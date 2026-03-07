@@ -633,8 +633,8 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
       <button onclick="document.getElementById('audit-sandbox-modal').style.display='none'" class="absolute top-8 right-8 text-slate-600 hover:text-white transition-colors text-xl">✕</button>
       
       <div id="sandbox-init" class="text-center py-10">
-        <div class="section-label justify-center mb-8">ZERO-EGRESS COMPLIANCE SANDBOX</div>
-        <h2 class="text-4xl font-black text-white mb-6 italic uppercase tracking-tighter">Initialize <span class="text-gold">Deep Scan</span></h2>
+        <div class="section-label justify-center mb-8">ZERO-EGRESS COMPLIANCE SANDBOX (SIMULATION)</div>
+        <h2 class="text-4xl font-black text-white mb-6 italic uppercase tracking-tighter">Initialize <span class="text-gold">Mock Pipeline</span></h2>
         <p class="text-slate-400 text-base mb-10">Running the Sentinel engine in your browser's WASM sandbox. Your code never leaves this machine.</p>
         <button onclick="startMockScan()" class="px-12 py-6 bg-gold text-obsidian font-black rounded-2xl text-[11px] uppercase tracking-[.4em] shadow-2xl hover:scale-105 transition-all">Execute Core Audit →</button>
       </div>
@@ -675,6 +675,8 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
         Initialize pre-approved invoice extraction for your procurement department. 
         <br/><br/>
         <strong class="text-white italic">PROTOCOL STATUS:</strong> Confirmation triggers an immediate <span class="text-gold font-black italic underline decoration-gold/30">PAUSE</span> on Technical File Decay for 72 hours. Your industrial data sovereignty is guaranteed.
+        <br/><br/>
+        <a href="/legal/privacy" class="text-[9px] text-emerald-500/60 uppercase tracking-widest hover:text-emerald-400 transition-colors">View Security & Privacy Protocol →</a>
       </p>
       <div class="space-y-4 mb-10">
         <input id="proforma-email" type="email" placeholder="Corporate Email Address" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white mono text-xs focus:border-gold outline-none" />
@@ -763,16 +765,16 @@ function startMockScan() {
     running.classList.remove('hidden');
 
     const logs = [
-        { text: "[WASM] Loading EU AI Act v1.2 Regs...", delay: 500 },
-        { text: "[FS] Reading repository structure...", delay: 1000 },
-        { text: "[AUTH] Verifying zero-egress sandbox...", delay: 1500 },
-        { text: "[SCAN] Analyzing Article 10 (Data Governance)...", delay: 2500 },
-        { text: "[WARN] Low visibility in model training metadata.", color: "text-amber-500", delay: 3500 },
-        { text: "[SCAN] Analyzing Article 13 (Transparency)...", delay: 4500 },
-        { text: "[PASS] Human-oversight protocols detected.", color: "text-emerald-500", delay: 5500 },
-        { text: "[SCAN] Extracting model architecture weights...", delay: 6500 },
-        { text: "[GEN] Compiling Technical File preview...", delay: 7500 },
-        { text: "[DONE] Sovereign Audit Ready for Locking.", color: "text-gold font-bold", delay: 8500 }
+        { text: "[WASM] Initializing Heuristic Rule-Engine...", delay: 500 },
+        { text: "[FS] Reading repository structure (Local Only)...", delay: 1000 },
+        { text: "[AUTH] Verifying zero-egress sandbox environment...", delay: 1500 },
+        { text: "[SCAN] Running Article 10 (Data Governance) Heuristics...", delay: 2500 },
+        { text: "[INFO] Simulation: Scanning for training metadata...", color: "text-amber-500", delay: 3500 },
+        { text: "[SCAN] Running Article 13 (Transparency) Heuristics...", delay: 4500 },
+        { text: "[PASS] Traceability requirements detected.", color: "text-emerald-500", delay: 5500 },
+        { text: "[SCAN] Simulating cryptographic integrity fingerprinting...", delay: 6500 },
+        { text: "[GEN] Preparing Technical File preview...", delay: 7500 },
+        { text: "[DONE] Mock Audit Simulation Complete.", color: "text-gold font-bold", delay: 8500 }
     ];
 
     logs.forEach((log, i) => {
