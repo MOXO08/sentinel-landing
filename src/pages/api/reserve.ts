@@ -38,15 +38,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
             });
         }
 
-        // ── Turnstile verification (skip if no secret configured — dev mode) ──
-        const tsSecret = env?.TURNSTILE_SECRET_KEY;
-        if (tsSecret) {
-            const tsToken = body?.turnstileToken || '';
-            if (!tsToken) {
-                return new Response(JSON.stringify({ ok: false, error: 'BOT_CHALLENGE_REQUIRED' }), {
-                    status: 403, headers: cors,
-                });
-            }
+        // ── Turnstile verification (Always fail-soft or use testing secret if no env) ──
+        const tsSecret = env?.TURNSTILE_SECRET_KEY || '1X0000000000000000000000000000000AA';
+        const tsToken = body?.turnstileToken || '';
+
+        if (!tsToken && env?.TURNSTILE_SECRET_KEY) {
+            return new Response(JSON.stringify({ ok: false, error: 'BOT_CHALLENGE_REQUIRED' }), {
+                status: 403, headers: cors,
+            });
+        }
+
+        if (tsToken) {
             const valid = await verifyTurnstile(tsToken, ip, tsSecret);
             if (!valid) {
                 return new Response(JSON.stringify({ ok: false, error: 'BOT_CHALLENGE_FAILED' }), {
