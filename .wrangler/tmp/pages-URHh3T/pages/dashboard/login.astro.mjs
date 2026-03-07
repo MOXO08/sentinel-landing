@@ -1,5 +1,5 @@
 globalThis.process ??= {}; globalThis.process.env ??= {};
-import { e as createComponent, r as renderTemplate, l as renderHead } from '../../chunks/astro/server_C0THm8nM.mjs';
+import { e as createComponent, r as renderTemplate, l as renderHead } from '../../chunks/astro/server_CGa7oeTl.mjs';
 /* empty css                                    */
 export { renderers } from '../../renderers.mjs';
 

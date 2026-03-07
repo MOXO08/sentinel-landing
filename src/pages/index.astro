@@ -55,49 +55,84 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
 
 <Layout title="Sentinel — Deterministic Audit Layer for Enterprise AI | EU AI Act Infrastructure">
 
-  <header class="sticky top-9 z-50 border-b border-slate-900/80 backdrop-blur-xl bg-space/80">
+  <header class="sticky top-9 z-50 border-b border-white/5 backdrop-blur-xl bg-obsidian/80">
     <nav class="max-w-screen-xl mx-auto px-6 h-16 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2">
-        <div class="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center text-space font-black text-sm">S</div>
-        <span class="font-bold text-sm tracking-tight text-white">SENTINEL</span>
-        <span class="mono text-[10px] text-slate-500 ml-1">v7.6</span>
+        <div class="w-8 h-8 rounded-xl bg-gold flex items-center justify-center text-obsidian font-black text-sm shadow-[0_0_20px_rgba(212,175,55,0.3)]">S</div>
+        <span class="font-extrabold text-base tracking-tighter text-white">SENTINEL</span>
+        <span class="mono text-[9px] text-gold/60 ml-1 font-black">V8.5 SOVEREIGN</span>
       </a>
-      <div class="hidden md:flex items-center gap-8">
-        <a href="#risk"         class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">RISK TOOL</a>
-        <a href="#tech"         class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">TECHNOLOGY</a>
-        <a href="#pricing"      class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">PRICING</a>
-        <a href="https://github.com/MOXO08/sentinel-example-ai-app/wiki" class="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition-colors tracking-wide">WIKI</a>
-        <a href="/integrity-console"   class="text-xs text-slate-400 hover:text-white transition-colors font-medium tracking-wide">ONBOARDING</a>
+      <div class="hidden md:flex items-center gap-10">
+        <a href="#vault"        class="text-[11px] text-slate-400 hover:text-gold transition-colors font-bold tracking-widest uppercase">The Vault</a>
+        <a href="#tech"         class="text-[11px] text-slate-400 hover:text-gold transition-colors font-bold tracking-widest uppercase">Sovereign Edge</a>
+        <a href="#pricing"      class="text-[11px] text-slate-400 hover:text-gold transition-colors font-bold tracking-widest uppercase">Audit Tiers</a>
       </div>
-      <div class="flex items-center gap-3">
-        <a href="/dashboard/login" class="btn-ghost !py-2 !px-4 !text-xs">Dashboard</a>
-        <a href="#pricing"         class="btn-emerald !py-2 !px-4 !text-xs">Get Access</a>
+      <div class="flex items-center gap-4">
+        <a href="/dashboard/login" class="text-[11px] font-bold text-slate-400 hover:text-white uppercase tracking-widest">Client Portal</a>
+        <a href="#pricing" class="px-6 py-2.5 bg-gold text-obsidian rounded-full font-black text-[11px] uppercase tracking-widest hover:scale-105 transition-transform shadow-[0_0_30px_rgba(212,175,55,0.2)]">Get Access</a>
       </div>
     </nav>
   </header>
 
   <main class="max-w-screen-xl mx-auto px-6">
 
-    <!-- HERO -->
-    <section class="pt-28 pb-20 text-center relative overflow-hidden">
-      <!-- Premium Aurora Effect -->
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] -z-20 opacity-30 blur-[120px] pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-emerald-500/40 rounded-full animate-pulse"></div>
-        <div class="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] bg-cyan-500/30 rounded-full animate-pulse" style="animation-delay: 2s;"></div>
+    <!-- HERO (FERRARI OVERHAUL) -->
+    <section class="pt-32 pb-24 text-center relative overflow-hidden">
+      <!-- Sovereign Aurora -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1000px] -z-20 opacity-40 blur-[150px] pointer-events-none">
+        <div class="absolute top-[-20%] left-[-20%] w-[70%] h-[70%] bg-gold/20 rounded-full"></div>
+        <div class="absolute bottom-[20%] right-[-20%] w-[60%] h-[60%] bg-sovereign-blue/30 rounded-full"></div>
       </div>
-      <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_900px_600px_at_50%_-100px,rgba(16,185,129,0.12),transparent)]"></div>
-      <div class="section-label justify-center mb-4">DETERMINISTIC COMPLIANCE LAYER</div>
-      <h1 class="text-5xl md:text-7xl lg:text-8xl mb-8 max-w-5xl mx-auto leading-[0.95] tracking-tighter text-white font-extrabold">
-        The Deterministic<br/>
-        <span class="text-emerald-400 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">Audit Layer</span><br/>
-        for US & EU AI
-      </h1>
-      <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-12 leading-relaxed font-light">
-        A high-performance WASM compliance engine generating cryptographic audit proofs for EU AI Act regulations — localized execution with zero third-party data egress for global AI providers.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="#risk"    class="btn-emerald">Calculate Your Compliance Risk →</a>
-        <a href="#pricing" class="btn-ghost">View Subscription Tiers</a>
+      <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_1000px_800px_at_50%_-100px,rgba(212,175,55,0.08),transparent)]"></div>
+
+      <div class="flex flex-col items-center">
+        <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-gold/20 bg-gold/5 mb-8">
+          <span class="w-1.5 h-1.5 rounded-full bg-gold animate-pulse shadow-[0_0_8px_#D4AF37]"></span>
+          <span class="mono text-[9px] text-gold tracking-[0.2em] font-black uppercase italic">Enterprise Audit Protocol v8.5 Active</span>
+        </div>
+
+        <h1 class="text-6xl md:text-8xl lg:text-9xl mb-10 max-w-6xl mx-auto leading-[0.85] tracking-tightest text-white font-black italic">
+          SOVEREIGN<br/>
+          <span class="text-gold">COMPLIANCE</span><br/>
+          FOR AI GIANTS
+        </h1>
+        
+        <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-16 leading-relaxed font-light tracking-tight">
+          Deterministic compliance as an <span class="text-white font-medium italic">Immutable Asset</span>. We convert regulatory friction into industrial-grade cryptographic proofs for global AI providers.
+        </p>
+
+        <!-- Manifest Drop Zone (Loss Aversion Hook) -->
+        <div class="w-full max-w-4xl mx-auto mb-20 group">
+          <div class="relative p-[1px] rounded-3xl overflow-hidden bg-gradient-to-b from-gold/30 to-white/5 shadow-2xl shadow-gold/5 group-hover:shadow-gold/10 transition-all">
+            <div class="bg-obsidian/90 backdrop-blur-3xl rounded-[23px] p-8 md:p-12 border border-white/5 flex flex-col items-center justify-center gap-6">
+              <div class="w-20 h-20 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-500">📄</div>
+              <div class="text-center">
+                <h3 class="text-2xl font-bold text-white mb-2 underline decoration-gold/30 underline-offset-8">Audit Genesis Control</h3>
+                <p class="text-slate-500 text-sm mono">Drop manifest.json to initialize deterministic scan or paste commit hash</p>
+              </div>
+              <button class="px-8 py-4 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-sm tracking-widest uppercase hover:bg-gold hover:text-obsidian transition-all group-hover:border-gold/50">Initialize Audit Pipeline →</button>
+              
+              <!-- Live Compliance Pulse Feed -->
+              <div class="w-full mt-6 bg-black/40 rounded-xl p-4 border border-white/5 mono text-[10px] text-left text-slate-500 overflow-hidden h-24">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="text-emerald-500 font-bold">READY</span>
+                  <span class="text-slate-700">|</span>
+                  <span>Sentinel v8.0 listening on port 443</span>
+                </div>
+                <div class="animate-pulse flex items-center gap-3">
+                  <span class="text-gold font-black italic">PULSE</span>
+                  <span class="text-slate-700">|</span>
+                  <span class="text-slate-400 italic">Waiting for incoming telemetry from edge nodes...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-6 justify-center">
+          <a href="#risk"    class="px-10 py-5 bg-gold text-obsidian font-black rounded-xl text-sm uppercase tracking-widest shadow-xl shadow-gold/20 hover:scale-105 transition-transform">Initialize Risk Assessment</a>
+          <a href="#pricing" class="px-10 py-5 bg-white/5 border border-gold/30 text-gold font-bold rounded-xl text-sm uppercase tracking-widest hover:bg-gold/10 transition-all">Enter The Audit Vault</a>
+        </div>
       </div>
 
       <!-- SHADOW AUDIT SEARCH -->
@@ -121,63 +156,54 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
       </div>
     </section>
 
-    <!-- QUICK INTEGRATION STEPS -->
-    <section class="py-16">
-      <div class="grid md:grid-cols-3 gap-8">
+    <!-- QUICK INTEGRATION STEPS (SOVEREIGN) -->
+    <section class="py-20 border-t border-white/5">
+      <div class="grid md:grid-cols-3 gap-10">
         {[
-          {step: "01", title: "Connect Repository", desc: "Link your GitHub repository or use our CLI to initialize the compliance manifest."},
-          {step: "02", title: "Automated Scan", desc: "Our WASM engine audits every inference and commit against Art. 10-14 in 0.21ms."},
-          {step: "03", title: "Get Compliance Badge", desc: "Display your dynamic 'EU AI Act Compliant' badge and secure your audit trail in D1."}
+          {step: "01", title: "Protocol Initiation", desc: "Link your industrial repository or use the Sentinel CLI to initialize the compliance manifest."},
+          {step: "02", title: "Deterministic Scan", desc: "Our Sovereign engine audits every inference against Art. 10-14 with sub-millisecond latency."},
+          {step: "03", title: "Vault Extraction", desc: "Secure your dynamic 'Technical File' and display the cryptographic v8.0 badge."}
         ].map(s => (
-          <div class="glass p-6 rounded-2xl relative border-slate-800/40 hover:border-emerald-500/20 transition-all group">
-            <div class="mono text-[10px] text-emerald-500/50 mb-4 font-bold tracking-widest">{s.step}</div>
-            <h3 class="text-sm font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">{s.title}</h3>
-            <p class="text-[11px] text-slate-500 leading-relaxed font-light">{s.desc}</p>
+          <div class="glass p-8 rounded-3xl relative border-white/5 hover:border-gold/30 transition-all group bg-obsidian/40">
+            <div class="mono text-[9px] text-gold/40 mb-5 font-black tracking-[.3em]">{s.step}</div>
+            <h3 class="text-base font-black text-white mb-3 group-hover:text-gold transition-colors italic uppercase">{s.title}</h3>
+            <p class="text-xs text-slate-500 leading-relaxed font-light tracking-tight">{s.desc}</p>
           </div>
         ))}
       </div>
     </section>
 
-    <!-- RISK CALCULATOR -->
-    <section id="risk" class="py-24 border-t border-slate-900">
-      <div class="text-center mb-12">
-        <div class="section-label justify-center">US & EU RISK ANALYSIS</div>
-        <h2 class="text-4xl md:text-5xl text-white">Global Compliance<br/><span style="color:#f87171;">Penalty Estimator</span></h2>
-        <p class="text-slate-400 mt-4 max-w-xl mx-auto text-sm leading-relaxed">US companies with EU users fall under EU AI Act jurisdiction. Penalties reach <strong class="text-slate-200">7% of global annual turnover</strong>. Calculate your peace of mind.</p>
+    <!-- RISK CALCULATOR (SOVEREIGN) -->
+    <section id="risk" class="py-32 border-t border-white/5">
+      <div class="text-center mb-16">
+        <div class="section-label justify-center">REGULATORY RISK ASSESSMENT</div>
+        <h2 class="text-5xl md:text-6xl text-white font-black italic">Sovereign Asset<br/><span class="text-red-500 underline decoration-red-500/30 underline-offset-8">Liability Exposure</span></h2>
+        <p class="text-slate-400 mt-6 max-w-2xl mx-auto text-lg font-light tracking-tight">Non-compliance with the EU AI Act (Reg. 2024/1689) triggers penalties up to <strong class="text-gold font-bold">7% of global turnover</strong>. Calibrate your exposure.</p>
       </div>
-      <div class="max-w-2xl mx-auto glass p-8 md:p-10 rounded-3xl">
-        <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="max-w-3xl mx-auto glass p-10 md:p-14 rounded-[40px] border-white/5 bg-obsidian/60 backdrop-blur-3xl shadow-2xl relative">
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-red-500/5 blur-[80px] rounded-full"></div>
+        <div class="grid md:grid-cols-2 gap-10 mb-10">
           <div>
-            <label class="mono text-[10px] text-slate-500 tracking-wider uppercase block mb-3">Annual Global Revenue (€)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">€</span>
-              <input id="calc-revenue" type="number" value="50000000" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl pl-9 pr-4 py-4 text-white mono text-sm focus:border-emerald-500 focus:outline-none transition-colors"/>
-            </div>
+            <label class="mono text-[9px] font-black text-slate-500 uppercase tracking-[.3em] mb-3 block">Global Annual Revenue (€)</label>
+            <input type="number" id="calc-revenue" value="50000000" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white font-black text-xl focus:border-gold outline-none transition-all" />
           </div>
           <div>
-            <label class="mono text-[10px] text-slate-500 tracking-wider uppercase block mb-3">AI Risk Category</label>
-            <select id="calc-category" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-4 text-white mono text-sm focus:border-emerald-500 focus:outline-none transition-colors">
-              <option value="0.07">High-Risk AI (Article 6) — 7% cap</option>
-              <option value="0.03">General Purpose AI — 3% cap</option>
-              <option value="0.015">Transparency Obligation — 1.5% cap</option>
+            <label class="mono text-[9px] font-black text-slate-500 uppercase tracking-[.3em] mb-3 block">Violation Severity</label>
+            <select id="calc-category" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold text-sm focus:border-gold outline-none appearance-none cursor-pointer">
+              <option value="0.07">Article 10 (Critical) — 7.0%</option>
+              <option value="0.03" selected>Article 13 (High) — 3.0%</option>
+              <option value="0.015">Article 14 (Standard) — 1.5%</option>
             </select>
           </div>
         </div>
-        <div class="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 mb-8">
-          <div class="flex items-center justify-between mb-4">
-            <span class="mono text-[10px] text-red-400 tracking-widest uppercase">Maximum Regulatory Exposure</span>
-            <span class="mono text-[10px] text-slate-600">EU AI Act Art. 71</span>
-          </div>
-          <div class="text-5xl font-black text-red-400 mb-2" id="calc-penalty">€3.500.000</div>
-          <div class="text-sm text-slate-500 mono" id="calc-detail">7% of €50M · High-Risk classification</div>
+        
+        <div class="bg-black/60 rounded-3xl p-8 border border-white/5 text-center mb-10">
+          <div class="mono text-[10px] text-slate-500 uppercase tracking-widest mb-4">ESTIMATED MAXIMUM PENALTY EXPOSURE</div>
+          <div id="pen-val" class="text-5xl md:text-6xl font-black text-red-500 tracking-tighter mb-4 italic">€3,500,000</div>
+          <div id="pen-det" class="mono text-[9px] text-slate-600 uppercase tracking-widest">3.0% OF GLOBAL ANNUAL TURNOVER</div>
         </div>
-        <a href={LEMON_ENTERPRISE} class="lemonsqueezy-button w-full btn-emerald flex justify-center !py-5 text-base text-center decoration-none">
-          Get Enterprise Plan — <span class="line-through opacity-60 ml-1 mr-1">$499</span> $299/mo →
-        </a>
-        <div class="mt-4 flex items-center justify-center gap-2">
-            <span class="mono text-[10px] text-slate-600">Need a custom quote?</span>
-            <a href="mailto:office@gettingsentinel.com?subject=Enterprise%20Invoice%20Request" class="mono text-[10px] text-emerald-500 font-bold hover:underline">Request Enterprise Invoice (Bank Transfer) &rarr;</a>
-        </div>
+        
+        <a href="#pricing" class="w-full py-5 bg-gold text-obsidian font-black rounded-2xl text-center block uppercase tracking-[.3em] text-[11px] shadow-2xl shadow-gold/20 hover:scale-[1.02] transition-all">Download Mitigation Roadmap →</a>
       </div>
     </section>
 
@@ -213,229 +239,274 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
 
 
 
-    <!-- EU AI ACT -->
-    <section id="law" class="py-24 border-t border-slate-900">
-      <div class="grid lg:grid-cols-2 gap-16 items-start">
+    <!-- SOVEREIGN ALIGNMENT (EU AI ACT) -->
+    <section id="law" class="py-32 border-t border-white/5 bg-black/20">
+      <div class="grid lg:grid-cols-2 gap-20 items-center max-w-7xl mx-auto px-6">
         <div>
-          <div class="section-label">REGULATORY ALIGNMENT</div>
-          <h2 class="text-4xl md:text-5xl mb-8 text-white">EU AI Act<br/>Compliance Framework</h2>
-          <div class="space-y-5 text-slate-400 text-sm leading-relaxed">
-            <p>The <strong class="text-slate-200">EU AI Act</strong> (Regulation EU 2024/1689) entered force August 2024, categorising AI by risk and mandating technical controls for <strong class="text-slate-200">High-Risk AI Systems</strong> with phased obligations through 2026.</p>
-            <p><strong class="text-slate-200">Article 12 — Record-Keeping.</strong> Automatic logging generating records ensuring traceability throughout the system lifecycle. Sentinel's D1-backed cryptographic trail satisfies this natively.</p>
-            <p><strong class="text-slate-200">Article 13 — Transparency.</strong> Instructions covering capabilities, limitations, accuracy levels, and required human oversight measures. Sentinel reports map precisely to these disclosures.</p>
-            <p><strong class="text-slate-200">Article 14 — Human Oversight.</strong> Systems must allow oversight during operation. Sentinel surfaces risk signals in real-time so compliance officers act before a violation propagates.</p>
-            <a href="/compliance" class="text-emerald-400 hover:text-emerald-300 transition-colors text-xs mono tracking-wide">→ Government-Grade Compliance Architecture</a>
+          <div class="section-label">PROTOCOL ALIGNMENT</div>
+          <h2 class="text-5xl md:text-6xl text-white font-black italic mb-10 uppercase tracking-tighter">Sovereign <span class="text-gold">Regulatory Layer</span></h2>
+          <div class="space-y-8 text-slate-400 text-lg leading-relaxed font-light tracking-tight">
+            <p>The <strong class="text-white font-medium">EU AI Act (Reg. 2024/1689)</strong> is not just a constraint—it's the new global industrial standard. Sentinel provides the first native enforcement layer for the 2026 mandates.</p>
+            <div class="p-8 border-l-2 border-gold/30 bg-gold/[0.02] rounded-r-3xl">
+              <p class="italic">"We don't just 'audit' your AI. We provide the <span class="text-gold font-bold">signed cryptographic proof</span> required by Article 11 to move your model from deployment to production."</p>
+            </div>
+            <a href="/compliance" class="inline-flex items-center gap-3 text-gold hover:text-white transition-colors text-[10px] mono uppercase tracking-[.4em] font-black italic">→ Access Full Compliance Whitepaper</a>
           </div>
         </div>
-        <div class="space-y-4 pt-16">
+        <div class="grid gap-6">
           {[
-            {art:"Art. 12",title:"Automated Logging",detail:"Cryptographic D1 entries per audit, immutable & timestamped"},
-            {art:"Art. 13",title:"Transparency Output",detail:"Machine-readable compliance JSON with disclosure fields"},
-            {art:"Art. 14",title:"Human Oversight Hooks",detail:"Webhook alerts on non-compliant verdicts"},
-            {art:"Art. 71",title:"Penalty Mitigation",detail:"Due-diligence evidence for supervisory authorities"},
-            {art:"Annex III",title:"High-Risk Classification",detail:"Automatic detection of prohibited patterns"},
+            {art:"Art. 11",title:"The Technical File",detail:"Automated assembly of technical documentation for high-risk assets."},
+            {art:"Art. 12",title:"Immutable Traceability",detail:"Cryptographic D1 logging ensures zero-tamper audit histories."},
+            {art:"Art. 13",title:"Transparency Hub",detail:"Dynamic disclosure generation for human oversight requirements."},
+            {art:"Art. 71",title:"Liability Insulation",detail:"Due-diligence records for supervisory authority defense."}
           ].map(item=>(
-            <div class="glass p-5 flex items-start gap-4">
-              <div class="mono text-[10px] px-2 py-1 rounded border mt-0.5 shrink-0" style="border-color:var(--color-border);color:var(--color-emerald);">{item.art}</div>
-              <div class="flex-1"><div class="text-sm font-semibold text-slate-200">{item.title}</div><div class="mono text-xs text-slate-500 mt-1">{item.detail}</div></div>
-              <div class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shrink-0" style="background:var(--color-emerald-dim);color:var(--color-emerald);">✓</div>
+            <div class="glass p-8 flex items-center gap-6 border-white/5 hover:border-gold/30 transition-all group bg-obsidian/60">
+              <div class="mono text-[10px] px-3 py-1.5 rounded-lg border border-gold/30 text-gold font-black italic tracking-widest bg-gold/5 shrink-0 uppercase">{item.art}</div>
+              <div class="flex-1">
+                <div class="text-base font-black text-white italic uppercase mb-1">{item.title}</div>
+                <div class="mono text-[10px] text-slate-500 uppercase tracking-widest">{item.detail}</div>
+              </div>
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 bg-gold text-obsidian shadow-lg shadow-gold/20">✓</div>
             </div>
           ))}
         </div>
       </div>
     </section>
 
-    <!-- TECH MOAT + AI DRIFT SIMULATOR -->
-    <section id="tech" class="py-24 border-t border-slate-900">
-      <div class="text-center mb-16">
+    <!-- INDUSTRIAL INFRASTRUCTURE (TECH MOAT) -->
+    <section id="tech" class="py-40 border-t border-white/5 relative bg-obsidian/20">
+      <div class="text-center mb-24">
         <div class="section-label justify-center">INFRASTRUCTURE MOAT</div>
-        <h2 class="text-4xl md:text-5xl text-white">WASM-Compiled Deterministic Trails</h2>
+        <h2 class="text-5xl md:text-7xl text-white font-black italic mb-8 uppercase tracking-tighter">Zero-Trust <span class="text-gold">Sovereign Edge</span></h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-lg font-light tracking-tight">Distributed compliance logic that executes in parallel with your model, ensuring zero latency degradation and absolute data isolation.</p>
       </div>
-      <div class="grid md:grid-cols-3 gap-6 mb-16">
+      <div class="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto px-6 mb-24">
         {[
-          {icon:"⚡",color:"var(--color-emerald)",title:"Zero Cold Starts",body:"Compiled to WebAssembly via Rust. Deterministic sub-millisecond execution — no JIT warm-up, no provisioning delay."},
-          {icon:"🔒",color:"var(--color-cyan)",title:"Immutable D1 Chain",body:"Every verdict is written to Cloudflare D1 with a server-side timestamp that cannot be altered. Legally defensible, append-only."},
-          {icon:"📡",color:"#a78bfa",title:"Zero Egress Architecture",body:"Manifests and model metadata processed in-process in the Edge Worker. No data ever reaches third-party APIs."},
+          {icon:"⚡",title:"Zero-Warm Execution",body:"Compiled to industrial WASM via Rust. Deterministic sub-millisecond execution with no JIT warm-up or provisioning lag."},
+          {icon:"⛓️",title:"Immutable Ledger",body:"Every verdict is hard-locked into Cloudflare D1 with verifiable server-side timestamps. Legally defensible audit chains."},
+          {icon:"📡",title:"Zero-Egress Protocol",body:"Manifests and model telemetry are processed entirely in-process on the Edge. No data ever crosses third-party boundaries."}
         ].map(f=>(
-          <div class="glass p-8 flex flex-col gap-5">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={`background:${f.color}18`}>{f.icon}</div>
-            <h3 class="text-lg font-bold text-white">{f.title}</h3>
-            <p class="text-slate-400 text-sm leading-relaxed">{f.body}</p>
+          <div class="glass p-12 rounded-[40px] border-white/5 bg-obsidian/40 flex flex-col gap-8 hover:border-gold/20 transition-all shadow-2xl group">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl bg-gold/10 text-gold group-hover:scale-110 transition-transform">{f.icon}</div>
+            <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">{f.title}</h3>
+            <p class="text-slate-500 text-sm leading-relaxed font-light tracking-tight group-hover:text-slate-300 transition-colors">{f.body}</p>
           </div>
         ))}
       </div>
+    </section>
 
       <!-- AI DRIFT SIMULATOR -->
       <div class="glass p-8 rounded-3xl">
-        <div class="flex flex-col lg:flex-row items-center gap-10">
-          <div class="flex-1">
-            <div class="section-label mb-3">INTERACTIVE — AI DRIFT SIMULATOR</div>
-            <h3 class="text-2xl font-bold text-white mb-4">What Happens Without<br/>Deterministic Oversight?</h3>
-            <p class="text-slate-400 text-sm leading-relaxed">Without continuous auditing, AI models drift imperceptibly from "Safe" to "Risky" — often undetected for months. Sentinel intercepts every inference request and runs a deterministic compliance check in 0.21ms, before the output reaches your users.</p>
+    <!-- THE ENTROPY ENGINE (DRIFT SIMULATOR) -->
+    <section class="py-40 bg-black/40">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="glass p-16 rounded-[60px] border-white/5 bg-obsidian/40 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+          <div class="absolute inset-0 bg-red-500/[0.01]"></div>
+          <div class="flex flex-col lg:flex-row items-center gap-20 relative z-10">
+            <div class="flex-1">
+              <div class="section-label mb-8">SOVEREIGN VISUALIZATION — X-ENTROPY</div>
+              <h3 class="text-4xl md:text-5xl text-white font-black italic mb-8 uppercase tracking-tighter">The <span class="text-red-500">Compliance Entropy</span> Trap</h3>
+              <p class="text-slate-400 text-lg leading-relaxed font-light tracking-tight mb-10">
+                Without continuous deterministic oversight, AI outputs drift imperceptibly into regulatory territory. Sentinel intercepts 100% of inference packets, running a sub-millisecond check against the Sovereign Gold standard before data reaches the boundary.
+              </p>
+              <div class="flex gap-10">
+                <div>
+                  <div class="text-3xl font-black text-white italic mb-1 uppercase">0.21ms</div>
+                  <div class="mono text-[9px] text-slate-500 uppercase tracking-widest font-black">Audit Latency</div>
+                </div>
+                <div class="w-px h-12 bg-white/10"></div>
+                <div>
+                  <div class="text-3xl font-black text-gold italic mb-1 uppercase">100%</div>
+                  <div class="mono text-[9px] text-slate-500 uppercase tracking-widest font-black">Traceability</div>
+                </div>
+              </div>
+            </div>
+            <!-- Sovereign SVG animation -->
+            <svg viewBox="0 0 340 230" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-md shrink-0 shadow-2xl rounded-3xl overflow-hidden border border-white/5 bg-black/60">
+              <defs>
+                <style>{`
+                  @keyframes drift-bad{0%{fill:#D4AF37}35%{fill:#f59e0b}75%{fill:#ef4444}100%{fill:#7f1d1d}}
+                  @keyframes drift-good{0%,100%{fill:#D4AF37}}
+                  @keyframes pulse-ring{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.6);opacity:0}}
+                  @keyframes scan-y{0%{transform:translateY(0);opacity:.7}100%{transform:translateY(170px);opacity:0}}
+                  @keyframes warn-blink{0%,49%{opacity:1}50%,100%{opacity:.25}}
+                  .nb{animation:drift-bad 5s ease-in-out infinite alternate}
+                  .ng{animation:drift-good 5s ease-in-out infinite alternate}
+                  .rp{animation:pulse-ring 1.4s ease-out infinite}
+                  .sc{animation:scan-y 1.8s linear infinite}
+                  .wb{animation:warn-blink .9s ease-in-out infinite}
+                `}</style>
+                <filter id="gf2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <!-- WITHOUT -->
+              <text x="72" y="25" text-anchor="middle" fill="#475569" style="font-family:Outfit;font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase">Conventional</text>
+              <circle class="nb" cx="72" cy="95" r="32" filter="url(#gf2)"/>
+              <circle class="rp" cx="72" cy="95" r="24" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+              <text x="72" y="98" text-anchor="middle" fill="white" style="font-size:16px;font-weight:900;font-family:Outfit;font-style:italic">AI</text>
+              <text x="12" y="150" fill="#D4AF37" style="font-size:9px;font-family:JetBrains Mono">▶ SAFE</text>
+              <text x="38" y="163" fill="#f59e0b" style="font-size:9px;font-family:JetBrains Mono">▶ DRIFTING</text>
+              <text x="64" y="176" fill="#ef4444" class="wb" style="font-size:9px;font-family:JetBrains Mono">▶ ENTROPY ⚠</text>
+              <rect x="8" y="192" width="128" height="17" rx="4" fill="rgba(239,68,68,.1)" stroke="rgba(239,68,68,.2)" stroke-width="1"/>
+              <text x="72" y="203" text-anchor="middle" fill="#f87171" style="font-size:8px;font-family:JetBrains Mono;font-weight:900">UNCALIBRATED DRIFT</text>
+              <!-- DIVIDER -->
+              <line x1="172" y1="12" x2="172" y2="220" stroke="rgba(255,255,255,.05)" stroke-width="1" stroke-dasharray="4,3"/>
+              <!-- WITH -->
+              <text x="258" y="25" text-anchor="middle" fill="#D4AF37" style="font-family:Outfit;font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase">Sovereign</text>
+              <circle class="ng" cx="258" cy="95" r="32" filter="url(#gf2)"/>
+              <text x="258" y="98" text-anchor="middle" fill="#000" style="font-size:16px;font-weight:900;font-family:Outfit;font-style:italic">AI</text>
+              <rect x="200" y="40" width="116" height="135" rx="6" fill="none" stroke="rgba(212,175,55,.2)" stroke-width="1" stroke-dasharray="4,3"/>
+              <line class="sc" x1="202" y1="42" x2="314" y2="42" stroke="#D4AF37" stroke-width="1.5"/>
+              <text x="258" y="56" text-anchor="middle" fill="rgba(212,175,55,.4)" style="font-size:8px;font-family:JetBrains Mono">VAULT SCANNING…</text>
+              <text x="200" y="150" fill="#D4AF37" style="font-size:9px;font-family:JetBrains Mono">▶ CALIBRATED</text>
+              <text x="200" y="163" fill="#D4AF37" style="font-size:9px;font-family:JetBrains Mono">▶ CALIBRATED</text>
+              <text x="200" y="176" fill="#D4AF37" style="font-size:9px;font-family:JetBrains Mono">▶ CALIBRATED ✓</text>
+              <rect x="196" y="192" width="128" height="17" rx="4" fill="rgba(212,175,55,.1)" stroke="rgba(212,175,55,.2)" stroke-width="1"/>
+              <text x="260" y="203" text-anchor="middle" fill="#D4AF37" style="font-size:8px;font-family:JetBrains Mono;font-weight:900">SOVEREIGN V8.0 ✓</text>
+            </svg>
           </div>
-          <!-- Inline SVG animation -->
-          <svg viewBox="0 0 340 230" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-sm shrink-0">
-            <defs>
-              <style>{`
-                @keyframes drift-bad{0%{fill:#10b981}35%{fill:#f59e0b}75%{fill:#ef4444}100%{fill:#7f1d1d}}
-                @keyframes drift-good{0%,100%{fill:#10b981}}
-                @keyframes pulse-ring{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.6);opacity:0}}
-                @keyframes scan-y{0%{transform:translateY(0);opacity:.7}100%{transform:translateY(170px);opacity:0}}
-                @keyframes warn-blink{0%,49%{opacity:1}50%,100%{opacity:.25}}
-                .nb{animation:drift-bad 5s ease-in-out infinite alternate}
-                .ng{animation:drift-good 5s ease-in-out infinite alternate}
-                .rp{animation:pulse-ring 1.4s ease-out infinite}
-                .sc{animation:scan-y 1.8s linear infinite}
-                .wb{animation:warn-blink .9s ease-in-out infinite}
-              `}</style>
-              <filter id="gf2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            </defs>
-            <rect width="340" height="230" rx="12" fill="#060d1f"/>
-            <!-- WITHOUT -->
-            <text x="72" y="22" text-anchor="middle" fill="#475569" style="font-family:monospace;font-size:9px;font-weight:700;letter-spacing:.1em">WITHOUT SENTINEL</text>
-            <circle class="nb" cx="72" cy="95" r="32" filter="url(#gf2)"/>
-            <circle class="rp" cx="72" cy="95" r="24" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-            <text x="72" y="91" text-anchor="middle" fill="white" style="font-size:14px;font-weight:800;font-family:sans-serif">AI</text>
-            <text x="72" y="105" text-anchor="middle" fill="white" style="font-size:8px;font-family:monospace;opacity:.8">MODEL</text>
-            <text x="12" y="150" fill="#10b981" style="font-size:9px;font-family:monospace">▶ SAFE</text>
-            <text x="38" y="163" fill="#f59e0b" style="font-size:9px;font-family:monospace">▶ DRIFTING</text>
-            <text x="64" y="176" fill="#ef4444" class="wb" style="font-size:9px;font-family:monospace">▶ RISKY ⚠</text>
-            <rect x="8" y="192" width="128" height="17" rx="4" fill="rgba(239,68,68,.12)" stroke="rgba(239,68,68,.3)" stroke-width="1"/>
-            <text x="72" y="203" text-anchor="middle" fill="#f87171" style="font-size:8px;font-family:monospace;font-weight:700">NO AUDIT → VIOLATION</text>
-            <!-- DIVIDER -->
-            <line x1="172" y1="12" x2="172" y2="220" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
-            <!-- WITH -->
-            <text x="258" y="22" text-anchor="middle" fill="#10b981" style="font-family:monospace;font-size:9px;font-weight:700;letter-spacing:.1em">WITH SENTINEL</text>
-            <circle class="ng" cx="258" cy="95" r="32" filter="url(#gf2)"/>
-            <text x="258" y="91" text-anchor="middle" fill="#020617" style="font-size:14px;font-weight:800;font-family:sans-serif">AI</text>
-            <text x="258" y="105" text-anchor="middle" fill="#020617" style="font-size:8px;font-family:monospace;opacity:.8">MODEL</text>
-            <rect x="200" y="40" width="116" height="135" rx="6" fill="none" stroke="rgba(16,185,129,.22)" stroke-width="1" stroke-dasharray="4,3"/>
-            <line class="sc" x1="202" y1="42" x2="314" y2="42" stroke="rgba(16,185,129,.6)" stroke-width="1.5"/>
-            <text x="258" y="56" text-anchor="middle" fill="rgba(16,185,129,.45)" style="font-size:8px;font-family:monospace">SCANNING…</text>
-            <text x="200" y="150" fill="#10b981" style="font-size:9px;font-family:monospace">▶ SAFE</text>
-            <text x="200" y="163" fill="#10b981" style="font-size:9px;font-family:monospace">▶ SAFE</text>
-            <text x="200" y="176" fill="#10b981" style="font-size:9px;font-family:monospace">▶ SAFE ✓</text>
-            <rect x="196" y="192" width="128" height="17" rx="4" fill="rgba(16,185,129,.12)" stroke="rgba(16,185,129,.3)" stroke-width="1"/>
-            <text x="260" y="203" text-anchor="middle" fill="#10b981" style="font-size:8px;font-family:monospace;font-weight:700">AUDITED → COMPLIANT ✓</text>
-          </svg>
         </div>
       </div>
     </section>
 
-    <!-- AUDIT TRAIL -->
-    <section id="audit" class="py-24 border-t border-slate-900">
+    <!-- AUDIT TRAIL (GOLD) -->
+    <section id="audit" class="py-24 border-t border-white/5">
       <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
         <div>
           <div class="section-label">DATA PROVENANCE</div>
-          <h2 class="text-4xl md:text-5xl text-white">Live Cryptographic<br/>Audit Trail</h2>
+          <h2 class="text-4xl md:text-5xl text-white font-black italic">Live Cryptographic<br/>Audit Trail</h2>
         </div>
-        <div class="glass px-8 py-5 text-right shrink-0 rounded-2xl">
-          <div class="mono text-5xl font-black" style="color:var(--color-emerald);">{totalAudits}</div>
+        <div class="glass px-8 py-5 text-right shrink-0 rounded-2xl border-gold/20 bg-gold/5 shadow-[0_0_30px_rgba(212,175,55,0.05)]">
+          <div class="mono text-5xl font-black text-gold">{totalAudits}</div>
           <div class="mono text-[9px] text-slate-500 tracking-widest uppercase mt-1">Verified Records · D1</div>
         </div>
       </div>
-      <div class="glass overflow-hidden rounded-2xl">
-        <div class="data-grid-row header bg-slate-900/60"><span>TIMESTAMP</span><span>APPLICATION · VERSION</span><span>VERDICT</span><span class="text-right">PROOF ID</span></div>
+      <div class="glass overflow-hidden rounded-2xl border-white/5 bg-obsidian/40 backdrop-blur-xl">
+        <div class="data-grid-row header bg-white/5 border-b border-white/10 text-gold/60 uppercase"><span>TIMESTAMP</span><span>APPLICATION · VERSION</span><span>VERDICT</span><span class="text-right">PROOF ID</span></div>
         {auditLogs.length>0?auditLogs.map((log,i)=>{
           const hms=new Date(log.created_at).toISOString().slice(11,19);
           const isOk=log.status?.includes('COMPLIANT')&&!log.status?.includes('NON');
           const proof=`0x${(Math.abs(i*7+431882)+(log.app_name?.charCodeAt(0)??1)).toString(16).padStart(6,'0').slice(0,6)}`;
-          return <div class="data-grid-row"><span class="text-slate-500">{hms}</span><span class="text-slate-200 font-semibold">{log.app_name}<span class="mono text-[10px] text-slate-600 ml-2">v{log.version}</span></span><span><span class={`status-pill ${isOk?'status-compliant':'status-non-compliant'}`}><span class="w-1.5 h-1.5 rounded-full" style={`background:${isOk?'var(--color-emerald)':'#f87171'}`}></span>{log.status}</span></span><span class="mono text-[11px] text-slate-600 text-right">{proof}</span></div>;
-        }):<div class="data-grid-row"><span class="text-slate-600 mono text-xs">Awaiting D1 data…</span></div>}
-        <div class="px-6 py-3 mono text-[10px] text-slate-600 flex items-center gap-2 border-t border-slate-800/60">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>LIVE · Cloudflare D1 EEUR · {new Date().toISOString().slice(11,19)} UTC
+          return <div class="data-grid-row border-white/5 hover:bg-gold/5"><span class="text-slate-500">{hms}</span><span class="text-slate-200 font-bold">{log.app_name}<span class="mono text-[10px] text-gold/40 ml-2">v{log.version}</span></span><span><span class={`status-pill ${isOk?'status-compliant border-gold/30 text-gold bg-gold/10':'status-non-compliant border-red-500/30 text-red-400 bg-red-500/10'}`}><span class="w-1.5 h-1.5 rounded-full" style={`background:${isOk?'#D4AF37':'#f87171'}`}></span>{log.status}</span></span><span class="mono text-[11px] text-slate-600 text-right">{proof}</span></div>;
+        }):<div class="data-grid-row"><span class="text-slate-600 mono text-xs px-6 py-4">Awaiting D1 telemetry flux…</span></div>}
+        <div class="px-6 py-3 mono text-[10px] text-slate-600 flex items-center gap-2 border-t border-white/5 bg-black/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-gold animate-pulse shadow-[0_0_8px_#D4AF37]"></span>SOVEREIGN NODE · Cloudflare D1 · {new Date().toISOString().slice(11,19)} UTC
         </div>
       </div>
     </section>
 
-    <!-- PRICING -->
-    <section id="pricing" class="py-32 border-t border-slate-900/50 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03),transparent_70%)]">
-      <div class="text-center mb-20">
-        <div class="section-label justify-center">ACQUISITION TIERS · ENTERPRISE DEALS</div>
-        <h2 class="text-4xl md:text-5xl text-white font-extrabold mb-6">Scalable Compliance Packages</h2>
-        <p class="text-slate-400 max-w-xl mx-auto mb-8 font-light">Join the first wave of AI providers securing their regulatory future before the 2026 enforcement deadlines.</p>
-        <div class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 mono text-[11px] text-emerald-400 font-bold">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          INFRASTRUCTURE STATUS: OPERATIONAL
-        </div>
+    <!-- THE AUDIT VAULT (PRICING RE-ARCH) -->
+    <section id="pricing" class="py-40 relative">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05),transparent_70%)]"></div>
+      
+      <div class="text-center mb-24 relative z-10">
+        <div class="section-label justify-center">THE AUDIT VAULT · SOVEREIGN ASSETS</div>
+        <h2 class="text-5xl md:text-7xl text-white font-black italic mb-8">Choose Your Level of<br/><span class="text-gold">Liability Insulation</span></h2>
+        <p class="text-slate-400 max-w-2xl mx-auto mb-10 text-lg font-light tracking-tight">Sentinel is not just a tool—it's your <span class="text-white font-medium">Regulatory Shield</span>. Select the vault tier that matches your deployment scale.</p>
         
-        <!-- Trust Badge -->
-        <div class="mt-8 flex items-center justify-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+        <div class="inline-flex items-center gap-4 px-6 py-3 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-md">
           <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-            <span class="mono text-[10px] uppercase tracking-tighter text-slate-400">Secure Lemon Squeezy Checkout</span>
+            <span class="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
+            <span class="mono text-[10px] font-black text-gold uppercase tracking-widest">Global Edge Protocol active</span>
           </div>
-          <div class="w-px h-4 bg-slate-800"></div>
-          <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.9L10 1.554L17.834 4.9c.4.17.666.546.666.956V11c0 5.234-3.66 9.805-8.5 11-4.84-1.195-8.5-5.766-8.5-11V5.856c0-.41.266-.786.666-.956z" clip-rule="evenodd"></path></svg>
-            <span class="mono text-[10px] uppercase tracking-tighter text-slate-400">EU AI ACT Compliant Logic</span>
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-6 items-stretch">
-        <div class="pricing-card flex-1 group hover:border-emerald-500/30 transition-all duration-500">
-          <div class="mb-6 relative overflow-hidden rounded-2xl aspect-square bg-slate-900/50 border border-slate-800/50 flex items-center justify-center group-hover:bg-emerald-500/5">
-            <img src="/images/developer-plan.png" alt="Sentinel Developer" class="w-4/5 h-4/5 object-contain transition-transform duration-700 group-hover:scale-110" />
-            <div class="absolute inset-0 bg-gradient-to-t from-space/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </div>
-          <h3 class="text-2xl font-bold text-white mb-2">Sentinel Developer</h3>
-          <div class="mono text-[10px] text-slate-500 tracking-widest mb-6 uppercase">Standard Developer Tier</div>
-          <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$0</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
-          <div class="flex items-center gap-2 mb-8"><span class="bg-slate-800/50 text-slate-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-slate-700/50">COMMUNITY ACCESS</span></div>
-          <div class="flex-1">
-            <ul class="space-y-3 mb-10">{["100 Compliance Credits/mo","1-Day Audit History","Standard WASM Engine","Public API Access","JSON Reports"].map(f=><li class="flex items-start gap-3 text-sm text-slate-400"><span class="text-slate-600 shrink-0">✓</span>{f}</li>)}</ul>
-          </div>
-          <a href={LEMON_FREE} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3">Get Developer Tier →</a>
-        </div>
-
-        <div class="pricing-card featured relative border-emerald-500/40 flex-1 group hover:border-emerald-500 transition-all duration-500">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-emerald-500 text-space mono text-[9px] font-black px-4 py-1 rounded-full whitespace-nowrap shadow-lg shadow-emerald-500/20">MOST POPULAR</div>
-          <div class="mb-6 relative overflow-hidden rounded-2xl aspect-square bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/20">
-            <img src="/images/pro-plan.png" alt="Sentinel Pro" class="w-4/5 h-4/5 object-contain transition-transform duration-700 group-hover:scale-110" />
-            <div class="absolute inset-0 bg-gradient-to-t from-space/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </div>
-          <h3 class="text-2xl font-bold text-white mb-2">Sentinel Pro</h3>
-          <div class="mono text-[10px] text-slate-500 tracking-widest mb-6 uppercase">Professional Audit Tier</div>
-          <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$49</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
-          <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-xs">$165</span><span class="bg-emerald-500/10 text-emerald-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">EARLY ADOPTER · 70% OFF</span></div>
-          <div class="flex-1">
-            <ul class="space-y-3 mb-10">{["2,500 Compliance Credits/mo","30-Day D1 Audit History","Deterministic WASM Engine","API Key Provisioning","Premium JSON Reports","Priority Email Support"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span class="text-emerald-400 shrink-0 font-bold">✓</span>{f}</li>)}</ul>
-          </div>
-          <a href={LEMON_PRO} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3 shadow-emerald-500/10">Get Pro Plan →</a>
-        </div>
-
-        <div class="pricing-card flex-1 group hover:border-cyan-500/30 transition-all duration-500">
-          <div class="mb-6 relative overflow-hidden rounded-2xl aspect-square bg-slate-900/50 border border-slate-800/50 flex items-center justify-center group-hover:bg-cyan-500/5">
-            <img src="/images/enterprise-plan.png" alt="Sentinel Enterprise" class="w-4/5 h-4/5 object-contain transition-transform duration-700 group-hover:scale-110" />
-            <div class="absolute inset-0 bg-gradient-to-t from-space/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </div>
-          <h3 class="text-2xl font-bold text-white mb-2">Sentinel Enterprise</h3>
-          <div class="mono text-[10px] text-cyan-400 tracking-widest mb-6 uppercase font-bold">Enterprise Selection</div>
-          <div class="flex items-end gap-2 mb-1"><span class="text-4xl font-black text-white">$299</span><span class="text-slate-500 mb-1 text-sm font-medium">/mo</span></div>
-          <div class="flex items-center gap-2 mb-8"><span class="line-through text-slate-600 mono text-xs">$499</span><span class="bg-cyan-500/10 text-cyan-400 mono text-[9px] font-bold px-2 py-0.5 rounded border border-cyan-500/20">ENTERPRISE PACK</span></div>
-          <div class="flex-1">
-            <ul class="space-y-3 mb-10">{["10,000 Compliance Credits/mo","Unlimited D1 Audit History","Real-time Compliance Webhooks","Article 43 Draft Generator","Audit Manifest Visualizer","SLA 99.9% Uptime"].map(f=><li class="flex items-start gap-3 text-sm text-slate-300"><span style="color:var(--color-cyan);" class="shrink-0 font-bold">✓</span>{f}</li>)}</ul>
-          </div>
-          <a href={LEMON_ENTERPRISE} class="lemonsqueezy-button btn-emerald w-full !justify-center !py-3">Get Enterprise Plan →</a>
-          <a href="mailto:office@gettingsentinel.com?subject=Enterprise%20Licensing" class="mt-4 block text-center mono text-[9px] text-slate-500 hover:text-emerald-400">Request Invoice / Pay by Bank &rarr;</a>
+          <div class="w-px h-4 bg-white/10"></div>
+          <span class="mono text-[10px] text-slate-500 uppercase tracking-widest">EU AI ACT V1.2.4 COMPLIANT</span>
         </div>
       </div>
 
+      <div class="flex flex-col lg:flex-row gap-10 max-w-7xl mx-auto px-6 items-stretch relative z-10">
+        <!-- SINGLE PASS VAULT -->
+        <div class="pricing-card flex-1 group hover:border-gold/50 transition-all duration-700 border border-white/5 bg-obsidian/60 backdrop-blur-2xl p-10 rounded-[40px] flex flex-col relative shadow-2xl overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
+          <span class="absolute top-6 left-10 mono text-[9px] font-black text-gold/40 tracking-[.3em] uppercase italic">Entry Protocol</span>
+          
+          <div class="mt-8 mb-10 flex items-center justify-center p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+            <div class="text-6xl group-hover:scale-110 transition-transform duration-500">🔑</div>
+          </div>
+          
+          <h3 class="text-3xl font-black text-white mb-2 italic uppercase">The Swift Key</h3>
+          <p class="text-slate-500 text-sm mb-6 font-medium tracking-tight">One-time compliance fix for immediate release.</p>
+          
+          <div class="flex items-end gap-2 mb-8">
+            <span class="text-5xl font-black text-gold tracking-tighter">$99</span>
+            <span class="text-slate-500 mb-1.5 text-xs font-bold uppercase tracking-widest">/ Access Code</span>
+          </div>
+          
+          <div class="flex-1">
+            <ul class="space-y-4 mb-12">
+              {["Industrial Audit Diagnostic","Cryptographic Technical File","Article 11 Conformity Proof","Single Model Activation","$500 Enterprise Upgrade Credit"].map(f=><li class="flex items-start gap-4 text-sm text-slate-300 font-medium tracking-tight"><span class="text-gold shrink-0">✓</span>{f}</li>)}
+            </ul>
+          </div>
+          
+          <a href={LEMON_PRO} class="px-8 py-5 bg-white/5 border border-white/10 text-white font-black rounded-2xl text-xs uppercase tracking-[.2em] text-center hover:bg-gold hover:text-obsidian transition-all shadow-xl shadow-black">Initialize Key Extraction →</a>
+        </div>
+
+        <!-- STANDARD PRO VAULT -->
+        <div class="pricing-card flex-1 group hover:border-gold transition-all duration-700 border-2 border-gold/30 bg-gold/[0.03] backdrop-blur-3xl p-10 rounded-[40px] flex flex-col relative shadow-[0_0_50px_rgba(212,175,55,0.1)]">
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold text-obsidian px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[.3em] shadow-lg shadow-gold/20 italic animate-pulse">Continuous Shield</div>
+          
+          <div class="mt-8 mb-10 flex items-center justify-center p-8 rounded-3xl bg-gold/10 border border-gold/20">
+            <div class="text-6xl group-hover:scale-110 transition-transform duration-500">🛡️</div>
+          </div>
+          
+          <h3 class="text-3xl font-black text-white mb-2 italic uppercase">The Watchtower</h3>
+          <p class="text-slate-400 text-sm mb-6 font-medium tracking-tight">Active monitoring for high-frequency AI delivery.</p>
+          
+          <div class="flex items-end gap-2 mb-8">
+            <span class="text-5xl font-black text-white tracking-tighter">$299</span>
+            <span class="text-slate-500 mb-1.5 text-xs font-bold uppercase tracking-widest">/ Node Monthly</span>
+          </div>
+          
+          <div class="flex-1">
+            <ul class="space-y-4 mb-12">
+              {["Continuous CI/CD Integrity Scans","Automated Regulatory Patching","Real-time Legal Drift Alerts","Monthly Recertification Proofs","Tier 1 Response Protocol"].map(f=><li class="flex items-start gap-4 text-sm text-white font-bold tracking-tight"><span class="text-gold shrink-0 italic">★</span>{f}</li>)}
+            </ul>
+          </div>
+          
+          <a href={LEMON_ENTERPRISE} class="px-8 py-5 bg-gold text-obsidian font-black rounded-2xl text-xs uppercase tracking-[.2em] text-center hover:scale-105 transition-all shadow-2xl shadow-gold/10">Activate Continuous Guard →</a>
+        </div>
+
+        <!-- REGULATORY SHIELD VAULT -->
+        <div class="pricing-card flex-1 group hover:border-white transition-all duration-700 border border-white/10 bg-black/60 backdrop-blur-2xl p-10 rounded-[40px] flex flex-col relative shadow-2xl">
+          <span class="absolute top-6 left-10 mono text-[9px] font-black text-slate-500 tracking-[.3em] uppercase">Enterprise Anchor</span>
+          
+          <div class="mt-8 mb-10 flex items-center justify-center p-8 rounded-3xl bg-white/[0.05] border border-white/10">
+            <div class="text-6xl group-hover:scale-110 transition-transform duration-500">⚓</div>
+          </div>
+          
+          <h3 class="text-4xl font-black text-white mb-2 italic uppercase">The Fortress</h3>
+          <p class="text-slate-500 text-sm mb-6 font-medium tracking-tight">Total liability transfer & industrial coverage.</p>
+          
+          <div class="flex items-end gap-2 mb-8">
+            <span class="text-4xl font-light text-slate-500 tracking-tight">From</span>
+            <span class="text-5xl font-black text-white tracking-tighter">$4,999</span>
+            <span class="text-slate-500 mb-1.5 text-[10px] font-bold uppercase tracking-widest">/ Entry Point</span>
+          </div>
+          
+          <div class="flex-1">
+            <ul class="space-y-4 mb-12">
+              {["Full Art. 11 & 43 Automated Files","Signed Industrial Conformity Cert","Signed Liability Indemnification","Direct PO & Procurement Support","Dedicated AI Safety Lead"].map(f=><li class="flex items-start gap-4 text-sm text-slate-400 font-medium tracking-tight"><span class="text-white shrink-0">✓</span>{f}</li>)}
+            </ul>
+          </div>
+          
+          <button onclick="generateProforma()" class="px-8 py-6 bg-white text-obsidian font-black rounded-2xl text-[10px] uppercase tracking-[.3em] text-center hover:bg-gold transition-all shadow-2xl">Request Proforma & Pause Decay →</button>
+          <p class="mt-4 text-center mono text-[8px] text-slate-600 font-black tracking-widest uppercase">Strict Corporate Domain Verification Required</p>
+        </div>
+      </div>
     </section>
 
-    <!-- INDUSTRY SOLUTIONS HUB -->
-    <section class="py-32 border-t border-slate-900/50">
-      <div class="text-center mb-16">
+    <!-- INDUSTRY SOLUTIONS HUB (SOVEREIGN) -->
+    <section class="py-32 border-t border-white/5">
+      <div class="text-center mb-20">
         <div class="section-label justify-center">SOLUTIONS HUB</div>
-        <h2 class="text-4xl text-white font-extrabold mb-4">Industrial-Grade Integrity</h2>
-        <p class="text-slate-400 max-w-lg mx-auto font-light">Custom audit workflows tailored to the specific risk profiles of your regulated sector.</p>
+        <h2 class="text-5xl text-white font-black italic mb-6">Industrial-Grade Integrity</h2>
+        <p class="text-slate-400 max-w-xl mx-auto font-light text-lg">Custom audit workflows tailored to the specific risk profiles of your regulated sector.</p>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
         {[{slug:"finance",label:"Finance",icon:"🏦",desc:"MiFID II & AI Act"},{slug:"healthcare",label:"Healthcare",icon:"🏥",desc:"MDR & patient safety"},{slug:"retail",label:"Retail",icon:"🛒",desc:"Profiling AI regulation"},{slug:"government",label:"Government",icon:"🏛️",desc:"Public sector AI"},{slug:"saas",label:"SaaS",icon:"☁️",desc:"Multi-tenant audit isolation"}].map(uc=>(
-          <a href={`/use-cases/${uc.slug}`} class="glass p-6 rounded-2xl text-center hover:border-emerald-500/30 transition-all group block">
-            <div class="text-3xl mb-3 group-hover:scale-110 transition-transform">{uc.icon}</div>
-            <div class="font-bold text-slate-200 text-sm mb-1">{uc.label}</div>
-            <div class="mono text-[10px] text-slate-500">{uc.desc}</div>
+          <a href={`/use-cases/${uc.slug}`} class="glass p-8 rounded-3xl text-center border-white/5 hover:border-gold/30 transition-all group block bg-obsidian/40">
+            <div class="text-4xl mb-5 group-hover:scale-110 transition-transform duration-500">{uc.icon}</div>
+            <div class="font-black text-white text-sm mb-2 italic uppercase tracking-wider">{uc.label}</div>
+            <div class="mono text-[9px] text-gold/40">{uc.desc}</div>
           </a>
         ))}
       </div>
@@ -443,67 +514,150 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
 
   </main>
 
-  <!-- FOOTER WITH TRUST ARCHITECTURE -->
-  <footer class="border-t border-slate-900 mt-12">
-    <div class="border-b border-slate-900/50 py-6">
-      <div class="max-w-screen-xl mx-auto px-6 flex flex-col md:flex-row items-center justify-center gap-8">
-        <div class="mono text-[9px] text-slate-600 tracking-widest uppercase hidden md:block">SECURITY & PRIVACY</div>
+  <!-- FOOTER WITH SOVEREIGN TRUST ARCHITECTURE -->
+  <footer class="border-t border-white/5 mt-32 bg-obsidian/40 backdrop-blur-3xl">
+    <div class="border-b border-white/5 py-12">
+      <div class="max-w-screen-xl mx-auto px-6 grid md:grid-cols-3 gap-12 text-center md:text-left">
         {[
-          {icon:"🔐",label:"WASM Encrypted",sub:"In-process execution, zero data exfiltration"},
-          {icon:"☁️",label:"Cloudflare Protected",sub:"DDoS mitigation + Edge WAF on every request"},
-          {icon:"📋",label:"Art. 12 Validated",sub:"Automated logging per EU AI Act standard"},
+          {icon:"🔐",label:"WASM-Sovereign",sub:"Isolated edge execution, zero data egress"},
+          {icon:"🏢",label:"B2B Procurement",sub:"Instant proforma & technical file escrow"},
+          {icon:"⚖️",label:"EU Regulatory Shield",sub:"Art. 11/12 compliant traceability"}
         ].map(t=>(
-          <div class="flex items-center gap-3 glass px-5 py-3 rounded-xl">
-            <span class="text-lg">{t.icon}</span>
+          <div class="flex items-center gap-5 glass p-6 rounded-[30px] border-white/5 hover:border-gold/20 transition-all">
+            <span class="text-3xl bg-gold/10 p-4 rounded-2xl">{t.icon}</span>
             <div>
-              <div class="mono text-[10px] font-bold text-slate-300 tracking-wide">{t.label}</div>
-              <div class="mono text-[9px] text-slate-600 mt-0.5">{t.sub}</div>
+              <div class="mono text-[11px] font-black text-white italic tracking-[.2em] uppercase mb-1">{t.label}</div>
+              <div class="mono text-[9px] text-slate-500 uppercase tracking-widest">{t.sub}</div>
             </div>
           </div>
         ))}
       </div>
     </div>
-    <div class="max-w-screen-xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="flex items-center gap-3">
-        <div class="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center text-space font-black text-xs">S</div>
-        <div class="flex flex-col">
-          <span class="mono text-xs text-slate-200">SENTINEL V7.6 · EU AI ACT COMPLIANCE</span>
-          <span class="mono text-[9px] text-emerald-400 mt-0.5">System Status: Operational | Onboarding: Manual Selection (44/50 left)</span>
+    <div class="max-w-screen-xl mx-auto px-6 py-20 flex flex-col md:flex-row justify-between items-start gap-16">
+      <div class="flex flex-col gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gold flex items-center justify-center text-obsidian font-black text-lg italic shadow-xl shadow-gold/10">S</div>
+          <div class="flex flex-col">
+            <span class="text-white font-black italic tracking-tighter uppercase text-xl">SENTINEL</span>
+            <span class="mono text-[10px] text-gold/40 font-black tracking-widest uppercase italic">The Regulatory Operating System</span>
+          </div>
+        </div>
+        <div class="max-w-xs mono text-[9px] text-slate-600 leading-relaxed uppercase tracking-widest italic">
+          Sentinel is the industry-standard deterministic audit layer for Sovereign AI deployments. Regulated under EU Regulation 2024/1689.
         </div>
       </div>
-      <div class="flex gap-8 mono text-[10px] text-slate-600 tracking-wider uppercase">
-        <a href="https://github.com/MOXO08/sentinel-example-ai-app/wiki" class="hover:text-emerald-400 transition-colors font-bold text-emerald-500">TECHNICAL WIKI</a>
-        <a href="/integrity-console" class="hover:text-emerald-400 transition-colors">AUDIT VERIFY</a>
-        <a href="/compliance"       class="hover:text-emerald-400 transition-colors">COMPLIANCE</a>
-        <a href="/onboarding"       class="hover:text-emerald-400 transition-colors">ONBOARDING</a>
-        <a href="/legal/terms"      class="hover:text-emerald-400 transition-colors">TERMS OF SERVICE</a>
-        <a href="/sitemap.xml"      class="hover:text-emerald-400 transition-colors">SITEMAP</a>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-12">
+        <div>
+          <div class="mono text-[10px] font-black text-white mb-6 uppercase tracking-[.3em] italic">Protocol</div>
+          <div class="flex flex-col gap-4 mono text-[10px] text-slate-500">
+            <a href="/integrity-console" class="hover:text-gold transition-colors">Audit Verify</a>
+            <a href="/technical-file" class="hover:text-gold transition-colors">Technical ESCROW</a>
+            <a href="/compliance" class="hover:text-gold transition-colors">EU AI Act Map</a>
+          </div>
+        </div>
+        <div>
+          <div class="mono text-[10px] font-black text-white mb-6 uppercase tracking-[.3em] italic">Corporate</div>
+          <div class="flex flex-col gap-4 mono text-[10px] text-slate-500">
+            <a href="/pricing" class="hover:text-gold transition-colors">Vault Tiers</a>
+            <a href="/onboarding" class="hover:text-gold transition-colors">Enterprise Onboarding</a>
+            <a href="mailto:office@gettingsentinel.com" class="hover:text-gold transition-colors">Contact Expert</a>
+          </div>
+        </div>
+        <div>
+          <div class="mono text-[10px] font-black text-white mb-6 uppercase tracking-[.3em] italic">Security</div>
+          <div class="flex flex-col gap-4 mono text-[10px] text-slate-500">
+            <a href="/legal/terms" class="hover:text-gold transition-colors">Industrial TOS</a>
+            <a href="/legal/privacy" class="hover:text-gold transition-colors">Zero-Egress Policy</a>
+            <a href="/status" class="flex items-center gap-2 text-gold/60"><span class="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></span> SYSTEM OPERATIONAL</a>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="max-w-screen-xl mx-auto px-6 py-8 border-t border-white/5 flex justify-between items-center bg-black/40">
+      <div class="mono text-[8px] text-slate-700 tracking-[.4em] font-black uppercase italic">© 2026 SENTINEL TECHNOLOGIES · V8.5 SOVEREIGN RELEASE</div>
+      <div class="flex gap-6 mono text-[8px] text-slate-700 font-black tracking-widest uppercase italic">
+        <span>ISO 27001 Ready</span>
+        <span>SOC2 compliance path active</span>
+      </div>
+    </div>
+    <div class="h-2 w-full bg-gradient-to-r from-obsidian via-gold to-obsidian opacity-20"></div>
   </footer>
 
-  <!-- VERIFIED BY SENTINEL FLOATING BADGE -->
-  <a href="/integrity-console" class="fixed bottom-6 right-6 z-50 glass rounded-2xl p-4 border-emerald-500/30 shadow-2xl cursor-pointer hover:border-emerald-500/60 transition-all group max-w-xs no-underline block">
-    <div class="flex items-start gap-3">
-      <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
-        <span class="text-emerald-400 font-black text-sm">S</span>
+  <!-- SOVEREIGN FLOATING TRUST BADGE -->
+  <a href="/integrity-console" class="fixed bottom-10 right-10 z-[1000] glass rounded-[20px] p-5 border-gold/30 shadow-2xl cursor-pointer hover:border-gold transition-all group max-w-xs no-underline block bg-obsidian/80 backdrop-blur-2xl">
+    <div class="flex items-start gap-4">
+      <div class="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+        <span class="text-gold font-black text-base italic">S</span>
       </div>
       <div class="flex-1">
-        <div class="flex items-center gap-2 mb-1">
-          <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
-          <span class="mono text-[10px] font-bold text-emerald-400 tracking-wider">VERIFIED BY SENTINEL</span>
+        <div class="flex items-center gap-2 mb-1.5">
+          <div class="w-2 h-2 rounded-full bg-gold animate-pulse shadow-[0_0_8px_#D4AF37]"></div>
+          <span class="mono text-[9px] font-black text-gold tracking-[.4em] uppercase italic">Sovereign Proof Validated</span>
         </div>
-        <div class="mono text-[11px] text-white font-bold" id="badge-count">{totalAudits.toLocaleString()} reads audited live</div>
-        <div class="mono text-[9px] text-slate-500 mt-1 group-hover:text-emerald-400 transition-colors">Click to Verify Integrity →</div>
+        <div class="mono text-xs text-white font-black italic tracking-tight" id="badge-count">{totalAudits.toLocaleString()} READS AUDITED LIVE</div>
+        <div class="mono text-[8px] text-slate-600 mt-2 group-hover:text-gold transition-colors uppercase tracking-widest font-black italic">Click to Inspect Vault →</div>
       </div>
     </div>
   </a>
 
 
 
+  <!-- PROFORMA VAULT MODAL (SOVEREIGN) -->
+  <div id="proforma-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center bg-obsidian/95 backdrop-blur-2xl px-6">
+    <div class="glass max-w-xl w-full p-12 rounded-[40px] border-gold/20 relative shadow-2xl bg-black/40">
+      <button onclick="this.closest('#proforma-modal').style.display='none'" class="absolute top-8 right-8 text-slate-600 hover:text-white transition-colors text-xl">✕</button>
+      <div class="section-label mb-8">B2B PROCUREMENT PROTOCOL X-8-82</div>
+      <h2 class="text-4xl font-black text-white mb-6 italic uppercase tracking-tighter">Instant Vault Proforma<br/><span class="text-gold tracking-widest">#PF-2026-X8</span></h2>
+      <p class="text-slate-400 text-base leading-relaxed mb-10 font-light tracking-tight">
+        Initialize pre-approved invoice extraction for your procurement department. 
+        <br/><br/>
+        <strong class="text-white italic">PROTOCOL STATUS:</strong> Confirmation triggers an immediate <span class="text-gold font-black italic underline decoration-gold/30">PAUSE</span> on Technical File Decay for 72 hours. Your industrial data sovereignty is guaranteed.
+      </p>
+      <div class="space-y-6">
+        <div class="p-6 bg-white/[0.02] rounded-3xl border border-white/5 flex items-center justify-between">
+          <span class="mono text-[10px] text-slate-600 uppercase tracking-widest font-black">Industrial Floor</span>
+          <span class="mono text-xl text-white font-black italic">$4,999.00 USD</span>
+        </div>
+        <button id="proforma-gen-btn" class="w-full py-6 bg-white text-obsidian font-black rounded-2xl text-[11px] uppercase tracking-[.4em] shadow-2xl hover:bg-gold transition-all">Extract & Freeze Vault Clock →</button>
+        <p class="text-center mono text-[8px] text-slate-700 font-black tracking-widest uppercase">Valid for Bank Protocol (SEPA/SWIFT) only.</p>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <script is:inline>
+async function generateProforma() {
+  const modal = document.getElementById('proforma-modal');
+  const btn = document.getElementById('proforma-gen-btn');
+  const auditId = "88X2"; // This would be dynamic in a real app or pulled from URL/localstorage/session
+  
+  const email = prompt("Enter your CORPORATE email for Proforma Invoice generation:");
+  if (!email || !email.includes("@")) return;
+
+  btn.disabled = true;
+  btn.textContent = "GENERATING PDF & PAUSING CLOCK...";
+
+  try {
+    const res = await fetch(`https://sentinel-api.pages.dev/api/pause-decay?id=${auditId}&email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+
+    if (res.ok) {
+      alert(`✅ Proforma #PF-2026-88X2 generated!\n\nTechnical File Decay has been PAUSED for 72 hours.\nYour audit data is secured. Check ${email} for the document.`);
+      window.location.reload();
+    } else {
+      alert(`⚠️ ERROR: ${data.message || 'Failed to pause decay'}`);
+    }
+  } catch (err) {
+    alert("❌ Network Error: Could not connect to Sentinel API.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Generate & Freeze Audit Clock →";
+  }
+}
+
+// Attach event listener to the button
+document.getElementById('proforma-gen-btn')?.addEventListener('click', generateProforma);
+
 (function(){
   const rev=document.getElementById('calc-revenue'),cat=document.getElementById('calc-category'),pen=document.getElementById('calc-penalty'),det=document.getElementById('calc-detail'),cta=document.getElementById('calc-cta-amount');
   function fmt(n){return'€'+Math.round(n).toLocaleString('de-DE');}

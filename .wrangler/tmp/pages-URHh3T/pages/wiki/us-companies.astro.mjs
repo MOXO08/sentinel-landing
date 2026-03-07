@@ -1,6 +1,6 @@
 globalThis.process ??= {}; globalThis.process.env ??= {};
-import { e as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../../chunks/astro/server_C0THm8nM.mjs';
-import { $ as $$Layout } from '../../chunks/Layout_BgZ1aDSE.mjs';
+import { e as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../../chunks/astro/server_CGa7oeTl.mjs';
+import { $ as $$Layout } from '../../chunks/Layout_Do7llZzW.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const $$UsCompanies = createComponent(($$result, $$props, $$slots) => {

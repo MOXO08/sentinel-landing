@@ -1,5 +1,5 @@
 globalThis.process ??= {}; globalThis.process.env ??= {};
-import { e as createComponent, r as renderTemplate, l as renderHead, h as createAstro } from '../chunks/astro/server_C0THm8nM.mjs';
+import { e as createComponent, r as renderTemplate, l as renderHead, h as createAstro } from '../chunks/astro/server_CGa7oeTl.mjs';
 /* empty css                                 */
 export { renderers } from '../renderers.mjs';
 
@@ -27,7 +27,9 @@ const $$Index = createComponent(async ($$result, $$props, $$slots) => {
 Generate audit-grade PDF reports including:
 <br data-astro-cid-y55gmoyq>&bull; <strong data-astro-cid-y55gmoyq>Immutable Audit UUID</strong> (from Edge)
 <br data-astro-cid-y55gmoyq>&bull; <strong data-astro-cid-y55gmoyq>Cloudflare-Native Timestamp</strong> <br data-astro-cid-y55gmoyq>&bull; <strong data-astro-cid-y55gmoyq>Ruleset Version:</strong> 2026-Q1.1
-<br data-astro-cid-y55gmoyq>&bull; <strong data-astro-cid-y55gmoyq>Diagnostic Verdict</strong> </p> <button class="btn-copy" style="width:100%;background:#39d0dc;color:#0a0d12;padding:12px;margin-bottom:12px" onclick="alert('Feature coming soon for Pro B2B accounts.')" data-astro-cid-y55gmoyq>
+<br data-astro-cid-y55gmoyq>&bull; <strong data-astro-cid-y55gmoyq>Diagnostic Verdict</strong> </p> <button class="btn-copy" style="width:100%;background:#39d0dc;color:#0a0d12;padding:12px;margin-bottom:12px" onclick="window.location='/dashboard/data-health'" data-astro-cid-y55gmoyq>
+View Enterprise Data Health (Art. 10) &rarr;
+</button> <button class="btn-copy" style="width:100%;background:transparent;border:1px solid #21262d;color:#7d8590;padding:12px;margin-bottom:12px" onclick="alert('Feature coming soon for Pro B2B accounts.')" data-astro-cid-y55gmoyq>
 Download Latest Report (PDF)
 </button> <hr style="border:0;border-top:1px solid #21262d;margin:20px 0" data-astro-cid-y55gmoyq> <h2 style="font-size:0.8rem" data-astro-cid-y55gmoyq>Subscription & Billing</h2> <a href="https://radumuresanu.lemonsqueezy.com/billing" class="stripe-btn" style="width:100%;text-align:center" data-astro-cid-y55gmoyq>
 &#x1F4CB; Manage Subscription & Billing &rarr;
