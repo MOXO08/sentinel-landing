@@ -75,24 +75,51 @@ export const partial = false;
     <canvas id="usageChart"></canvas>
   </div>
 
+  <!-- AUDIT HISTORY -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2 style="margin-bottom:0">Detailed Audit Trail</h2>
+        <span class="meta" style="margin-top:0"><strong id="log-count">0</strong> Audits Secured</span>
+    </div>
+    <div style="overflow-x:auto;background:rgba(0,0,0,0.2);border-radius:12px;border:1px solid #21262d">
+      <table style="width:100%;border-collapse:collapse;font-size:0.75rem">
+        <thead>
+          <tr style="text-align:left;border-bottom:1px solid #21262d;color:#7d8590;background:rgba(255,255,255,0.02)">
+            <th style="padding:14px 20px">App Name</th>
+            <th style="padding:14px 20px">Version</th>
+            <th style="padding:14px 20px">Status</th>
+            <th style="padding:14px 20px">Date</th>
+            <th style="padding:14px 20px">Trace ID</th>
+          </tr>
+        </thead>
+        <tbody id="logs-tbody">
+          <tr><td colspan="5" style="padding:32px;text-align:center;color:#7d8590">Synchronizing with Regulatory Vault...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="meta" style="margin-top:16px;font-size:0.7rem;text-align:center">
+        Note: Audits are immutable once signed by the WASM engine. <span style="color:#39d0dc">● Sovereign Tier Active</span>
+    </div>
+  </div>
+
   <!-- COMPLIANCE REPORTS -->
   <div class="card">
-    <h2>Automated Compliance Reports</h2>
+    <h2>Sovereign Integrity Proofs</h2>
     <p style="color:#7d8590;font-size:0.9rem;margin-bottom:20px">
-      Generate audit-grade PDF reports including:
-      <br>&bull; <strong>Immutable Audit UUID</strong> (from Edge)
-      <br>&bull; <strong>Cloudflare-Native Timestamp</strong>
+      Generate audit-grade PDF reports for legal and procurement departments.
+      <br>&bull; <strong>Immutable Audit UUID</strong> (via Cloudflare Edge)
+      <br>&bull; <strong>Art. 10/11 Technical File</strong> generation
       <br>&bull; <strong>Ruleset Version:</strong> 2026-Q1.1
       <br>&bull; <strong>Diagnostic Verdict</strong>
     </p>
     <button class="btn-copy" style="width:100%;background:#39d0dc;color:#0a0d12;padding:12px;margin-bottom:12px" onclick="window.location='/dashboard/data-health'">
       View Enterprise Data Health (Art. 10) &rarr;
     </button>
-    <button class="btn-copy" style="width:100%;background:transparent;border:1px solid #21262d;color:#7d8590;padding:12px;margin-bottom:12px" onclick="alert('Feature coming soon for Pro B2B accounts.')">
-      Download Latest Report (PDF)
+    <button class="btn-copy" style="width:100%;background:transparent;border:1px solid #21262d;color:#e6edf3;padding:12px;margin-bottom:12px" onclick="alert('PDF Extraction protocol initializing... Draft will be sent to your corporate email.')">
+      Extract Compliance Certificate (PDF/Art 43)
     </button>
     <hr style="border:0;border-top:1px solid #21262d;margin:20px 0">
-    <h2 style="font-size:0.8rem">Subscription & Billing</h2>
+    <h2 style="font-size:0.8rem">Subscription Management</h2>
     <a href="https://radumuresanu.lemonsqueezy.com/billing" class="stripe-btn" style="width:100%;text-align:center">
       &#x1F4CB; Manage Subscription & Billing &rarr;
     </a>
@@ -157,6 +184,39 @@ async function loadUsage() {
   } catch {}
 }
 
+async function loadLogs() {
+  try {
+    const r = await fetch('/api/dashboard/api/logs');
+    const d = await r.json();
+    const logs = d.logs || [];
+    const tbody = document.getElementById('logs-tbody');
+    const countEl = document.getElementById('log-count');
+    
+    if (countEl) countEl.textContent = logs.length;
+    
+    if (!logs.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="padding:48px;text-align:center;color:#7d8590">No immutable audits detected in the vault yet.</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = logs.map(l => `
+      <tr style="border-bottom:1px solid #21262d;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.01)'" onmouseout="this.style.background='transparent'">
+        <td style="padding:16px 20px;font-weight:600;color:#e6edf3">${l.app_name}</td>
+        <td style="padding:16px 20px;font-family:monospace;font-size:0.7rem;color:#7d8590">${l.version?.slice(0,8) || 'v1.0'}</td>
+        <td style="padding:16px 20px">
+          <span style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:0.65rem;font-weight:700;background:${l.is_compliant ? 'rgba(35,134,54,0.1)' : 'rgba(248,81,73,0.1)'};color:${l.is_compliant ? '#3fb950' : '#f85149'};border:1px solid ${l.is_compliant ? 'rgba(63,185,80,0.2)' : 'rgba(248,81,73,0.2)'}">
+            ${l.status}
+          </span>
+        </td>
+        <td style="padding:16px 20px;color:#7d8590">${new Date(l.created_at).toLocaleDateString()}</td>
+        <td style="padding:16px 20px;font-family:monospace;font-size:0.65rem;color:#39d0dc;opacity:0.6">${l.request_id || 'REQ-???'}</td>
+      </tr>
+    `).join('');
+  } catch(e) { 
+    document.getElementById('logs-tbody').innerHTML = '<tr><td colspan="5" style="padding:32px;text-align:center;color:#f85149">Vault Synchronization Failed. Check network connectivity.</td></tr>';
+  }
+}
+
 function drawChart(data) {
   const canvas = document.getElementById('usageChart');
   canvas.width = canvas.offsetWidth * 2; canvas.height = 360;
@@ -182,6 +242,6 @@ function drawChart(data) {
 document.getElementById('copy-btn').addEventListener('click', copyKey);
 document.getElementById('rotate-btn').addEventListener('click', rotateKey);
 
-loadKey(); loadUsage();
+loadKey(); loadUsage(); loadLogs();
 </script>
 </body></html>

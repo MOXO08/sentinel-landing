@@ -198,5 +198,23 @@ export const GET: APIRoute = async ({ request, locals, params }) => {
         });
     }
 
+    if (path === 'api/logs') {
+        if (!env.DB || !client) {
+            return new Response(JSON.stringify({ logs: [] }), { status: 200 });
+        }
+
+        const result = await env.DB.prepare(
+            `SELECT app_name, version, status, is_compliant, triggered_rules, created_at, request_id, cli_version 
+             FROM audit_logs 
+             WHERE client_id = ? 
+             ORDER BY created_at DESC LIMIT 50`
+        ).bind(client.id).all();
+
+        return new Response(JSON.stringify({ logs: result.results || [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     return new Response('Not Found', { status: 404 });
 };
