@@ -25,8 +25,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     };
 
     try {
-        const body = await request.json() as { email?: string; plan?: string; turnstileToken?: string };
+        const body = await request.json() as { email?: string; plan?: string; company?: string; role?: string; audit_id?: string; turnstileToken?: string };
         const email = body?.email?.trim().toLowerCase();
+        const company = body?.company?.trim();
+        const role = body?.role?.trim();
+        const auditId = body?.audit_id?.trim();
         const ip = request.headers.get('CF-Connecting-IP') || '0.0.0.0';
 
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -57,29 +60,34 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const ts = new Date().toISOString();
 
         if (env?.DB) {
+            // Updated schema for B2B Monetization Phase 1
             await env.DB.prepare(`
                 CREATE TABLE IF NOT EXISTS reservations (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     email TEXT NOT NULL,
                     plan TEXT NOT NULL DEFAULT 'founder',
+                    company TEXT,
+                    role TEXT,
+                    audit_id_ref TEXT,
                     country TEXT,
                     ip TEXT,
                     created_at TEXT NOT NULL
                 )
             `).run();
 
-            const existing = (await env.DB.prepare(
-                `SELECT id FROM reservations WHERE email = ?1`
-            ).bind(email).first()) as { id: number } | null;
+            // Attempt migration if columns missing (non-destructive)
+            try {
+                await env.DB.prepare("ALTER TABLE reservations ADD COLUMN company TEXT").run();
+                await env.DB.prepare("ALTER TABLE reservations ADD COLUMN role TEXT").run();
+                await env.DB.prepare("ALTER TABLE reservations ADD COLUMN audit_id_ref TEXT").run();
+            } catch (e) { /* already exists */ }
 
-            if (!existing) {
-                await env.DB.prepare(
-                    `INSERT INTO reservations (email, plan, country, ip, created_at) VALUES (?1, ?2, ?3, ?4, ?5)`
-                ).bind(email, plan, country, ip, ts).run();
-            }
+            await env.DB.prepare(
+                `INSERT INTO reservations (email, plan, company, role, audit_id_ref, country, ip, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)`
+            ).bind(email, plan, company, role, auditId, country, ip, ts).run();
         }
 
-        return new Response(JSON.stringify({ ok: true, message: 'Reservation logged.', ts }), {
+        return new Response(JSON.stringify({ ok: true, message: 'Lead captured.', ts }), {
             status: 200, headers: cors,
         });
     } catch (err: any) {
