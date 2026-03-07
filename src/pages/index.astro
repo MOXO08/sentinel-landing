@@ -50,9 +50,9 @@ const getCheckoutUrl = (id: string | undefined, defaultId: string) => {
   return finalId.startsWith('http') ? finalId : `https://radumuresanu.lemonsqueezy.com/checkout/buy/${finalId}?embed=1`;
 };
 
-const LEMON_SWIFT      = getCheckoutUrl(env?.LEMON_SWIFT,     "873708");
-const LEMON_WATCHTOWER  = getCheckoutUrl(env?.LEMON_WATCHTOWER, "868655");
-const LEMON_FORTRESS    = getCheckoutUrl(env?.LEMON_FORTRESS,   "868657");
+const LEMON_SWIFT      = getCheckoutUrl(env?.LEMON_SWIFT,     "4fb0f242-90ec-4465-9fbe-78d474022bac");
+const LEMON_WATCHTOWER  = getCheckoutUrl(env?.LEMON_WATCHTOWER, "aefa17e9-7794-44c0-bf3f-65b1a93c5182");
+const LEMON_FORTRESS    = getCheckoutUrl(env?.LEMON_FORTRESS,   "2af0bd06-7319-4390-91d4-397998ab012b");
 
 // LANDING PAGE CACHE: 1 minute
 Astro.response.headers.set('Cache-Control', 'public, max-age=60');
