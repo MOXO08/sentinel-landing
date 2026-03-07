@@ -653,6 +653,19 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
       </div>
     </div>
   </div>
+  <!-- FLOATING URGENCY BANNER (MONETIZATION PHASE 2) -->
+  <div id="urgency-banner" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] hidden items-center gap-6 px-8 py-4 bg-gold text-obsidian rounded-2xl shadow-[0_20px_60px_rgba(212,175,55,0.4)] animate-bounce-slow">
+    <div class="flex flex-col">
+       <span class="mono text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Global Audit Velocity</span>
+       <span class="mono text-sm font-black italic">842 AUDITS / HOUR</span>
+    </div>
+    <div class="h-8 w-px bg-obsidian/10"></div>
+    <div class="flex flex-col">
+       <span class="mono text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Sovereign Slots Remaining</span>
+       <span class="mono text-sm font-black italic text-red-700">仅剩 14 SLOTS AVAILABLE</span>
+    </div>
+    <button onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})" class="ml-4 px-6 py-3 bg-obsidian text-white rounded-xl mono text-[9px] font-black uppercase tracking-[0.2em] hover:bg-slate-900 transition-colors">Lock Audit →</button>
+  </div>
 </Layout>
 
 <script is:inline>
@@ -732,6 +745,11 @@ function startMockScan() {
             if (i === logs.length - 1) {
                 setTimeout(() => {
                     results.classList.remove('hidden');
+                    const banner = document.getElementById('urgency-banner');
+                    if (banner) {
+                        banner.classList.remove('hidden');
+                        banner.classList.add('flex');
+                    }
                 }, 500);
             }
         }, log.delay);
