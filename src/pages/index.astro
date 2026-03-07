@@ -416,7 +416,8 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
     </section>
 
     <!-- THE AUDIT VAULT (PRICING RE-ARCH) -->
-    <section id="pricing" class="py-40 relative">
+    <section id="vault" class="py-40 relative">
+      <div id="pricing"></div>
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05),transparent_70%)]"></div>
       
       <div class="text-center mb-24 relative z-10">
@@ -625,6 +626,44 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
   </a>
 
 
+
+  <!-- AUDIT SANDBOX MODAL (SOVEREIGN) -->
+  <div id="audit-sandbox-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center bg-obsidian/95 backdrop-blur-2xl px-6">
+    <div class="glass max-w-2xl w-full p-12 rounded-[40px] border-gold/20 relative shadow-2xl bg-black/40">
+      <button onclick="document.getElementById('audit-sandbox-modal').style.display='none'" class="absolute top-8 right-8 text-slate-600 hover:text-white transition-colors text-xl">✕</button>
+      
+      <div id="sandbox-init" class="text-center py-10">
+        <div class="section-label justify-center mb-8">ZERO-EGRESS COMPLIANCE SANDBOX</div>
+        <h2 class="text-4xl font-black text-white mb-6 italic uppercase tracking-tighter">Initialize <span class="text-gold">Deep Scan</span></h2>
+        <p class="text-slate-400 text-base mb-10">Running the Sentinel engine in your browser's WASM sandbox. Your code never leaves this machine.</p>
+        <button onclick="startMockScan()" class="px-12 py-6 bg-gold text-obsidian font-black rounded-2xl text-[11px] uppercase tracking-[.4em] shadow-2xl hover:scale-105 transition-all">Execute Core Audit →</button>
+      </div>
+
+      <div id="sandbox-running" class="hidden">
+        <div class="flex justify-between items-end mb-4">
+          <div class="mono text-[10px] text-gold font-black uppercase tracking-widest animate-pulse">Scanning Industrial Assets...</div>
+          <div id="scan-pct" class="mono text-xl text-white font-black italic">0%</div>
+        </div>
+        <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden mb-8">
+          <div id="scan-bar" class="h-full bg-gold transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <div id="scan-console" class="bg-black/40 rounded-2xl p-6 border border-white/5 h-48 overflow-y-auto mono text-[10px] text-slate-500 space-y-2 mb-10">
+          <!-- Logs injected here -->
+        </div>
+
+        <div id="sandbox-results" class="hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
+           <div class="p-8 bg-gold/10 border border-gold/30 rounded-3xl mb-10">
+              <div class="flex justify-between items-center mb-4">
+                 <h4 class="text-xl font-bold text-white uppercase italic">Audit Verdict: <span class="text-gold">Sovereign Proof Ready</span></h4>
+                 <div class="px-4 py-2 bg-gold text-obsidian mono text-[10px] font-black rounded-lg">TRUST: 98.4%</div>
+              </div>
+              <p class="text-slate-400 text-sm leading-relaxed mb-6">Article 10 (Data Governance) and Article 13 (Transparency) anomalies detected. Immediate technical file extraction recommended.</p>
+              <button onclick="document.getElementById('audit-sandbox-modal').style.display='none'; document.getElementById('proforma-modal').style.display='flex'" class="w-full py-5 bg-white text-obsidian font-black rounded-xl text-[10px] uppercase tracking-[.4em] hover:bg-gold transition-all">Lock & Extract Technical File →</button>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- PROFORMA VAULT MODAL (SOVEREIGN) -->
   <div id="proforma-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center bg-obsidian/95 backdrop-blur-2xl px-6">
