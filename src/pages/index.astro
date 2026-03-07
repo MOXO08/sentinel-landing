@@ -682,8 +682,6 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
           <input id="proforma-company" type="text" placeholder="Company Name" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white mono text-xs focus:border-gold outline-none" />
           <input id="proforma-role" type="text" placeholder="Your Role (e.g. CTO)" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white mono text-xs focus:border-gold outline-none" />
         </div>
-        <!-- Cloudflare Turnstile bot challenge (Testing key) -->
-        <div class="cf-turnstile" data-sitekey="1X00000000000000000000AA" data-theme="dark" data-size="flexible" id="proforma-turnstile"></div>
       </div>
         <div class="p-6 bg-white/[0.02] rounded-3xl border border-white/5 flex items-center justify-between">
           <span class="mono text-[10px] text-slate-600 uppercase tracking-widest font-black">Industrial Floor</span>
@@ -732,8 +730,7 @@ async function generateProforma() {
       company, 
       role, 
       plan: 'fortress', 
-      audit_id: auditId,
-      turnstileToken: document.querySelector('#proforma-modal [name="cf-turnstile-response"]')?.value || ''
+      audit_id: auditId
     })
   });
     const data = await res.json();
