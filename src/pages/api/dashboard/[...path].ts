@@ -216,5 +216,25 @@ export const GET: APIRoute = async ({ request, locals, params }) => {
         });
     }
 
+    if (path === 'api/audit-detail') {
+        const id = new URL(request.url).searchParams.get('id');
+        if (!id || !env.DB || !client) {
+            return new Response(JSON.stringify({ error: 'Invalid request' }), { status: 400 });
+        }
+
+        // We join to ensure the user owns the audit they are requesting
+        const result = await env.DB.prepare(
+            `SELECT ar.* FROM Audit_Reports ar
+             JOIN audit_logs al ON ar.Repo_ID = al.app_name AND ar.Commit_Hash = al.version
+             WHERE al.request_id = ? AND al.client_id = ?
+             LIMIT 1`
+        ).bind(id, client.id).first();
+
+        return new Response(JSON.stringify(result || { error: 'Not found' }), {
+            status: result ? 200 : 404,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     return new Response('Not Found', { status: 404 });
 };
