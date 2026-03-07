@@ -97,7 +97,16 @@ const schemaFAQ = {
     <!-- Google Fonts: Outfit (UI) + JetBrains Mono (DATA) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    
+    <style is:inline>
+      @keyframes pl-pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(212,175,55,0.7); background: #D4AF37; }
+        100% { box-shadow: 0 0 0 20px rgba(212,175,55,0); background: #003366; }
+      }
+      #pl-logo { animation: pl-pulse 0.9s ease-in-out infinite alternate; }
+      #sentinel-preloader { transition: opacity 0.4s ease, visibility 0.4s ease; }
+    </style>
 
     <!-- JSON-LD: SoftwareApplication -->
     <script type="application/ld+json" set:html={JSON.stringify(schemaApp)} />
@@ -122,27 +131,12 @@ const schemaFAQ = {
     )}
 
     <!-- ── PRELOADER (SOVEREIGN THEME) ───────────────── -->
-    <div id="sentinel-preloader" style="
-      position:fixed;inset:0;z-index:9999;
-      background:#020617;
-      display:flex;align-items:center;justify-content:center;
-      flex-direction:column;gap:16px;
-      transition:opacity 0.4s ease,visibility 0.4s ease;
-    ">
+    <div id="sentinel-preloader" style="position:fixed;inset:0;z-index:9999;background:#020617;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div id="pl-logo" style="
-          width:50px;height:50px;border-radius:14px;
-          background:#D4AF37;
-          display:flex;align-items:center;justify-content:center;
-          font-weight:900;font-size:20px;color:#020617;
-          font-family:'Outfit',sans-serif;
-          box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
-        ">S</div>
-        <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:24px;color:#fff;letter-spacing:-0.03em;">SENTINEL</span>
+        <div id="pl-logo" style="width:50px;height:50px;border-radius:14px;background:#D4AF37;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;color:#020617;font-family:sans-serif;box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);">S</div>
+        <span style="font-family:sans-serif;font-weight:800;font-size:24px;color:#fff;letter-spacing:-0.03em;">SENTINEL</span>
       </div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#475569;letter-spacing:.25em;text-transform:uppercase;" id="pl-status">
-        V8.0 SOVEREIGN ENGINE INITIALIZING…
-      </div>
+      <div style="font-family:monospace;font-size:9px;color:#475569;letter-spacing:.25em;text-transform:uppercase;" id="pl-status">V8.0 SOVEREIGN ENGINE INITIALIZING…</div>
       <div id="pl-bar-wrap" style="width:200px;height:1px;background:#111827;border-radius:99px;overflow:hidden;margin-top:10px;">
         <div id="pl-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#D4AF37,#003366);transition:width 0.4s ease;border-radius:99px;"></div>
       </div>
