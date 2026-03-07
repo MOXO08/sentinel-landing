@@ -246,7 +246,7 @@ const schemaLocal = {
         </div>
       </div>
 
-      <div class="glass overflow-hidden rounded-2xl">
+      <div class="glass overflow-hidden rounded-2xl" id="audit-trail-container">
         <div class="data-grid-row header bg-slate-900/80" style="display:grid;grid-template-columns:160px 1fr 1fr 100px 120px;">
           <span class="mono text-[10px] text-slate-500 font-bold tracking-widest uppercase">TIMESTAMP</span>
           <span class="mono text-[10px] text-slate-500 font-bold tracking-widest uppercase">APPLICATION</span>
@@ -339,8 +339,8 @@ const schemaLocal = {
   (function(){
     const TARGET = 10000;
     const VELOCITY = 315;
+    const container = document.getElementById('audit-trail-container');
     
-    // Premium numbering transition
     function animateValue(id, start, end, duration) {
       const obj = document.getElementById(id);
       if (!obj) return;
@@ -352,14 +352,45 @@ const schemaLocal = {
       const timer = setInterval(function() {
         current += increment;
         obj.textContent = current.toLocaleString() + (id.includes('hero') ? '+' : '');
-        if (current == end) {
-          clearInterval(timer);
-        }
+        if (current == end) clearInterval(timer);
       }, Math.max(stepTime, 20));
+    }
+
+    function createLogRow(log, i) {
+      const dt = new Date(log.created_at);
+      const ts = `${dt.toISOString().slice(0,10)} ${dt.toISOString().slice(11,19)}`;
+      const isOk = log.status?.includes('COMPLIANT') && !log.status?.includes('NON');
+      const hash = `0x${Math.random().toString(16).slice(2,10)}`; // Simplified for client hydration
+      
+      const row = document.createElement('div');
+      row.className = 'data-grid-row hover:bg-white/5 transition-all duration-700 opacity-0 translate-y-[-10px]';
+      row.style = 'display:grid;grid-template-columns:160px 1fr 1fr 100px 120px;';
+      row.innerHTML = `
+        <span class="mono text-[10px] text-slate-500">${ts}</span>
+        <div>
+          <span class="text-slate-200 text-sm font-semibold">${log.app_name}</span>
+          <span class="mono text-[10px] text-slate-600 ml-2">v${log.version}</span>
+        </div>
+        <span>
+          <span class="status-pill ${isOk ? 'status-compliant' : 'status-non-compliant'}">
+            <span class="w-1.5 h-1.5 rounded-full inline-block mr-1" style="background:${isOk ? '#10b981' : '#f87171'}"></span>
+            ${log.status}
+          </span>
+        </span>
+        <span class="mono text-[10px] text-emerald-600">EEUR-1</span>
+        <span class="mono text-[10px] text-slate-600 text-right">${hash}</span>
+      `;
+      return row;
     }
 
     let lastReads = 2950;
     let lastQueries = 198;
+    let processedTimestamps = new Set();
+    
+    // Seed initial timestamps from existing DOM
+    document.querySelectorAll('.data-grid-row:not(.header) .mono:first-child').forEach(el => {
+      processedTimestamps.add(el.textContent.trim());
+    });
 
     function refreshData() {
       fetch('/api/audit-count?t=' + Date.now(), { cache: 'no-store' })
@@ -370,55 +401,62 @@ const schemaLocal = {
           const queries = Number(d.totalQueries);
           const score = Number(d.integrityScore);
           
-          // Update hero with animation
           if (reads !== lastReads) {
             animateValue('hero-reads-val', lastReads, reads, 1000);
             animateValue('kpi-reads', lastReads, reads, 1000);
             lastReads = reads;
           }
-          
           if (queries !== lastQueries) {
             animateValue('kpi-queries', lastQueries, queries, 1000);
             lastQueries = queries;
           }
 
-          // Update Status Badge
+          // Hydrate Table
+          if (d.recentLogs && container) {
+            const header = container.querySelector('.header');
+            const footer = container.querySelector('.bg-slate-950\\/40');
+            
+            d.recentLogs.reverse().forEach(log => {
+              const dt = new Date(log.created_at);
+              const ts = `${dt.toISOString().slice(0,10)} ${dt.toISOString().slice(11,19)}`;
+              if (!processedTimestamps.has(ts)) {
+                processedTimestamps.add(ts);
+                const newRow = createLogRow(log);
+                header.after(newRow);
+                setTimeout(() => {
+                  newRow.classList.remove('opacity-0', 'translate-y-[-10px]');
+                }, 50);
+              }
+            });
+          }
+
           const sColor = score >= 95 ? '#10b981' : score >= 80 ? '#f59e0b' : '#ef4444';
           const sLabel = score >= 95 ? 'NOMINAL' : score >= 80 ? 'DEGRADED' : 'CRITICAL';
           
-          const sDot = document.getElementById('status-dot');
-          const sLab = document.getElementById('status-label');
-          const iLab = document.getElementById('integrity-label');
-          const iBar = document.getElementById('integrity-bar');
+          const sDot = document.getElementById('status-dot'), sLab = document.getElementById('status-label');
+          const iLab = document.getElementById('integrity-label'), iBar = document.getElementById('integrity-bar');
           
           if (sDot) sDot.style.background = sColor;
           if (sLab) { sLab.textContent = sLabel; sLab.style.color = sColor; }
           if (iLab) { iLab.textContent = score + '% COMPLIANT'; iLab.style.color = sColor; }
           if (iBar) { iBar.style.width = score + '%'; iBar.style.background = 'linear-gradient(90deg, ' + sColor + ', ' + sColor + 'aa)'; }
 
-          // Sync HUD milestone
           const msTop = document.getElementById('hud-milestone-top');
           if (msTop) msTop.textContent = (Math.floor(reads/1000)) + 'K VERIFIED';
 
-          // Update Forecast
-          const rem = Math.max(0, TARGET - reads);
-          const dLeft = Math.ceil(rem / VELOCITY);
-          const fDays = document.getElementById('forecast-days');
+          const rem = Math.max(0, TARGET - reads), dLeft = Math.ceil(rem / VELOCITY);
+          const fDays = document.getElementById('forecast-days'), fDate = document.getElementById('forecast-date');
           if (fDays) fDays.textContent = dLeft + ' days';
+          if (fDate) {
+            const dt = new Date(); dt.setDate(dt.getDate() + dLeft);
+            fDate.textContent = dt.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+          }
           
-          const dt = new Date();
-          dt.setDate(dt.getDate() + dLeft);
-          const fDate = document.getElementById('forecast-date');
-          if (fDate) fDate.textContent = dt.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
-          
-          // Update last sync time
           const syncEl = document.getElementById('last-sync-time');
           if (syncEl) syncEl.textContent = new Date().toISOString().slice(11,19);
 
-          // Update Footer
-          const tc = document.getElementById('audit-trail-count');
+          const tc = document.getElementById('audit-trail-count'), ifo = document.getElementById('indexed-reads-footer');
           if (tc) tc.textContent = reads.toLocaleString();
-          const ifo = document.getElementById('indexed-reads-footer');
           if (ifo) ifo.textContent = reads.toLocaleString();
         })
         .catch(console.error);
