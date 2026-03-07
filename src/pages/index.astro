@@ -45,9 +45,14 @@ const slots = Array.from({length: SPOTS_TOTAL}, (_, i) => ({
   label: i < SPOTS_TAKEN ? 'OK' : i === SPOTS_TAKEN ? 'YOU' : String(i+1).padStart(2,'0')
 }));
 
-const LEMON_FREE       = "https://radumuresanu.lemonsqueezy.com/checkout/buy/89ca9ead-179c-497d-b2b7-2a474814ba80";
-const LEMON_PRO        = "https://radumuresanu.lemonsqueezy.com/checkout/buy/aefa17e9-7794-44c0-bf3f-65b1a93c5182";
-const LEMON_ENTERPRISE = "https://radumuresanu.lemonsqueezy.com/checkout/buy/2af0bd06-7319-4390-91d4-397998ab012b";
+const getCheckoutUrl = (id: string | undefined, defaultId: string) => {
+  const finalId = id || defaultId;
+  return finalId.startsWith('http') ? finalId : `https://radumuresanu.lemonsqueezy.com/checkout/buy/${finalId}?embed=1`;
+};
+
+const LEMON_SWIFT      = getCheckoutUrl(env?.LEMON_SWIFT,     "4fb0f242-90ec-4465-9fbe-78d474022bac");
+const LEMON_WATCHTOWER  = getCheckoutUrl(env?.LEMON_WATCHTOWER, "aefa17e9-7794-44c0-bf3f-65b1a93c5182");
+const LEMON_FORTRESS    = getCheckoutUrl(env?.LEMON_FORTRESS,   "2af0bd06-7319-4390-91d4-397998ab012b");
 
 // LANDING PAGE CACHE: 1 minute
 Astro.response.headers.set('Cache-Control', 'public, max-age=60');
@@ -437,7 +442,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
             </ul>
           </div>
           
-          <a href={LEMON_PRO} class="px-8 py-5 bg-white/5 border border-white/10 text-white font-black rounded-2xl text-xs uppercase tracking-[.2em] text-center hover:bg-gold hover:text-obsidian transition-all shadow-xl shadow-black">Initialize Key Extraction →</a>
+          <a href={LEMON_SWIFT} class="px-8 py-5 bg-white/5 border border-white/10 text-white font-black rounded-2xl text-xs uppercase tracking-[.2em] text-center hover:bg-gold hover:text-obsidian transition-all shadow-xl shadow-black">Initialize Key Extraction →</a>
         </div>
 
         <!-- STANDARD PRO VAULT -->
@@ -462,7 +467,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
             </ul>
           </div>
           
-          <a href={LEMON_ENTERPRISE} class="px-8 py-5 bg-gold text-obsidian font-black rounded-2xl text-xs uppercase tracking-[.2em] text-center hover:scale-105 transition-all shadow-2xl shadow-gold/10">Activate Continuous Guard →</a>
+          <a href={LEMON_WATCHTOWER} class="px-8 py-5 bg-gold text-obsidian font-black rounded-2xl text-xs uppercase tracking-[.2em] text-center hover:scale-105 transition-all shadow-2xl shadow-gold/10">Activate Continuous Guard →</a>
         </div>
 
         <!-- REGULATORY SHIELD VAULT -->
@@ -488,7 +493,10 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
             </ul>
           </div>
           
-          <button onclick="generateProforma()" class="px-8 py-6 bg-white text-obsidian font-black rounded-2xl text-[10px] uppercase tracking-[.3em] text-center hover:bg-gold transition-all shadow-2xl">Request Proforma & Pause Decay →</button>
+          <div class="space-y-3">
+            <a href={LEMON_FORTRESS} class="px-8 py-5 bg-white text-obsidian font-black rounded-2xl text-[10px] uppercase tracking-[.3em] text-center hover:bg-gold transition-all shadow-2xl block no-underline">Buy THE FORTRESS →</a>
+            <button onclick="generateProforma()" class="w-full py-4 bg-white/5 border border-white/10 text-white font-black rounded-2xl text-[9px] uppercase tracking-[.3em] text-center hover:bg-white/10 transition-all">Request Proforma Invoice</button>
+          </div>
           <p class="mt-4 text-center mono text-[8px] text-slate-600 font-black tracking-widest uppercase">Strict Corporate Domain Verification Required</p>
         </div>
       </div>

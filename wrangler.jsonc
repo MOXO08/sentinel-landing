@@ -11,6 +11,9 @@
   },
   "vars": {
     "WORKERS_RS_VERSION": "0.0.9",
+    "LEMON_SWIFT": "4fb0f242-90ec-4465-9fbe-78d474022bac",
+    "LEMON_WATCHTOWER": "aefa17e9-7794-44c0-bf3f-65b1a93c5182",
+    "LEMON_FORTRESS": "2af0bd06-7319-4390-91d4-397998ab012b",
     "FALLBACK_RULE_JSON": "{\"id\":\"AI-ACT-CORE-001\",\"description\":\"Subliminal manipulation is forbidden\",\"risk_category\":\"Unacceptable\",\"required_flags\":[\"human_oversight_enabled\"],\"forbidden_flags\":[\"subliminal_techniques\",\"social_scoring\"]}"
   },
   "kv_namespaces": [
