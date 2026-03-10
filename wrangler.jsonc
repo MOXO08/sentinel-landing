@@ -1,20 +1,21 @@
 {
-  "name": "sentinel-landing",
-  "compatibility_date": "2026-03-02",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sentinel-prod",
+  "pages_build_output_dir": "dist",
+  "compatibility_date": "2026-03-06",
   "compatibility_flags": [
     "nodejs_compat",
     "global_fetch_strictly_public"
   ],
-  "pages_build_output_dir": "./dist",
-  "observability": {
-    "enabled": true
-  },
   "vars": {
-    "WORKERS_RS_VERSION": "0.0.9",
+    "FALLBACK_RULE_JSON": "{\"id\":\"AI-ACT-CORE-001\",\"description\":\"Subliminal manipulation is forbidden\",\"risk_category\":\"Unacceptable\",\"required_flags\":[\"human_oversight_enabled\"],\"forbidden_flags\":[\"subliminal_techniques\",\"social_scoring\"]}",
+    "LEMON_PRO_ID": "868655",
+    "LEMON_ENTERPRISE_ID": "868657",
+    "LEMON_FORTRESS_ID": "873708",
     "LEMON_SWIFT": "4fb0f242-90ec-4465-9fbe-78d474022bac",
     "LEMON_WATCHTOWER": "aefa17e9-7794-44c0-bf3f-65b1a93c5182",
     "LEMON_FORTRESS": "2af0bd06-7319-4390-91d4-397998ab012b",
-    "FALLBACK_RULE_JSON": "{\"id\":\"AI-ACT-CORE-001\",\"description\":\"Subliminal manipulation is forbidden\",\"risk_category\":\"Unacceptable\",\"required_flags\":[\"human_oversight_enabled\"],\"forbidden_flags\":[\"subliminal_techniques\",\"social_scoring\"]}"
+    "WORKERS_RS_VERSION": "0.0.9"
   },
   "kv_namespaces": [
     {
@@ -27,6 +28,12 @@
       "binding": "DB",
       "database_name": "sentinel-db",
       "database_id": "4d397bd9-d8a7-4716-bc05-d5df1e43f1a1"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "FORTRESS_VAULT",
+      "bucket_name": "sentinel-fortress-vault"
     }
   ],
   "ai": {
