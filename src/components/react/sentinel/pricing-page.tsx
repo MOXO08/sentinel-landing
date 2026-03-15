@@ -3,7 +3,7 @@ import { Shield, Lock, CheckCircle2, Server, Terminal, GitBranch, FileCheck, Hel
 import { motion } from "framer-motion";
 import { EnterpriseModal } from "./enterprise-modal";
 
-const PLAN_TEAM_MONTHLY = "https://radumuresanu.lemonsqueezy.com/checkout/buy/aefa17e9-7794-44c0-bf3f-65b1a93c5182?embed=1";
+const PLAN_TEAM_MONTHLY = "https://radumuresanu.lemonsqueezy.com/checkout/buy/3f92be48-0dbb-458f-8a23-035e9452d0dc?embed=1";
 
 export function PricingPage() {
   const [isEnterpriseModalOpen, setIsEnterpriseModalOpen] = useState(false);
