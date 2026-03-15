@@ -1,0 +1,79 @@
+---
+// InfrastructureSection.astro
+---
+
+<section id="infrastructure" class="bg-white py-24 border-t border-[#e2e8f0]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-5xl font-black text-[#0f172a] mb-6 tracking-tight">The infrastructure layer for AI compliance</h2>
+      <p class="text-lg text-[#475569] max-w-2xl mx-auto font-light">
+        Sentinel transforms regulatory requirements into deterministic engineering workflows.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Block 1: Developer Tooling */}
+      <div class="bg-[#F8FAFC] p-8 rounded-3xl border border-[#e2e8f0] hover:border-[#cbd5e1] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-[#0f172a] flex items-center justify-center mb-8 group-hover:bg-[#c5832b] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line></svg>
+        </div>
+        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Developer tooling</h3>
+        <ul class="space-y-4">
+          {[
+            "CLI scanning",
+            "GitHub Actions integration",
+            "CI templates and starter kits",
+            "Local compliance diagnostics"
+          ].map((item) => (
+            <li class="flex items-start gap-3 text-sm text-[#475569] font-mono">
+              <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Block 2: Policy Engine */}
+      <div class="bg-[#F8FAFC] p-8 rounded-3xl border border-[#e2e8f0] hover:border-[#cbd5e1] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-[#0f172a] flex items-center justify-center mb-8 group-hover:bg-[#c5832b] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><rect width="16" height="16" x="4" y="4" rx="2"></rect><rect width="6" height="6" x="9" y="9" rx="1"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path><path d="M9 20v2"></path><path d="M9 2v2"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Deterministic policy engine</h3>
+        <ul class="space-y-4">
+          {[
+            "Rule-based AI Act validation",
+            "Technical compliance checks",
+            "Manifest schema validation",
+            "SARIF compliance reporting"
+          ].map((item) => (
+            <li class="flex items-start gap-3 text-sm text-[#475569] font-mono">
+              <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Block 3: Evidence Infrastructure */}
+      <div class="bg-[#F8FAFC] p-8 rounded-3xl border border-[#e2e8f0] hover:border-[#cbd5e1] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-[#0f172a] flex items-center justify-center mb-8 group-hover:bg-[#c5832b] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="m9 15 2 2 4-4"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Compliance evidence infrastructure</h3>
+        <ul class="space-y-4">
+          {[
+            "Audit evidence generation",
+            "Technical documentation artifacts",
+            "Compliance traceability",
+            "Audit-ready compliance files"
+          ].map((item) => (
+            <li class="flex items-start gap-3 text-sm text-[#475569] font-mono">
+              <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

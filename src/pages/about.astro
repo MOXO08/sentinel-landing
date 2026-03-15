@@ -1,0 +1,21 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { AboutPage } from '../components/react/sentinel/about-page';
+import { BottomCTA } from '../components/react/sentinel/BottomCTA';
+
+const seoTitle = "About Us | Mission & Vision of Sentinel Platform";
+const seoDescription = "Learn about Sentinel's mission to provide sovereign trust for AI giants. Discover our expertise in EU AI Act compliance and Zero-Egress architecture.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load activePage="/about" />
+
+  <main class="bg-[#F4F1EA]">
+    <AboutPage client:load />
+  </main>
+
+  <BottomCTA client:visible />
+  <SovereignFooter client:idle />
+</SovereignLayout>

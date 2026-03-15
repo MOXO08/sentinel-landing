@@ -87,7 +87,7 @@ async function authenticateRequest(request, env) {
       return {
         error: "MONTHLY_QUOTA_EXCEEDED",
         status: 429,
-        message: "Developer Tier limit reached (1,000 req/mo). Upgrade to Pro for unlimited access: https://sentinel-api.sentinel-moxo.workers.dev/upgrade"
+        message: "Developer Tier limit reached (1,000 req/mo). Upgrade to Pro for unlimited access: https://api.gettingsentinel.com/v1/upgrade"
       };
     }
     // Increment quota
@@ -108,13 +108,22 @@ export default {
 
     const url = new URL(request.url);
 
+    // ─── STATIC ASSETS EXEMPTION (SEO FIX) ───────────────────────────────────
+    const staticFiles = ['/robots.txt', '/sitemap.xml', '/favicon.ico', '/favicon.svg'];
+    if (request.method === 'GET' && staticFiles.includes(url.pathname)) {
+      if (env.ASSETS) return env.ASSETS.fetch(request);
+    }
+
     // Health check — public, fără auth
     if (url.pathname === '/health') {
       return new Response('Sentinel Audit API is operational (v3 — P0 Hardened)', { status: 200 });
     }
 
     if (request.method !== 'POST') {
-      return new Response('Method Not Allowed', { status: 405 });
+      // Allow GET for Dashboard and Webhooks if they handle it, otherwise 405
+      if (!(request.method === 'GET' && (url.pathname.startsWith('/dashboard') || url.pathname.startsWith('/v1/webhooks/stripe')))) {
+        return new Response('Method Not Allowed', { status: 405 });
+      }
     }
 
     // ── Stripe Webhook — autentificare proprie HMAC, nu necesită Bearer ──

@@ -62,6 +62,28 @@ const schemaFAQ = {
     }
   ]
 };
+const schemaOrg = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Sentinel",
+  "url": "https://gettingsentinel.com",
+  "logo": "https://gettingsentinel.com/favicon.svg",
+  "sameAs": [
+    "https://linkedin.com/company/sentinel-compliance",
+    "https://github.com/sentinel-compliance"
+  ]
+};
+
+const schemaBreadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Home",
+    "item": "https://gettingsentinel.com"
+  }]
+};
 ---
 <!doctype html>
 <html lang="en" class="scroll-smooth">
@@ -80,26 +102,50 @@ const schemaFAQ = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="keywords" content="EU AI Act Compliance Tool, AI Audit Automation, High-Risk AI Assessment, Article 43 AI Act, Deterministic Compliance Engine, WASM AI Security, AI Risk Mitigation SaaS" />
+    <meta name="author" content="Sentinel Cloud" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+    <!-- Favicon & Mobile Assets -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
     <!-- Open Graph -->
+    <meta property="og:site_name" content="Sentinel" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://gettingsentinel.com" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:image" content="https://gettingsentinel.com/images/og-main.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@sentinel_ai" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://gettingsentinel.com/images/og-main.png" />
 
     <!-- Canonical -->
-    <link rel="canonical" href="https://gettingsentinel.com" />
-    <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="canonical" href={Astro.url} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Google Fonts: Outfit (UI) + JetBrains Mono (DATA) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     
+    <!-- Performance Optimization: Immediate preloader bypass for returning users -->
+    <script is:inline>
+      if (document.cookie.includes('sentinel_visited=true')) {
+        document.documentElement.classList.add('preloader-bypass');
+      }
+    </script>
+
     <style is:inline>
+      .preloader-bypass #sentinel-preloader { display: none !important; }
       @keyframes pl-pulse {
         0%   { box-shadow: 0 0 0 0 rgba(212,175,55,0.7); background: #D4AF37; }
         100% { box-shadow: 0 0 0 20px rgba(212,175,55,0); background: #003366; }
@@ -108,10 +154,11 @@ const schemaFAQ = {
       #sentinel-preloader { transition: opacity 0.4s ease, visibility 0.4s ease; }
     </style>
 
-    <!-- JSON-LD: SoftwareApplication -->
+    <!-- JSON-LD Scripts -->
     <script type="application/ld+json" set:html={JSON.stringify(schemaApp)} />
-    <!-- JSON-LD: FAQ -->
     <script type="application/ld+json" set:html={JSON.stringify(schemaFAQ)} />
+    <script type="application/ld+json" set:html={JSON.stringify(schemaOrg)} />
+    <script type="application/ld+json" set:html={JSON.stringify(schemaBreadcrumb)} />
 
     <!-- Lemon Squeezy Script -->
     <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
@@ -312,6 +359,10 @@ const schemaFAQ = {
     clearInterval(tick);
     if (plBar) plBar.style.width = '100%';
     if (plStatus) plStatus.textContent = 'SYSTEM READY';
+    
+    // Set cookie to skip preloader on next visit
+    document.cookie = "sentinel_visited=true; max-age=" + (365 * 24 * 60 * 60) + "; path=/; SameSite=Lax";
+
     setTimeout(function() {
       if (pl) {
         pl.style.opacity = '0';

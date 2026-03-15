@@ -1,0 +1,35 @@
+---
+import SovereignLayout from '../../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../components/react/sentinel/sovereign-footer';
+import { AdminDashboard } from '../../components/react/sentinel/admin-dashboard';
+
+export const prerender = false;
+
+// Sentinel Authority Server-Side Check
+const cookie = Astro.request.headers.get('Cookie') || '';
+const match = cookie.match(/sentinel_session=([^;]+)/);
+const env = (Astro.locals as any).runtime.env;
+
+let isAdmin = false;
+
+if (match && env && env.CACHE) {
+    const sessionData = await env.CACHE.get(`session:${match[1]}`);
+    if (sessionData) {
+        const session = JSON.parse(sessionData);
+        if (session.email === 'office@gettingsentinel.com') {
+            isAdmin = true;
+        }
+    }
+}
+
+if (!isAdmin) {
+    return Astro.redirect('/dashboard/login');
+}
+---
+
+<SovereignLayout title="Sentinel HQ - Mission Control" description="Internal Administrator Dashboard">
+  <SovereignHeader client:load />
+  <AdminDashboard client:load />
+  <SovereignFooter client:idle />
+</SovereignLayout>

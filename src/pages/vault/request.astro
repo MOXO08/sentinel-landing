@@ -1,0 +1,37 @@
+---
+import SovereignLayout from '../../layouts/SovereignLayout.astro';
+import { FortressRequestForm } from '../../components/react/sentinel/FortressRequestForm';
+import { SovereignHeader } from '../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../components/react/sentinel/sovereign-footer';
+
+export const prerender = false;
+---
+
+<SovereignLayout title="Fortress Vault Inquiry — Sentinel">
+  <SovereignHeader client:load />
+  
+  <main class="min-h-screen pt-40 pb-32 px-6 relative overflow-hidden bg-[#0f172a]">
+    <!-- Background Decor -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] -z-10 bg-[radial-gradient(ellipse_800px_600px_at_50%_-20%,rgba(16,185,129,0.1),transparent)] pointer-events-none"></div>
+    
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#10b981]/10 border border-[#10b981]/20 mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse"></span>
+          <span class="text-[10px] font-mono font-bold text-[#10b981] uppercase tracking-widest">Enterprise Access Panel</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-6">
+          Requesting the <span class="text-[#10b981]">Fortress Vault</span>
+        </h1>
+        <p class="text-slate-400 text-lg max-w-2xl mx-auto font-light">
+          Securing high-risk AI systems requires a dedicated architecture. Complete the technical profile to initiate the compliance validation process and infrastructure isolation.
+        </p>
+      </div>
+
+      <FortressRequestForm client:load />
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>
+

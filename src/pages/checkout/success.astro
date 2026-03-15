@@ -1,5 +1,8 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import SovereignLayout from '../../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../components/react/sentinel/sovereign-footer';
+
 export const prerender = false;
 
 const resources = [
@@ -8,7 +11,7 @@ const resources = [
     title: "Sentinel Onboarding: EU AI Act Implementation Guide",
     desc: "50-page practitioner guide covering Articles 6–14, high-risk classification, and how to map Sentinel audit trails to each article obligation.",
     badge: "PDF · 50 pages",
-    color: "var(--color-emerald)",
+    color: "#10b981",
     icon: "📋",
     href: "/docs"
   },
@@ -17,7 +20,7 @@ const resources = [
     title: "Technical API Integration Checklist",
     desc: "Step-by-step checklist for integrating the Sentinel Audit API into CI/CD pipelines, LLM serving stacks, and MLOps platforms.",
     badge: "Checklist · 2 pages",
-    color: "var(--color-cyan)",
+    color: "#0ea5e9",
     icon: "✅",
     href: "/docs"
   },
@@ -26,78 +29,84 @@ const resources = [
     title: "Deterministic Audit Proof Templates",
     desc: "JSON templates for structured audit proofs, ready for submission to EU supervisory authorities and internal compliance registers (GDPR Art. 30).",
     badge: "JSON Templates · v3",
-    color: "#a78bfa",
+    color: "#8b5cf6",
     icon: "⚖️",
     href: "/docs"
   }
 ];
 ---
 
-<Layout title="Welcome to Sentinel — Your Access is Ready">
-  <main class="max-w-screen-md mx-auto px-6 pt-24 pb-32 text-center">
+<SovereignLayout title="Welcome to Sentinel — Your Access is Ready" description="Access provisioned. Get started with Sentinel AI compliance infrastructure.">
+  <SovereignHeader client:load />
 
-    <!-- Success state -->
-    <div class="w-20 h-20 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-4xl mx-auto mb-8">
-      🛡️
-    </div>
+  <main class="bg-[#F4F1EA] pt-32 pb-24 text-center">
+    <div class="max-w-screen-md mx-auto px-6">
+      <!-- Success state -->
+      <div class="w-20 h-20 rounded-[24px] bg-white border border-[#cbd5e1] flex items-center justify-center text-4xl mx-auto mb-8 shadow-sm">
+        🛡️
+      </div>
 
-    <div class="section-label justify-center mb-4">ACCESS PROVISIONED</div>
-    <h1 class="text-4xl md:text-5xl text-white mb-6">
-      Welcome to<br /><span style="color: var(--color-emerald);">Sentinel Infrastructure</span>
-    </h1>
-    <p class="text-slate-400 text-lg mb-12 max-w-lg mx-auto leading-relaxed">
-      Your API keys are being provisioned. You'll receive your credentials by email within 60 seconds. In the meantime, get started with these resources.
-    </p>
+      <div class="text-[10px] font-mono font-bold text-[#10b981] uppercase tracking-[0.2em] mb-4">Access Provisioned</div>
+      <h1 class="text-4xl md:text-5xl font-bold text-[#0f172a] mb-6">
+        Welcome to<br /><span class="text-[#10b981]">Sentinel Infrastructure</span>
+      </h1>
+      <p class="text-[#475569] text-lg mb-12 max-w-lg mx-auto leading-relaxed font-light">
+        Your API keys are being provisioned. You'll receive your credentials by email within 60 seconds. In the meantime, get started with these resources.
+      </p>
 
-    <!-- Resource Downloads -->
-    <div class="space-y-4 mb-16 text-left">
-      {resources.map((r, i) => (
-        <a href={r.href}
-           class="glass flex items-start gap-6 p-6 rounded-2xl hover:border-emerald-500/30 transition-all group block">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform"
-               style={`background: ${r.color}18;`}>
-            {r.icon}
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-start justify-between gap-3 mb-2">
-              <div class="font-semibold text-slate-200 text-sm leading-tight">{r.title}</div>
-              <span class="mono text-[10px] px-2 py-1 rounded shrink-0 mt-0.5"
-                    style={`background: ${r.color}15; color: ${r.color};`}>
-                {r.badge}
-              </span>
+      <!-- Resource Downloads -->
+      <div class="grid gap-4 mb-16 text-left">
+        {resources.map((r, i) => (
+          <a href={r.href}
+             class="bg-white border border-[#cbd5e1] flex items-start gap-6 p-6 rounded-3xl hover:border-[#10b981]/30 transition-all group block shadow-sm">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform bg-[#f1f5f9]"
+                 style={`color: ${r.color};`}>
+              {r.icon}
             </div>
-            <p class="text-xs text-slate-500 leading-relaxed">{r.desc}</p>
-          </div>
-          <div class="text-slate-600 group-hover:text-emerald-400 transition-colors shrink-0 mt-1">↓</div>
-        </a>
-      ))}
-    </div>
-
-    <!-- Next steps -->
-    <div class="glass p-8 rounded-2xl text-left mb-10">
-      <div class="mono text-[10px] text-slate-500 tracking-widest uppercase mb-6">Next Steps</div>
-      <ol class="space-y-5">
-        {[
-          { n: "01", title: "Access your Dashboard", desc: "Log in to retrieve your API key and view your live audit logs." },
-          { n: "02", title: "Run your first audit", desc: "POST a manifest to /api/audit with your API key. Expect a verdict in under 3ms." },
-          { n: "03", title: "Set up D1 Webhooks", desc: "Configure webhook alerts for non-compliant verdicts in your Slack or PagerDuty workspace." },
-          { n: "04", title: "Generate your first PDF Report", desc: "Use the /api/audit?format=pdf endpoint to generate a technical validation report for regulators." },
-        ].map(s => (
-          <li class="flex items-start gap-4">
-            <span class="mono text-xs font-black shrink-0 mt-0.5" style="color: var(--color-emerald);">{s.n}</span>
-            <div>
-              <div class="font-semibold text-slate-200 text-sm">{s.title}</div>
-              <div class="text-xs text-slate-500 mt-1">{s.desc}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div class="font-bold text-[#0f172a] text-sm leading-tight group-hover:text-[#10b981] transition-colors">{r.title}</div>
+                <span class="text-[9px] font-mono font-bold px-2 py-1 rounded shrink-0 mt-0.5 tracking-tighter"
+                      style={`background: ${r.color}15; color: ${r.color};`}>
+                  {r.badge}
+                </span>
+              </div>
+              <p class="text-[11px] text-[#64748b] leading-relaxed font-light">{r.desc}</p>
             </div>
-          </li>
+            <div class="text-[#94a3b8] group-hover:text-[#10b981] transition-colors shrink-0 mt-1">↓</div>
+          </a>
         ))}
-      </ol>
+      </div>
+
+      <!-- Next steps -->
+      <div class="bg-white p-10 rounded-[32px] border border-[#cbd5e1] shadow-sm text-left mb-12">
+        <div class="text-[10px] font-mono font-bold text-[#64748b] tracking-widest uppercase mb-8">Onboarding Protocol</div>
+        <ol class="space-y-6">
+          {[
+            { n: "01", title: "Access your Dashboard", desc: "Log in to retrieve your production API key and view live audit trails." },
+            { n: "02", title: "Initialize First Audit", desc: "POST a manifest to /api/audit. Expect a deterministic verdict in under 3ms." },
+            { n: "03", title: "Configure Webhooks", desc: "Stream non-compliant alerts directly to Slack, PagerDuty, or internal SOCs." },
+            { n: "04", title: "Export Proof-of-Trust", desc: "Generate legal-grade PDF Technical Files for Article 11/43 compliance." },
+          ].map(s => (
+            <li class="flex items-start gap-5">
+              <span class="text-xs font-mono font-black text-[#10b981] shrink-0 mt-0.5">{s.n}</span>
+              <div>
+                <div class="font-bold text-[#0f172a] text-sm mb-1">{s.title}</div>
+                <div class="text-xs text-[#64748b] font-light leading-relaxed">{s.desc}</div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <a href="/dashboard/login" class="inline-block bg-[#10b981] text-[#0f172a] py-6 px-16 font-bold rounded-2xl hover:scale-105 transition-transform shadow-xl shadow-[#10b981]/20">
+        Open Compliance Dashboard →
+      </a>
+      <p class="text-[10px] font-mono text-[#94a3b8] mt-6 uppercase tracking-widest">
+        Support: legal@sentinel.dev · System Status: Nominal
+      </p>
     </div>
-
-    <a href="/dashboard/login" class="btn-emerald !py-5 !px-12 !text-base mx-auto">
-      Open Compliance Dashboard →
-    </a>
-    <p class="mono text-[10px] text-slate-600 mt-4">Problems? Reply to your welcome email or contact support@sentinel.dev</p>
-
   </main>
-</Layout>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

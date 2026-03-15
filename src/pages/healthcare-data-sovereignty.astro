@@ -1,0 +1,36 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+
+const seoTitle = "Healthcare Data Sovereignty | EU AI Act | Sentinel";
+const seoDescription = "Secure AI compliance for Healthcare. Ensure data sovereignty and regulatory alignment with the EU AI Act for clinical and administrative AI.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load activePage="/healthcare-data-sovereignty" />
+  
+  <main class="bg-[#F4F1EA] pt-32 pb-24 text-[#0f172a]">
+    <div class="max-w-4xl mx-auto px-6">
+      <h1 class="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-8">
+        Healthcare <span class="text-[#10b981]">Data</span> Sovereignty
+      </h1>
+      <p class="text-xl text-[#475569] leading-relaxed mb-12 font-light">
+        Protecting patient data while enabling AI innovation. Sentinel provides the bedrock for compliant Healthcare AI under the EU legal framework.
+      </p>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">GDPR Alignment</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Seamless integration of Article 10 data governance requirements with existing health data protections.</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Clinical Safety</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Sub-10ms deterministic audits for clinical decision support systems to ensure model reliability.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

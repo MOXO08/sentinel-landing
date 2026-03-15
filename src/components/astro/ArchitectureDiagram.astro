@@ -1,0 +1,38 @@
+---
+import { ArrowRight, Box, FileJson, Terminal, Cpu, FileCheck, ShieldAlert } from "lucide-react";
+---
+
+<section class="bg-white py-24 border-t border-[#e2e8f0]">
+  <div class="max-w-7xl mx-auto px-6 text-center">
+    <h2 class="text-3xl md:text-5xl font-black text-[#0f172a] mb-6 tracking-tight">How Sentinel works</h2>
+    <p class="text-lg text-[#475569] max-w-3xl mx-auto font-light mb-16">
+      Sentinel converts regulatory requirements into deterministic checks that run inside your development workflow and produce verifiable compliance artifacts.
+    </p>
+
+    {/* Architecture Flow */}
+    <div class="relative flex flex-wrap justify-center items-center gap-4 md:gap-8">
+      {[
+        { id: 'app', label: 'AI System', icon: <Box className="w-6 h-6" /> },
+        { id: 'manifest', label: 'manifest.json', icon: <FileJson className="w-6 h-6" /> },
+        { id: 'scan', label: 'sentinel scan', icon: <Terminal className="w-6 h-6" /> },
+        { id: 'engine', label: 'policy engine', icon: <Cpu className="w-6 h-6" /> },
+        { id: 'evidence', label: 'evidence artifacts', icon: <FileCheck className="w-6 h-6" /> },
+        { id: 'gate', label: 'CI/CD gate', icon: <ShieldAlert className="w-6 h-6" /> },
+      ].map((step, i, arr) => (
+        <>
+          <div class="flex flex-col items-center group">
+            <div class="w-16 h-16 rounded-2xl bg-[#0f172a] text-[#F4F1EA] flex items-center justify-center shadow-lg group-hover:bg-[#c5832b] transition-all duration-300">
+              {step.icon}
+            </div>
+            <span class="mt-4 text-xs font-mono font-bold text-[#64748b] tracking-wider uppercase">{step.label}</span>
+          </div>
+          {i < arr.length - 1 && (
+            <div class="hidden md:flex items-center text-[#c5832b]">
+              <ArrowRight className="w-5 h-5 opacity-40" />
+            </div>
+          )}
+        </>
+      ))}
+    </div>
+  </div>
+</section>

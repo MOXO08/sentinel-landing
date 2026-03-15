@@ -1,6 +1,10 @@
 User-agent: *
-Allow: /
+Disallow: /cdn-cgi/
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-login.php
+Disallow: /.env
 Disallow: /api/
-Disallow: /dashboard/
+Allow: /
 
-Sitemap: https://gettingsentinel.com/sitemap.xml
+Sitemap: https://gettingsentinel.com/sitemap-index.xml

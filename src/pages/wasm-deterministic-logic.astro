@@ -1,0 +1,36 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+
+const seoTitle = "WASM Deterministic Logic | High-Performance AI Auditing | Sentinel";
+const seoDescription = "Learn about our Rust-powered WASM engine. Zero-latency, deterministic AI compliance checks executed at the Edge for maximum security and speed.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load activePage="/wasm-deterministic-logic" />
+  
+  <main class="bg-[#F4F1EA] pt-32 pb-24 text-[#0f172a]">
+    <div class="max-w-4xl mx-auto px-6">
+      <h1 class="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-8">
+        WASM <span class="text-[#10b981]">Deterministic</span> Logic
+      </h1>
+      <p class="text-xl text-[#475569] leading-relaxed mb-12 font-light">
+        The future of regulatory engineering. Sentinel leverages Rust and WebAssembly (WASM) to deliver bit-identical audit results across any environment, with sub-1ms execution times.
+      </p>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Rust Core</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Built for safety and speed. Our core rulesets are compiled from memory-safe Rust directly into WASM for execution in V8 Isolates.</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Edge Execution</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Zero-lag compliance. Every request is handled at the network edge, minimizing the attack surface and maximizing performance.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

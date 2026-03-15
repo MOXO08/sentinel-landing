@@ -1,0 +1,6 @@
+Contact: mailto:security@gettingsentinel.com
+Expires: 2027-01-01T00:00:00.000Z
+Acknowledgments: https://api.gettingsentinel.com/v1/security/hall-of-fame
+Preferred-Languages: en, ro
+Canonical: https://gettingsentinel.com/.well-known/security.txt
+Policy: https://gettingsentinel.com/legal/vdp

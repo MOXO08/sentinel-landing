@@ -111,7 +111,7 @@ async function loadHealthData() {
     const commit = params.get('commit') || 'latest';
     
     try {
-        const r = await fetch(`https://sentinel-api.sentinel-moxo.workers.dev/api/v1/data-health?repo=${encodeURIComponent(repo)}&commit=${encodeURIComponent(commit)}`);
+        const r = await fetch(`https://api.gettingsentinel.com/v1/data-health?repo=${encodeURIComponent(repo)}&commit=${encodeURIComponent(commit)}`);
         const data = await r.json();
         
         if (data.error) {
@@ -139,7 +139,7 @@ function renderHealth(data) {
     document.getElementById('quality-val').textContent = (score * 0.95).toFixed(1) + '%';
 
     document.getElementById('conclusion-text').innerHTML = `
-        <strong>Verificator:</strong> Sentinel Engine v7.6 (Art 10 Explorer)<br>
+        <strong>Verifier:</strong> Sentinel Engine v7.6 (Art 10 Explorer)<br>
         <strong>Finding:</strong> Detected distribution spread of ${categories.length} segments. 
         ${score < 80 ? '<span style="color:#f85149">Imbalance exceeds Article 10.3 safety thresholds.</span>' : '<span style="color:#3fb950">Statistically representative dataset detected.</span>'}
     `;

@@ -45,6 +45,13 @@ function generateApiToken() {
     return `sntl_live_${hex}`;
 }
 
+async function hashKey(key: string) {
+    const msgUint8 = new TextEncoder().encode(key);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function sendWelcomeEmail(toEmail: string, apiToken: string) {
     const curlSnippet = `curl -X POST https://gettingsentinel.com/api/audit \\
   -H "Authorization: Bearer ${apiToken}" \\
@@ -135,10 +142,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         if (env.DB) {
             try {
+                const hashedToken = await hashKey(apiToken);
                 await env.DB.prepare(
-                    `INSERT INTO clients (id, email, stripe_customer_id, stripe_subscription_id, plan, status, api_key, rpm_limit)
+                    `INSERT INTO clients (id, email, stripe_customer_id, stripe_subscription_id, plan, status, api_key_hash, rpm_limit)
            VALUES (?1, ?2, ?3, ?4, ?5, 'active', ?6, ?7)`
-                ).bind(clientId, customerEmail, stripeCustomerId, stripeSubscriptionId, planType, apiToken, rpmLimit).run();
+                ).bind(clientId, customerEmail, stripeCustomerId, stripeSubscriptionId, planType, hashedToken, rpmLimit).run();
             } catch (err) {
                 console.error('D1 client insert error:', err);
             }

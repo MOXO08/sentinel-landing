@@ -64,17 +64,43 @@ const borderColor = report?.Scor_Compliance >= 80 ? 'border-emerald-500/20' : re
           </div>
         </div>
 
+        <!-- Technical Metadata -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 relative z-10 border-b border-slate-800/50 pb-8">
+          <div>
+            <div class="mono text-[9px] text-slate-500 uppercase tracking-widest mb-1">Engine Latency</div>
+            <div class="text-sm font-bold text-emerald-400">0.21ms</div>
+          </div>
+          <div>
+            <div class="mono text-[9px] text-slate-500 uppercase tracking-widest mb-1">Jurisdiction</div>
+            <div class="text-sm font-bold text-white">EEUR-1 Frankfurt</div>
+          </div>
+          <div>
+            <div class="mono text-[9px] text-slate-500 uppercase tracking-widest mb-1">Security Standard</div>
+            <div class="text-sm font-bold text-white">EU AI Act / WASM</div>
+          </div>
+          <div>
+            <div class="mono text-[9px] text-slate-500 uppercase tracking-widest mb-1">D1 Consistency</div>
+            <div class="text-sm font-bold text-indigo-400">Ledger-Locked</div>
+          </div>
+        </div>
+
         <!-- Risk Summary -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 relative z-10">
-          <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
-            <h3 class="mono text-xs font-bold text-slate-400 mb-4 uppercase">AI Act Status</h3>
-            <div class={`text-xl font-bold ${report.payload.verdict === 'COMPLIANT' ? 'text-emerald-400' : 'text-red-400'}`}>
-              {report.payload.verdict.replace(/_/g, ' ')}
+          <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-2xl">⚖️</div>
+            <div>
+              <h3 class="mono text-xs font-bold text-slate-400 uppercase">AI Act Status</h3>
+              <div class={`text-xl font-bold ${report.payload.verdict === 'COMPLIANT' ? 'text-emerald-400' : 'text-red-400'}`}>
+                {report.payload.verdict.replace(/_/g, ' ')}
+              </div>
             </div>
           </div>
-          <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
-            <h3 class="mono text-xs font-bold text-slate-400 mb-4 uppercase">Engine Version</h3>
-            <div class="text-xl font-bold text-white">Sentinel WASM v2.1</div>
+          <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-2xl">⚙️</div>
+            <div>
+              <h3 class="mono text-xs font-bold text-slate-400 uppercase">Engine Version</h3>
+              <div class="text-xl font-bold text-white">Sentinel WASM v2.1</div>
+            </div>
           </div>
         </div>
 
@@ -102,7 +128,7 @@ const borderColor = report?.Scor_Compliance >= 80 ? 'border-emerald-500/20' : re
               </div>
 
               {v.article === 'LOCKED' && (
-                <a href="#pricing" class="mt-2 text-center text-[10px] font-bold text-amber-400 hover:underline uppercase tracking-widest">
+                <a href="/pricing" class="mt-2 text-center text-[10px] font-bold text-amber-400 hover:underline uppercase tracking-widest">
                   Unlock Full Regulatory Report &rarr;
                 </a>
               )}
@@ -117,20 +143,26 @@ const borderColor = report?.Scor_Compliance >= 80 ? 'border-emerald-500/20' : re
           )}
         </div>
 
-        <!-- NEW: REGULATORY PANIC WIDGETS -->
+        <!-- REGULATORY PANIC WIDGETS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 relative z-10">
-          <div class="glass p-6 rounded-2xl border-amber-500/20 bg-amber-500/[0.03]">
-             <div class="flex items-center gap-2 mb-4">
-               <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-               <h3 class="mono text-[10px] font-bold text-amber-400 uppercase tracking-widest">Regulatory Deadline</h3>
+          <div class="glass p-6 rounded-2xl border-amber-500/20 bg-amber-500/[0.03] group hover:bg-amber-500/[0.06] transition-all">
+             <div class="flex items-center justify-between mb-4">
+               <div class="flex items-center gap-2">
+                 <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                 <h3 class="mono text-[10px] font-bold text-amber-400 uppercase tracking-widest">Regulatory Deadline</h3>
+               </div>
+               <div class="text-xl opacity-50 group-hover:scale-110 transition-transform">⏳</div>
              </div>
              <div class="text-2xl font-black text-white mb-1">Aug 2026</div>
              <p class="text-[10px] text-slate-500 leading-relaxed uppercase">EU AI Act Enforcement for High-Risk Systems starts in 512 days. Unaudited models face immediate market ban.</p>
           </div>
-          <div class="glass p-6 rounded-2xl border-red-500/20 bg-red-500/[0.03]">
-             <div class="flex items-center gap-2 mb-4">
-               <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-               <h3 class="mono text-[10px] font-bold text-red-400 uppercase tracking-widest">Exposure Estimator</h3>
+          <div class="glass p-6 rounded-2xl border-red-500/20 bg-red-500/[0.03] group hover:bg-red-500/[0.06] transition-all">
+             <div class="flex items-center justify-between mb-4">
+               <div class="flex items-center gap-2">
+                 <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                 <h3 class="mono text-[10px] font-bold text-red-400 uppercase tracking-widest">Exposure Estimator</h3>
+               </div>
+               <div class="text-xl opacity-50 group-hover:scale-110 transition-transform">📉</div>
              </div>
              <div class="text-2xl font-black text-white mb-1">€35.000.000</div>
              <p class="text-[10px] text-slate-500 leading-relaxed uppercase">Projected max fine (7% of global turnover) for detected Article 5/10 non-compliance.</p>
@@ -138,13 +170,14 @@ const borderColor = report?.Scor_Compliance >= 80 ? 'border-emerald-500/20' : re
         </div>
 
         <!-- CTA -->
-        <div class="relative z-10 bg-emerald-500/10 border border-emerald-500/20 p-8 rounded-3xl text-center">
+        <div class="relative z-10 bg-emerald-500/10 border border-emerald-500/20 p-8 rounded-3xl text-center print:hidden">
           <h2 class="text-xl font-bold text-white mb-4">Secure your CI/CD with Continuous Monitoring</h2>
           <p class="text-slate-400 text-sm mb-8 max-w-md mx-auto">
             This report was snapshots via Sentinel Shadow Audit. Install the GitHub App to enable real-time risk mitigation and automated compliance signatures.
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a href={`/report/article43/${id}`} class="btn-emerald">Draft Article 43 Proof →</a>
+            <button onclick="window.print()" class="px-8 py-3 rounded-xl border border-indigo-500/30 text-indigo-400 font-bold hover:bg-indigo-500/10 transition-all">Download Audit (PDF)</button>
             <a href="mailto:office@gettingsentinel.com?subject=Enterprise%20Invoice%20Request" class="px-8 py-3 rounded-xl border border-emerald-500/30 text-emerald-400 font-bold hover:bg-emerald-500/10 transition-all no-underline">Request Enterprise Invoice</a>
           </div>
         </div>
@@ -164,3 +197,4 @@ const borderColor = report?.Scor_Compliance >= 80 ? 'border-emerald-500/20' : re
     -webkit-backdrop-filter: blur(20px);
   }
 </style>
+

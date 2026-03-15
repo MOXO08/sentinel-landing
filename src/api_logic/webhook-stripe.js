@@ -57,7 +57,7 @@ function generateApiToken() {
  * Email de bun venit via MailChannels (gratuit pe Cloudflare Workers)
  */
 async function sendWelcomeEmail(toEmail, apiToken) {
-    const curlSnippet = `curl -X POST https://sentinel-api.sentinel-moxo.workers.dev \\
+    const curlSnippet = `curl -X POST https://api.gettingsentinel.com/v1/audit \\\\
   -H "Authorization: Bearer ${apiToken}" \\
   -H "Content-Type: application/json" \\
   -d '{"app_name":"my-app","version":"1.0","risk_category":"High","declared_flags":["human_oversight_enabled"]}'`;
@@ -78,12 +78,12 @@ h1 { color: #0d1117; }
   <p>⚠️ <strong>Păstrează această cheie în siguranță.</strong> Nu o publica în cod sursă public.</p>
   <h2>Integrare rapidă (cURL)</h2>
   <div class="snippet">${curlSnippet}</div>
-  <a class="btn" href="https://sentinel-api.sentinel-moxo.workers.dev/docs">Documentație completă →</a>
-  <p style="color:#666;font-size:12px;">Sentinel API · EU AI Act Compliance Engine · <a href="https://sentinel-api.sentinel-moxo.workers.dev">sentinel-api.sentinel-moxo.workers.dev</a></p>
+  <a class="btn" href="https://api.gettingsentinel.com/v1/docs">Documentație completă →</a>
+  <p style="color:#666;font-size:12px;">Sentinel API · EU AI Act Compliance Engine · <a href="https://api.gettingsentinel.com/v1">api.gettingsentinel.com</a></p>
 </body>
 </html>`;
 
-    const text = `Bine ai venit la Sentinel API!\n\nCheia ta API:\n${apiToken}\n\nIntegrare rapidă:\n${curlSnippet}\n\nDocumentație: https://sentinel-api.sentinel-moxo.workers.dev/docs`;
+    const text = `Bine ai venit la Sentinel API!\n\nCheia ta API:\n${apiToken}\n\nIntegrare rapidă:\n${curlSnippet}\n\nDocumentație: https://api.gettingsentinel.com/v1/docs`;
 
     const response = await fetch('https://api.mailchannels.net/tx/v1/send', {
         method: 'POST',

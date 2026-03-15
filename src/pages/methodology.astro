@@ -1,0 +1,21 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { MethodologyPage } from '../components/react/sentinel/methodology-page';
+import { BottomCTA } from '../components/react/sentinel/BottomCTA';
+
+const seoTitle = "The Entropy Engine | AI Act Compliance Methodology";
+const seoDescription = "Deep dive into Sentinel's Zero-Egress architecture. Discover how our WASM engine converts regulatory friction into deterministic cryptographic proofs at the Cloudflare Edge.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load />
+  
+  <main class="bg-[#F4F1EA]">
+    <MethodologyPage client:load />
+  </main>
+
+  <BottomCTA client:visible />
+  <SovereignFooter client:idle />
+</SovereignLayout>

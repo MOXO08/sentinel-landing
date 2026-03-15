@@ -1,0 +1,289 @@
+---
+import Layout from '../../layouts/Layout.astro';
+export const prerender = false;
+
+const { tau } = Astro.params;
+---
+
+<Layout title={`Sentinel Vault | Secure Audit Channel ${tau}`}>
+  <main class="min-h-screen bg-obsidian text-white pt-24 pb-40">
+    <div class="max-w-4xl mx-auto px-6">
+      
+      <!-- HEADER -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-gold/30 bg-gold/5 mb-6">
+            <span class="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></span>
+            <span class="mono text-[9px] text-gold font-black uppercase tracking-widest italic">Secure Vault Channel Active</span>
+          </div>
+          <h1 class="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-4">
+            THE <span class="text-gold">FORTRESS</span> VAULT
+          </h1>
+          <p class="text-slate-500 mono text-xs uppercase tracking-widest font-bold">
+            Audit ID: <span class="text-white" id="display-tau">{tau}</span> · Protocol: Zero-Egress R2
+          </p>
+        </div>
+        <div class="text-right">
+          <div class="mono text-[9px] text-slate-600 uppercase tracking-widest mb-1">Company Entity</div>
+          <div id="company-name" class="text-xl font-bold italic text-white animate-pulse">INITIALIZING...</div>
+        </div>
+      </div>
+
+      <!-- MAIN ACTIONS -->
+      <div class="grid lg:grid-cols-3 gap-10">
+        
+        <!-- UPLOAD ZONE -->
+        <div class="lg:col-span-2">
+          <div id="drop-zone" class="glass p-12 rounded-[40px] border-dashed border-2 border-white/5 hover:border-gold/30 transition-all flex flex-col items-center justify-center gap-6 cursor-pointer bg-obsidian/40 backdrop-blur-3xl group mb-10">
+            <div class="w-24 h-24 rounded-3xl bg-gold/10 border border-gold/20 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-500">📥</div>
+            <div class="text-center">
+              <h3 class="text-2xl font-bold text-white mb-2 italic uppercase">Ingest Industrial Assets</h3>
+              <p class="text-slate-500 text-sm mono">Drag & Drop codebase (ZIP) or documentation files here</p>
+            </div>
+            <input type="file" id="file-input" class="hidden" multiple />
+          </div>
+
+          <div id="upload-progress-container" class="hidden space-y-4 mb-10">
+            <!-- Uploading items injected here -->
+          </div>
+
+          <!-- FILE LIST -->
+          <div class="glass rounded-3xl border-white/5 overflow-hidden">
+            <div class="px-8 py-4 bg-white/5 border-b border-white/10 flex justify-between items-center">
+              <span class="mono text-[10px] text-gold font-black uppercase tracking-widest">Vault Inventory</span>
+              <span class="mono text-[10px] text-slate-500" id="file-count">0 Files Securely Stored</span>
+            </div>
+            <div id="file-list" class="divide-y divide-white/5 bg-obsidian/40">
+              <!-- Files injected here -->
+              <div class="p-8 text-center text-slate-600 mono text-[10px] uppercase italic">Sevaulting... waiting for intake</div>
+            </div>
+          </div>
+
+          <!-- AUDIT HISTORY -->
+          <div class="glass rounded-3xl border-white/5 overflow-hidden mt-10">
+            <div class="px-8 py-4 bg-white/5 border-b border-white/10 flex justify-between items-center">
+              <span class="mono text-[10px] text-gold font-black uppercase tracking-widest">Audit History (Last 10)</span>
+            </div>
+            <div id="audit-history" class="divide-y divide-white/5 bg-obsidian/40">
+              <div class="p-8 text-center text-slate-600 mono text-[10px] uppercase italic">Initializing history archives...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIDEBAR INFO -->
+        <div class="space-y-6">
+          <div class="glass p-8 rounded-3xl border-white/5 bg-gold/[0.02]">
+            <h4 class="text-xs font-black text-gold uppercase tracking-[0.2em] mb-4 italic italic">Audit Status</h4>
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+              <span class="text-sm font-bold text-white uppercase italic">Awaiting Assets</span>
+            </div>
+            <p class="text-[10px] text-slate-500 leading-relaxed uppercase tracking-widest">
+              Audit starts automatically once the primary codebase is ingested. Estimated completion: 48h.
+            </p>
+          </div>
+
+          <div class="glass p-8 rounded-3xl border-white/5 bg-obsidian/60">
+            <h4 class="text-xs font-black text-white uppercase tracking-[0.2em] mb-4 italic">Security Matrix</h4>
+            <div class="space-y-4">
+              <div class="flex flex-col gap-1">
+                <span class="mono text-[8px] text-slate-600 uppercase">Storage</span>
+                <span class="mono text-[10px] text-slate-300">Cloudflare R2 (Encrypted)</span>
+              </div>
+              <div class="flex flex-col gap-1">
+                <span class="mono text-[8px] text-slate-600 uppercase">Integrity</span>
+                <span class="mono text-[10px] text-slate-300">SHA-256 Content Hashing</span>
+              </div>
+              <div class="flex flex-col gap-1">
+                <span class="mono text-[8px] text-slate-600 uppercase">Access</span>
+                <span class="mono text-[10px] text-slate-300">Single-Token Channel Only</span>
+              </div>
+            </div>
+          </div>
+
+          <a href="mailto:office@gettingsentinel.com" class="block p-8 border border-white/10 rounded-3xl text-center hover:bg-white/5 transition-all group">
+            <div class="mono text-[10px] text-slate-500 group-hover:text-gold transition-colors mb-2 uppercase tracking-widest">Need Direct Support?</div>
+            <div class="text-sm font-black text-white italic uppercase tracking-widest underline decoration-gold/30">Contact AI Lead →</div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<script is:inline define:vars={{ tau }}>
+  const fileInput = document.getElementById('file-input');
+  const dropZone = document.getElementById('drop-zone');
+  const fileList = document.getElementById('file-list');
+  const companyName = document.getElementById('company-name');
+  const fileCount = document.getElementById('file-count');
+  const progressContainer = document.getElementById('upload-progress-container');
+  const auditHistory = document.getElementById('audit-history');
+
+  const API_BASE = 'https://api.gettingsentinel.com/v1';
+
+  // 1. Initial Status Load
+  async function loadStatus() {
+    try {
+      const res = await fetch(`https://api.gettingsentinel.com/v1/vault/status?tau=${tau}`);
+      const data = await res.json();
+      
+      if (data.ok) {
+        companyName.textContent = data.company || "CORPORATE ENTITY";
+        companyName.classList.remove('animate-pulse');
+        renderFileList(data.files || []);
+        loadAuditHistory();
+      } else {
+        companyName.textContent = "INVALID CHANNEL";
+        companyName.classList.add('text-red-500');
+        fileList.innerHTML = `<div class="p-8 text-center text-red-400 mono text-xs uppercase">${data.message || 'Access Denied'}</div>`;
+      }
+    } catch (e) {
+      console.error('Vault load failed:', e);
+    }
+  }
+
+  function renderFileList(files) {
+    if (files.length === 0) {
+      fileList.innerHTML = `<div class="p-8 text-center text-slate-600 mono text-[10px] uppercase italic">Sevaulting... waiting for intake</div>`;
+      fileCount.textContent = "0 Files Securely Stored";
+      return;
+    }
+
+    fileCount.textContent = `${files.length} Files Securely Stored`;
+    fileList.innerHTML = files.map(f => `
+      <div class="px-8 py-5 flex justify-between items-center group/file">
+        <div class="flex items-center gap-4">
+          <span class="text-2xl opacity-40 group-hover/file:opacity-100 transition-opacity">📄</span>
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-white italic uppercase tracking-wide">${f.name}</span>
+            <span class="mono text-[9px] text-slate-500 uppercase tracking-widest">${(f.size / 1024 / 1024).toFixed(2)} MB · HASHED VERIFIED</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <button onclick="downloadFile('${f.name}')" class="px-4 py-2 rounded-lg border border-white/10 hover:border-gold/50 bg-white/5 hover:bg-gold/5 transition-all mono text-[10px] text-white hover:text-gold uppercase font-black">
+            Download →
+          </button>
+          <div class="flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+            <span class="mono text-[9px] text-emerald-500 font-black uppercase tracking-widest italic">Secure R2</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function downloadFile(filename) {
+    try {
+      const url = `${API_BASE}/api/vault/download?tau=${tau}&filename=${encodeURIComponent(filename)}`;
+      window.location.href = url;
+    } catch (e) {
+      console.error('Download trigger failed:', e);
+    }
+  }
+
+  async function loadAuditHistory() {
+    try {
+        const res = await fetch(`${API_BASE}/api/vault/audit-history?tau=${tau}`);
+        const data = await res.json();
+        
+        if (data.ok && data.history.length > 0) {
+            auditHistory.innerHTML = data.history.map(h => `
+                <div class="px-8 py-4 flex justify-between items-center group/audit">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-white uppercase italic">${h.app_name}</span>
+                        <span class="mono text-[8px] text-slate-500 uppercase tracking-widest">${h.created_at} · VERDICT: <span class="${h.is_compliant ? 'text-emerald-500' : 'text-red-500'}">${h.status}</span></span>
+                    </div>
+                    <span class="mono text-[9px] text-white opacity-40">#${h.request_id}</span>
+                </div>
+            `).join('');
+        } else {
+            auditHistory.innerHTML = `<div class="p-8 text-center text-slate-600 mono text-[10px] uppercase italic">No historical records found for this vault.</div>`;
+        }
+    } catch (e) {
+        console.error('History load failed:', e);
+        auditHistory.innerHTML = `<div class="p-8 text-center text-red-400 mono text-xs uppercase italic">History Vault Offline</div>`;
+    }
+  }
+
+  // 2. Upload Logic
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-gold/50', 'bg-gold/5'); });
+  dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-gold/50', 'bg-gold/5'); });
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-gold/50', 'bg-gold/5');
+    handleFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+  async function handleFiles(files) {
+    for (const file of files) {
+      await uploadFile(file);
+    }
+    loadStatus(); // Refresh list
+  }
+
+  async function uploadFile(file) {
+    const progressId = `progress-${Math.random().toString(36).slice(2, 9)}`;
+    progressContainer.classList.remove('hidden');
+    
+    const progressEl = document.createElement('div');
+    progressEl.id = progressId;
+    progressEl.className = 'glass p-6 rounded-2xl border-white/10 bg-black/40';
+    progressEl.innerHTML = `
+      <div class="flex justify-between items-end mb-3">
+        <span class="mono text-[10px] text-gold font-black uppercase tracking-widest truncate max-w-[200px]">INGESTING: ${file.name}</span>
+        <span class="mono text-xs text-white pct">0%</span>
+      </div>
+      <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+        <div class="h-full bg-gold bar transition-all duration-300" style="width: 0%"></div>
+      </div>
+    `;
+    progressContainer.appendChild(progressEl);
+
+    try {
+      // Direct stream upload to R2 via API
+      // In a real scenario, we might use multipart, but for now simple POST
+      const res = await fetch(`https://api.gettingsentinel.com/v1/vault/upload?tau=${tau}&filename=${encodeURIComponent(file.name)}`, {
+        method: 'POST',
+        body: file,
+        headers: {
+          'Content-Type': 'application/octet-stream'
+        }
+      });
+
+      if (!res.ok) throw new Error('Upload failed');
+
+      progressEl.querySelector('.bar').style.width = '100%';
+      progressEl.querySelector('.pct').textContent = 'VERIFIED';
+      progressEl.querySelector('.pct').classList.add('text-emerald-500');
+      
+      setTimeout(() => {
+        progressEl.remove();
+        if (progressContainer.childElementCount === 0) progressContainer.classList.add('hidden');
+      }, 2000);
+
+    } catch (e) {
+      progressEl.querySelector('.pct').textContent = 'ERROR';
+      progressEl.querySelector('.pct').classList.add('text-red-500');
+      console.error(e);
+    }
+  }
+
+  // Load status on boot
+  loadStatus();
+</script>
+
+<style>
+  .glass {
+    background: rgba(2, 6, 23, 0.4);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>

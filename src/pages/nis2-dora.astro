@@ -1,0 +1,44 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { Nis2DoraPage } from '../components/react/sentinel/nis2-dora-page';
+
+const seoTitle = "Audit Deterministic și Conformitate NIS2/DORA la Marginea Rețelei (Edge)";
+const seoDescription = "Real-time regulatory compliance and WASM-based security. Auditare deterministică, fără transfer de date (zero-egress) la standarde europene pentru Directiva NIS2 și DORA.";
+
+// JSON-LD Schema Markup
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "name": "Audit Deterministic NIS2/DORA",
+      "provider": {
+        "@type": "Organization",
+        "name": "Sentinel",
+        "url": "https://gettingsentinel.com"
+      },
+      "description": "Servicii de audit deterministic bazate pe WebAssembly pentru conformitate DORA și NIS2 la marginea rețelei (Edge). Soluție eficientă contra riscurilor GDPR de 4% și penalității zilnice DORA.",
+      "areaServed": "EU",
+      "serviceType": "Risk Management & Security Audit"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Sentinel WASM Edge Engine",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Cloudflare Edge",
+      "description": "Zero-latency audit and no-egress data validation using proprietary compiled WASM logic. Elimină latența și expunerea datelor."
+    }
+  ]
+};
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  <SovereignHeader client:load />
+  <main class="bg-[#F4F1EA]">
+    <Nis2DoraPage client:load />
+  </main>
+  <SovereignFooter client:idle />
+</SovereignLayout>

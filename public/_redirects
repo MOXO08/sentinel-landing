@@ -1,0 +1,6 @@
+/technical-file   /vault               301
+# Removed /status redirect to let Cloudflare reset its routing table for this path
+
+
+
+

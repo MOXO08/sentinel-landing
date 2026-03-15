@@ -1,0 +1,36 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+
+const seoTitle = "AI Act Fintech Compliance | Sentinel";
+const seoDescription = "Operationalize EU AI Act compliance for Fintech. Automated Annex IV reporting and real-time risk classification for financial services.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load activePage="/ai-act-fintech-compliance" />
+  
+  <main class="bg-[#F4F1EA] pt-32 pb-24 text-[#0f172a]">
+    <div class="max-w-4xl mx-auto px-6">
+      <h1 class="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-8">
+        AI Act <span class="text-[#10b981]">Fintech</span> Compliance
+      </h1>
+      <p class="text-xl text-[#475569] leading-relaxed mb-12 font-light">
+        High-fidelity compliance infrastructure for financial institutions. Accelerate your time-to-market while meeting the stringent requirements of the EU AI Act.
+      </p>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Annex IV Reporting</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Automated generation of technical documentation required for high-risk AI systems in the financial sector.</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Risk Management</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Real-time monitoring of bias and model drift to ensure continuous compliance with Art. 10 and Art. 14.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

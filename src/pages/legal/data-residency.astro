@@ -1,0 +1,36 @@
+---
+import SovereignLayout from '../../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../components/react/sentinel/sovereign-footer';
+
+const seoTitle = "Data Residency Policy | Sovereign Trust | Sentinel";
+const seoDescription = "Our commitment to data sovereignty. Learn how Sentinel ensures your AI telemetry and audit data never leave the EU jurisdiction.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load activePage="/legal/data-residency" />
+  
+  <main class="bg-[#F4F1EA] pt-32 pb-24 text-[#0f172a]">
+    <div class="max-w-4xl mx-auto px-6">
+      <h1 class="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-8">
+        Data <span class="text-[#10b981]">Residency</span> Policy
+      </h1>
+      <p class="text-xl text-[#475569] leading-relaxed mb-12 font-light">
+        Sovereignty is not optional. At Sentinel, we guarantee that all data ingested and processed remains strictly within the European Union, utilizing regionally-bound infrastructure.
+      </p>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">EU-Only Storage</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">We utilize Cloudflare R2 and D1 specifically configured for EU-local data storage nodes.</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Regulatory Compliance</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Fully aligned with GDPR Chapter V and the EU AI Act's sovereignty mandates for high-risk systems.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

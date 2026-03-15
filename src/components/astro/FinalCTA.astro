@@ -1,0 +1,69 @@
+---
+import { Github, BookOpen, Play, Copy } from "lucide-react";
+---
+
+<section id="final-cta" class="bg-[#F4F1EA] py-24 border-t border-[#c5832b]/10">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <h2 class="text-3xl md:text-5xl font-black text-[#0f172a] mb-6 tracking-tight">Start building compliant AI systems today</h2>
+    <p class="text-lg text-[#475569] mb-12 font-light">
+      Run Sentinel locally or integrate it directly into your development pipeline.
+    </p>
+
+    <div class="mb-12 max-w-md mx-auto relative group">
+      <div class="bg-white border border-[#e2e8f0] rounded-2xl p-4 font-mono text-sm relative overflow-hidden transition-all group-hover:border-[#c5832b]/30 shadow-sm flex items-center justify-between">
+        <code id="final-cmd" class="text-[#0f172a]">npx @radu_api/sentinel-scan</code>
+        <button type="button" aria-label="Copy install command" class="final-copy-trigger p-2 rounded-lg hover:bg-[#0f172a]/5 text-[#64748b] transition-colors" data-target="final-cmd">
+          <Copy className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a 
+        href="#quickstart" 
+        class="w-full sm:w-auto px-8 py-4 bg-[#0f172a] text-[#F4F1EA] font-bold rounded-xl shadow-xl hover:bg-[#1e293b] transition-all flex items-center justify-center gap-2"
+      >
+        <Play className="w-4 h-4 fill-current" />
+        Run your first audit
+      </a>
+      
+      <a 
+        href="https://github.com/MOXO08/sentinel" 
+        target="_blank"
+        rel="noopener noreferrer"
+        class="w-full sm:w-auto px-8 py-4 bg-white text-[#0f172a] font-bold rounded-xl border border-[#e2e8f0] hover:border-[#cbd5e1] transition-all flex items-center justify-center gap-2 shadow-sm"
+      >
+        <Github className="w-4 h-4" />
+        View on GitHub
+      </a>
+
+      <a 
+        href="/docs" 
+        class="w-full sm:w-auto px-8 py-4 bg-transparent text-[#64748b] font-bold rounded-xl hover:text-[#0f172a] transition-all flex items-center justify-center gap-2"
+      >
+        <BookOpen className="w-4 h-4" />
+        Read the documentation
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.getElementById('final-cta')?.addEventListener('click', async (e) => {
+    const button = (e.target as HTMLElement).closest('.final-copy-trigger');
+    if (!button) return;
+
+    const targetId = button.getAttribute('data-target');
+    const text = targetId ? document.getElementById(targetId)?.textContent?.trim() : null;
+    if (!text) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      const originalInner = button.innerHTML;
+      button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => { button.innerHTML = originalInner; }, 2000);
+    } catch {
+      // Fail silent
+    }
+  });
+</script>

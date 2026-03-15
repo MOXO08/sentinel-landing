@@ -1,0 +1,83 @@
+---
+const specs = [
+  { art: "Art. 10", title: "Data Governance", desc: "Support for documenting data governance, testing evidence, and dataset controls." },
+  { art: "Art. 11", title: "Technical Documentation", desc: "Generate structured technical artifacts and audit-ready compliance files." },
+  { art: "Art. 12", title: "Traceability", desc: "Maintain audit history, evidence records, and compliance traceability." },
+  { art: "Art. 13", title: "Transparency", desc: "Support documentation for instructions for use, disclosures, and oversight processes." }
+];
+---
+
+<section class="bg-white py-24 border-t border-[#e2e8f0]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div class="space-y-8">
+        <div>
+          <h2 class="text-[11px] font-mono font-bold text-[#b87333] tracking-[0.2em] uppercase mb-4">Compliance Mapping</h2>
+          <h3 class="text-4xl md:text-5xl font-black text-[#0f172a] mb-6 tracking-tight">Built for AI compliance requirements</h3>
+          <p class="text-lg text-[#475569] leading-relaxed font-light">
+            Sentinel helps engineering teams map AI system requirements to concrete compliance workflows, documentation artifacts, and audit evidence.
+          </p>
+        </div>
+        
+        <div class="space-y-4">
+          {specs.map((item) => (
+            <div class="flex items-start gap-4 p-5 rounded-2xl border border-[#e2e8f0] hover:border-[#c5832b]/50 bg-[#F4F1EA]/50 transition-colors group shadow-sm">
+              <div class="px-3 py-1.5 bg-[#c5832b]/10 text-[#c5832b] text-[10px] font-mono font-bold rounded-lg uppercase tracking-[0.2em] shrink-0 border border-[#c5832b]/20">
+                {item.art}
+              </div>
+              <div>
+                <h4 class="font-bold text-[#0f172a] mb-1 group-hover:text-[#c5832b] transition-colors">{item.title}</h4>
+                <p class="text-sm text-[#475569]">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="bg-[#0f172a] rounded-[40px] p-8 md:p-12 relative overflow-hidden shadow-2xl border border-[#c5832b]/30">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-[#c5832b]/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="relative z-10">
+          <div class="flex justify-between items-center mb-8 border-b border-[#334155] pb-6">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c5832b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+              <span class="text-white font-mono text-sm">sentinel-evidence/</span>
+            </div>
+          </div>
+          
+          <div class="space-y-2 font-mono text-xs md:text-sm text-[#cbd5e1] mb-8">
+            <div class="flex gap-4">
+              <span class="text-[#64748b]">1</span> 
+              <span>sentinel-evidence/</span>
+            </div>
+            <div class="flex gap-4">
+              <span class="text-[#64748b]">2</span> 
+              <span>├── compliance-summary.md</span>
+            </div>
+            <div class="flex gap-4">
+              <span class="text-[#64748b]">3</span> 
+              <span>├── scan-metadata.json</span>
+            </div>
+            <div class="flex gap-4">
+              <span class="text-[#64748b]">4</span> 
+              <span>├── scan-report.json</span>
+            </div>
+            <div class="flex gap-4">
+              <span class="text-[#64748b]">5</span> 
+              <span>└── scan-report.sarif</span>
+            </div>
+          </div>
+
+          <div class="bg-[#020617] border border-[#334155] rounded-2xl p-5 shadow-inner text-left">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="w-2 h-2 rounded-full bg-[#c5832b] animate-pulse shadow-[0_0_8px_rgba(197,131,43,0.8)]"></span>
+              <span class="text-white font-bold text-sm">Evidence output</span>
+            </div>
+            <p class="text-[#64748b] text-xs font-mono">Technical documentation artifacts generated</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

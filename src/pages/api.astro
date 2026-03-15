@@ -1,0 +1,19 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { ApiDocsPage } from '../components/react/sentinel/api-docs-page';
+
+const seoTitle = "API Reference | Sentinel EU AI Act Compliance API";
+const seoDescription = "Full REST API documentation for Sentinel. Ingest manifests, retrieve compliance scores, and automate technical dossier generation via CI/CD.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load />
+  
+  <main class="bg-[#F4F1EA]">
+    <ApiDocsPage client:load />
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

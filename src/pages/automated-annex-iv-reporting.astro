@@ -1,0 +1,36 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+
+const seoTitle = "Automated Annex IV Reporting | EU AI Act | Sentinel";
+const seoDescription = "Streamline your EU AI Act compliance with automated Annex IV technical documentation. Instant PDF generation for regulatory audits.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load activePage="/automated-annex-iv-reporting" />
+  
+  <main class="bg-[#F4F1EA] pt-32 pb-24 text-[#0f172a]">
+    <div class="max-w-4xl mx-auto px-6">
+      <h1 class="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-8">
+        Automated <span class="text-[#10b981]">Annex IV</span> Reporting
+      </h1>
+      <p class="text-xl text-[#475569] leading-relaxed mb-12 font-light">
+        Eliminate the documentation bottleneck. Sentinel's reporting engine transforms technical telemetry into regulatory-grade technical dossiers in seconds.
+      </p>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Compliance-as-Code</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Embed Annex IV requirements directly into your CI/CD pipeline for continuous documentation updates.</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl border border-[#cbd5e1] shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Audit-Ready Flux</h3>
+          <p class="text-sm text-[#64748b] leading-relaxed">Maintain a version-controlled history of compliance snapshots, ready for immediate Notified Body inspection.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

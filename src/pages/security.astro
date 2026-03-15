@@ -1,0 +1,21 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { SecurityPage } from '../components/react/sentinel/security-page';
+import { BottomCTA } from '../components/react/sentinel/BottomCTA';
+
+const seoTitle = "Security Center & Trust Metrics | Sentinel";
+const seoDescription = "Review Sentinel's security posture, cryptographic infrastructure, and Zero-Egress guarantees. Built for DORA and EU AI Act strict compliance environments.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load />
+
+  <main class="bg-[#F4F1EA]">
+    <SecurityPage client:load />
+  </main>
+
+  <BottomCTA client:visible />
+  <SovereignFooter client:idle />
+</SovereignLayout>

@@ -1,36 +1,28 @@
-# ── WASM BINARY: 1 year immutable (87KB, never changes between deploys hash) ──
-/*.wasm
-  Cache-Control: public, max-age=31536000, immutable
-
-# ── SECURITY HEADERS (all routes) ────────────────────────────────
 /*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
-  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  X-XSS-Protection: 1; mode=block
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://blob.gettingsentinel.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.gettingsentinel.com; frame-src 'self' https://challenges.cloudflare.com;
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
-# ── STATIC ASSETS: 7-day immutable cache ─────────────────────────
+# Aggressive caching for versioned assets
 /_astro/*
-  Cache-Control: public, max-age=604800, immutable
+  Cache-Control: public, max-age=31536000, immutable
 
-/docs.css
-  Cache-Control: public, max-age=604800, immutable
+# Aggressive caching for static public assets
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
 
 /favicon.ico
-  Cache-Control: public, max-age=604800, immutable
+  Cache-Control: public, max-age=604800
 
 /favicon.svg
-  Cache-Control: public, max-age=604800, immutable
+  Cache-Control: public, max-age=604800
 
-# ── LANDING PAGE: 1 minute cache (live counter TTL) ──────────────
-/
-  Cache-Control: public, max-age=60, stale-while-revalidate=30
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
 
-# ── API: Never cached, never stored ──────────────────────────────
-/api/*
-  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate
-  Expires: 0
-  Pragma: no-cache
-  Surrogate-Control: no-store
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable

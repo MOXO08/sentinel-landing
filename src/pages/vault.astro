@@ -1,0 +1,21 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { FortressVaultPage } from '../components/react/sentinel/fortress-vault-page';
+
+export const prerender = false;
+
+const seoTitle = "Fortress Vault | Sovereign AI Act Document Storage";
+const seoDescription = "Secure your EU AI Act compliance documents in Sentinel's Fortress Vault. HSM-backed, Zero-Egress R2 storage for technical files and risk reports.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load />
+  
+  <main>
+    <FortressVaultPage client:load />
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

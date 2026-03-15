@@ -1,52 +1,78 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import SovereignLayout from '../../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../components/react/sentinel/sovereign-footer';
 export const prerender = true;
 ---
 
-<Layout title="Terms of Service | Sentinel">
-  <main class="min-h-screen pt-32 pb-20 px-6 container mx-auto max-w-3xl">
-    <div class="glass p-8 md:p-12 rounded-[2rem] border border-slate-800/50">
-      <div class="section-label mb-4">LEGAL</div>
-      <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight mb-8">
-        Terms of Service
-      </h1>
+<SovereignLayout title="Terms of Service | Sentinel Infrastructure" description="Terms of service and legal agreement for using the Sentinel Audit API and compliance tools.">
+  <SovereignHeader client:load />
+
+  <main class="bg-[#F4F1EA] py-32">
+    <div class="max-w-screen-md mx-auto px-6">
+      <div class="text-[10px] font-mono font-bold text-[#10b981] uppercase tracking-[0.2em] mb-4">Legal Agreement</div>
+      <h1 class="text-4xl md:text-5xl font-bold text-[#0f172a] mb-12 border-b border-[#cbd5e1] pb-10 tracking-tight">Terms of Service</h1>
       
-      <div class="space-y-8 text-slate-300 font-light leading-relaxed">
+      <div class="prose prose-slate prose-sm max-w-none prose-headings:text-[#0f172a] prose-p:text-[#475569] prose-p:font-light space-y-12">
         <section>
-          <h2 class="text-xl font-bold text-white mb-4">1. Acceptance of Terms</h2>
+          <h2 class="text-xl font-bold mb-4">01. ACCEPTANCE OF TERMS</h2>
           <p>
-            By accessing or using the Sentinel compliance tool and API ("Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.
+            This End User License Agreement (“Agreement”) constitutes a legal and binding contract between the Client (“Licensee”) and Sentinel (“Licensor”). Installing, executing, or using the Sentinel CLI binary and associated rule packages implies unconditional acceptance of these terms.
           </p>
         </section>
 
         <section>
-          <h2 class="text-xl font-bold text-white mb-4">2. Description of Service</h2>
+          <h2 class="text-xl font-bold mb-4">02. LICENSE GRANT AND RESTRICTIONS</h2>
           <p>
-            Sentinel provides technical infrastructure for generating deterministic audit trails, evidence gathering, and risk mapping. The Service analyzes system architectures and model manifests against specific heuristic rules derived from the EU AI Act framework.
+            The Licensor grants a limited, non-exclusive, non-transferable, and revocable license to execute the Software within the Licensee's own infrastructure (including isolated/air-gapped CI/CD environments). The Licensee does NOT have the right to:
           </p>
+          <ul class="list-disc pl-5 space-y-2 mt-4 text-[#475569]">
+            <li>Decompile, decrypt, or reverse-engineer the binary or rule packages (WASM/SRP).</li>
+            <li>Alter or bypass cryptographic signature validation mechanisms (Ed25519) and JWT tokens.</li>
+            <li>Distribute the private license (JWT) to third-party entities outside the organization.</li>
+          </ul>
         </section>
 
-        <section class="bg-red-500/10 border border-red-500/30 p-6 rounded-2xl">
-          <h2 class="text-xl font-bold text-red-400 mb-4">3. No Legal Advice & Limitation of Liability</h2>
-          <p class="mb-4">
-            Sentinel provides <strong>Technical Validation</strong> and <strong>Evidence Gathering</strong> tools. The outputs of our service do not establish automated legal compliance, nor do they replace the counsel of a qualified legal professional.
-          </p>
-          <p class="font-bold text-white uppercase tracking-wide text-sm">
-            Sentinel is a technical tool. Under no circumstances shall Sentinel be liable for regulatory fines, legal costs, or business interruptions.
+        <section class="bg-amber-50 border border-amber-200 p-8 rounded-3xl">
+          <h2 class="text-xl font-bold text-amber-900 mb-4">03. LEGAL ADVICE DISCLAIMER</h2>
+          <p class="mb-4 text-amber-800">
+            The Software is exclusively a technical diagnostic tool. The generated output <strong>does NOT constitute legal advice</strong>, authorized legal audit, or a guarantee of compliance. The Licensor assumes no liability for fines or litigation resulting from the Licensee's use of Artificial Intelligence models.
           </p>
         </section>
 
         <section>
-          <h2 class="text-xl font-bold text-white mb-4">4. Customer Responsibilities</h2>
+          <h2 class="text-xl font-bold mb-4">04. DATA PROCESSING AND ZERO-KNOWLEDGE</h2>
           <p>
-            You are entirely responsible for the inputs you provide to the Service. The technical validation metrics provided by Sentinel cover specific heuristics and rulesets, which may not encompass the entirety of your legal or regulatory obligations.
+            The Software is designed with a "Zero-Knowledge" architecture.
+          </p>
+          <ul class="list-disc pl-5 space-y-2 mt-4 text-[#475569]">
+            <li><strong>Source Code:</strong> The Software does not transmit, store, or exfiltrate source code or the Licensee's internal files.</li>
+            <li><strong>Opt-in Telemetry:</strong> If explicitly enabled, the Software asynchronously transmits only aggregated technical metadata to the Licensor's Edge infrastructure.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">05. LICENSE EXPIRATION AND GRACE PERIOD</h2>
+          <p>
+            Authentication is performed offline via JWT. Upon expiration, the Software enters a <strong>14-day</strong> grace period so as not to block critical CI/CD workflows. At the end of the grace period, the Software will refuse execution (Exit Code 3).
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">06. LIMITATION OF LIABILITY</h2>
+          <p>
+            The Licensor's total cumulative liability shall in no circumstance exceed the amount actually paid by the Licensee for the current annual license.
           </p>
         </section>
       </div>
       
-      <div class="mt-12 pt-8 border-t border-slate-800">
-        <a href="/" class="text-emerald-400 hover:text-emerald-300 font-bold transition-colors">← Return Home</a>
+      <div class="mt-20 pt-10 border-t border-[#cbd5e1]">
+        <a href="/" class="text-[#10b981] hover:text-[#0f172a] font-bold transition-colors inline-flex items-center gap-2">
+          ← Return Home
+        </a>
       </div>
     </div>
   </main>
-</Layout>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

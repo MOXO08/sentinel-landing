@@ -1,0 +1,21 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { SolutionsPage } from '../components/react/sentinel/solutions-page';
+import { BottomCTA } from '../components/react/sentinel/BottomCTA';
+
+const seoTitle = "EU AI Act Solutions | Deterministic Compliance Engines | Sentinel";
+const seoDescription = "Operationalize EU AI Act compliance with Sentinel's deterministic engines. From Article 6 classification to Article 11 technical documentation.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load />
+  
+  <main class="bg-[#F4F1EA]">
+    <SolutionsPage client:load />
+  </main>
+
+  <BottomCTA client:visible />
+  <SovereignFooter client:idle />
+</SovereignLayout>

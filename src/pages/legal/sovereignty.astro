@@ -1,0 +1,60 @@
+---
+import SovereignLayout from '../../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../components/react/sentinel/sovereign-footer';
+export const prerender = true;
+---
+
+<SovereignLayout title="Data Sovereignty Policy | Sentinel Infrastructure" description="Details about Zero-Egress architecture and data security in the Sentinel infrastructure.">
+  <SovereignHeader client:load />
+
+  <main class="bg-[#F4F1EA] py-32">
+    <div class="max-w-screen-md mx-auto px-6">
+      <div class="text-[10px] font-mono font-bold text-[#10b981] uppercase tracking-[0.2em] mb-4">Security and Trust</div>
+      <h1 class="text-4xl md:text-5xl font-bold text-[#0f172a] mb-12 border-b border-[#cbd5e1] pb-10 tracking-tight">Data Sovereignty Policy</h1>
+      
+      <div class="prose prose-slate prose-sm max-w-none prose-headings:text-[#0f172a] prose-p:text-[#475569] prose-p:font-light prose-strong:text-[#0f172a] space-y-12">
+        <section>
+          <h2 class="text-xl font-bold mb-4">01. Zero-Egress Architecture</h2>
+          <p>
+            Sentinel is built on the principle of absolute sovereignty. Unlike traditional SaaS solutions, our audit engine based on <strong>WebAssembly (WASM)</strong> runs exclusively within the client's secure perimeter (browser or CI/CD environment). Processed data — whether source code or AI model metadata — never leaves this isolation.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">02. Deterministic Edge Processing</h2>
+          <p>
+            We utilize <strong>Cloudflare Workers</strong> infrastructure to ensure ultra-fast global processing without storing raw data. The Sentinel engine executes EU AI Act rules in an ephemeral environment, and the only output transmitted to our infrastructure is the cryptographic hash of the compliance verdict.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">03. Immutable Ledger (D1 Ledger)</h2>
+          <p>
+            Compliance proofs are anchored in the <strong>Cloudflare D1</strong> distributed database. This functions as an "append-only" ledger, guaranteeing that audit history cannot be altered. Each entry is cryptographically signed (Ed25519), providing full traceability according to Article 12 of the EU AI Act.
+          </p>
+        </section>
+
+        <section class="bg-white p-8 rounded-3xl border border-[#cbd5e1] shadow-sm">
+          <h2 class="text-xl font-bold text-[#0f172a] mb-4">Sovereign Compilation vs. SaaS API</h2>
+          <p class="mb-4">
+            Sentinel is not an external API that receives your data. It is a compiled library that analyzes your systems under your supervision:
+          </p>
+          <ul class="list-disc pl-6 space-y-2 text-[#475569] font-light text-xs">
+            <li><strong>Mathematical Isolation:</strong> Sandboxed memory via V8 Isolates technology.</li>
+            <li><strong>No Central Persistence:</strong> Sensitive data is not written to any external disk.</li>
+            <li><strong>Verifiable Provenance:</strong> The engine code can be audited to confirm the absence of any exfiltration channels.</li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="mt-20 pt-10 border-t border-[#cbd5e1]">
+        <a href="/" class="text-[#10b981] hover:text-[#0f172a] font-bold transition-colors inline-flex items-center gap-2">
+          ← Back to Main Page
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

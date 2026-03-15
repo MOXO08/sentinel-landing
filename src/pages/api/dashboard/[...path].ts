@@ -12,6 +12,13 @@ function generateToken(prefix = '') {
     return `${prefix}${hex}`;
 }
 
+async function hashKey(key: string) {
+    const msgUint8 = new TextEncoder().encode(key);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function sendMagicLinkEmail(email: string, magicUrl: string) {
     const html = `<!DOCTYPE html><html><body style="font-family:sans-serif;max-width:480px;margin:auto;padding:24px">
     <h2>&#x1F6E1; Sentinel Dashboard</h2>
@@ -27,7 +34,7 @@ async function sendMagicLinkEmail(email: string, magicUrl: string) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             personalizations: [{ to: [{ email }] }],
-            from: { email: 'noreply@sentinel-api.com', name: 'Sentinel API' },
+            from: { email: 'noreply@gettingsentinel.com', name: 'Sentinel API' },
             subject: '&#x1F6E1; Your Sentinel Dashboard access link',
             content: [{ type: 'text/html', value: html }]
         })
@@ -56,18 +63,44 @@ async function getClientByEmail(env: any, email: string) {
 export const POST: APIRoute = async ({ request, locals, params }) => {
     const env = (locals as any).runtime.env;
     const path = params.path;
+    const url = new URL(request.url);
 
     if (path === 'auth/request') {
-        let email;
+        let email, password;
         try {
             const body = await request.json() as any;
             email = body.email?.toLowerCase().trim();
+            password = body.password;
         } catch {
             return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
         }
 
         if (!email || !email.includes('@')) {
             return new Response(JSON.stringify({ error: 'Valid email required' }), { status: 400 });
+        }
+
+        // ── ADMIN PASSWORD BYPASS (Authority Developer Access) ──
+        const ADMIN_EMAIL = 'office@gettingsentinel.com';
+        const ADMIN_PWD = env.ADMIN_PWD; // Set via Cloudflare Dashboard or wrangler secret put
+
+        if (email === ADMIN_EMAIL && password === ADMIN_PWD && ADMIN_PWD) {
+            const sessionToken = generateToken('sess_admin_');
+            await env.CACHE.put(
+                `session:${sessionToken}`,
+                JSON.stringify({ email, client_id: 'admin-sentinel', role: 'admin' }),
+                { expirationTtl: SESSION_TTL }
+            );
+
+            return new Response(JSON.stringify({ 
+                message: 'Welcome back, Admin. Redirecting...',
+                redirect: '/dashboard' 
+            }), {
+                status: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Set-Cookie': `sentinel_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_TTL}`
+                }
+            });
         }
 
         const client = await getClientByEmail(env, email);
@@ -115,12 +148,13 @@ export const POST: APIRoute = async ({ request, locals, params }) => {
         if (client.api_key) await env.CACHE.delete(`apikey:${client.api_key}`);
 
         const newKey = `sntl_live_${generateToken()}`;
+        const newKeyHash = await hashKey(newKey);
         const kvData = { client_id: client.id, plan: client.plan, rpm_limit: client.rpm_limit };
         await env.CACHE.put(`apikey:${newKey}`, JSON.stringify(kvData));
 
         if (env.DB) {
-            await env.DB.prepare('UPDATE clients SET api_key = ? WHERE id = ?')
-                .bind(newKey, client.id).run();
+            await env.DB.prepare('UPDATE clients SET api_key = NULL, api_key_hash = ? WHERE id = ?')
+                .bind(newKeyHash, client.id).run();
         }
 
         return new Response(JSON.stringify({ new_key: newKey }), {
@@ -135,6 +169,7 @@ export const POST: APIRoute = async ({ request, locals, params }) => {
 export const GET: APIRoute = async ({ request, locals, params }) => {
     const env = (locals as any).runtime.env;
     const path = params.path;
+    const url = new URL(request.url);
 
     if (path === 'auth/verify') {
         const token = url.searchParams.get('token');
@@ -204,13 +239,31 @@ export const GET: APIRoute = async ({ request, locals, params }) => {
         }
 
         const result = await env.DB.prepare(
-            `SELECT app_name, version, status, is_compliant, triggered_rules, created_at, request_id, cli_version 
+            `SELECT app_name, version, status, is_compliant, triggered_rules, created_at, request_id, cli_version, verdict 
              FROM audit_logs 
              WHERE client_id = ? 
              ORDER BY created_at DESC LIMIT 50`
         ).bind(client.id).all();
 
         return new Response(JSON.stringify({ logs: result.results || [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
+    if (path === 'api/threats') {
+        if (!env.DB || !client) {
+            return new Response(JSON.stringify({ threats: [] }), { status: 200 });
+        }
+
+        const result = await env.DB.prepare(
+            `SELECT id, incident_type, ip_address, endpoint, colo_node, severity, created_at 
+             FROM threat_intel 
+             ORDER BY created_at DESC 
+             LIMIT 10`
+        ).all();
+
+        return new Response(JSON.stringify({ threats: result.results || [] }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });

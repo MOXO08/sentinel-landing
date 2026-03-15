@@ -115,34 +115,46 @@ const signatureHash = report?.Signature || '0x' + Array.from({length: 40}, () =>
             z-index: 10;
         }
 
+        .header .seal {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
         .header h1 {
-            font-size: 24px;
+            font-size: 28px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             margin: 0 0 10px 0;
+            font-weight: 800;
         }
 
         .header h2 {
             font-size: 14px;
-            font-weight: 400;
+            font-weight: 600;
             color: var(--text-muted);
             margin: 0;
+            letter-spacing: 1px;
         }
 
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             position: relative;
             z-index: 10;
         }
 
         .section-title {
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border-color);
+            letter-spacing: 1.5px;
+            border-bottom: 1px solid var(--text-main);
             padding-bottom: 5px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .grid-data {
@@ -244,21 +256,33 @@ const signatureHash = report?.Signature || '0x' + Array.from({length: 40}, () =>
             <div class="watermark">DRAFT COPY</div>
 
             <div class="header">
-                <h1>Draft EU Conformity Assessment</h1>
-                <h2>Prepared in reference to Regulation (EU) 2024/1689 (Artificial Intelligence Act) - Article 43</h2>
+                <svg class="seal" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="48" stroke="#0f172a" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="42" stroke="#0f172a" stroke-width="1" stroke-dasharray="2 2"/>
+                    <path d="M35 50L45 60L65 40" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <text x="50" y="80" text-anchor="middle" font-family="Inter" font-size="8" font-weight="800" fill="#0f172a">SENTINEL EDGE</text>
+                </svg>
+                <h1>Certificate of Conformity</h1>
+                <h2>Regulation (EU) 2024/1689 (Artificial Intelligence Act) - Article 43</h2>
             </div>
 
             <div class="section">
-                <div class="section-title">1. System Identification</div>
+                <div class="section-title">
+                    <span>1. System Identification</span>
+                    <span style="font-size: 9px; color: var(--text-muted);">REF: SNTL-PRO-ID-{id.substring(0,8).toUpperCase()}</span>
+                </div>
                 <div class="grid-data">
                     <div class="label">Repository / System Name:</div>
-                    <div style="font-weight: bold;">{report.Repo_ID}</div>
+                    <div style="font-weight: bold; text-transform: uppercase;">{report.Repo_ID}</div>
                     
-                    <div class="label">Architecture Version:</div>
-                    <div class="mono-text">{report.payload.version || "1.0.0"}</div>
+                    <div class="label">Engine Version:</div>
+                    <div class="mono-text">Sentinel WASM v2.1 (Production)</div>
 
-                    <div class="label">Cryptographic Commit:</div>
-                    <div class="mono-text">{report.Commit_Hash}</div>
+                    <div class="label">Audit Jurisdiction:</div>
+                    <div>EEUR-1 Frankfurt (EU-Resident Infrastructure)</div>
+
+                    <div class="label">Processing Method:</div>
+                    <div>Zero-Egress WASM Enforcement (Deterministic)</div>
 
                     <div class="label">Date of Technical Eval:</div>
                     <div>{dateStr}</div>

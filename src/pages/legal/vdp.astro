@@ -1,0 +1,124 @@
+---
+import SovereignLayout from '../../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../components/react/sentinel/sovereign-footer';
+export const prerender = true;
+---
+
+<SovereignLayout title="Vulnerability Disclosure (VDP) | Sentinel Infrastructure" description="Security vulnerability reporting procedure in the Sentinel ecosystem.">
+  <SovereignHeader client:load />
+
+  <main class="bg-[#F4F1EA] py-32">
+    <div class="max-w-screen-md mx-auto px-6">
+      <div class="text-[10px] font-mono font-bold text-[#ef4444] uppercase tracking-[0.2em] mb-4">Security</div>
+      <h1 class="text-4xl md:text-5xl font-bold text-[#0f172a] mb-12 border-b border-[#cbd5e1] pb-10 tracking-tight">Vulnerability Disclosure</h1>
+      
+      <div class="prose prose-slate prose-sm max-w-none prose-headings:text-[#0f172a] prose-p:text-[#475569] prose-p:font-light space-y-12">
+        <section>
+          <h2 class="text-xl font-bold mb-4">Our Commitment</h2>
+          <p>
+            The security of the Sentinel infrastructure is our absolute priority. We appreciate the contribution of security researchers and the technical community in identifying potential risks. We are committed to analyzing every report with professionalism and remediating confirmed vulnerabilities as quickly as possible.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">Safe Harbor (Legal Protection)</h2>
+          <p>
+            We strongly support the protection of good-faith researchers. As long as your activity complies with this policy, we consider testing to be authorized by law. <strong>We will not initiate civil legal action and will not file criminal complaints</strong> for security research performed accidentally or in good faith.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">Scope of Testing</h2>
+          <p>Please limit your tests strictly to the following systems:</p>
+          <ul class="list-disc pl-6 space-y-2 mt-2 font-mono text-xs">
+            <li><code>*.gettingsentinel.com</code></li>
+            <li><code>api.gettingsentinel.com</code> (WASM Engine)</li>
+            <li>Platforma CLI (<code>npx @sentinel/sdk</code>)</li>
+          </ul>
+          <p class="mt-4 text-[#ef4444] text-xs font-bold">
+            Third-party services are explicitly excluded (e.g., Stripe, Lemon Squeezy, core Cloudflare infrastructure, SendGrid).
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">How to Report</h2>
+          <p>
+            Please contact us directly and privately at:
+          </p>
+          <a href="mailto:security@gettingsentinel.com" class="block bg-[#0f172a] p-6 rounded-2xl text-white font-mono text-center my-6 hover:bg-[#c5832b] transition-colors">
+             security@gettingsentinel.com
+          </a>
+          <p>
+            In your report, include the reproduction steps (PoC), a summary of the impact, and contact details.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">SLA (Response Times)</h2>
+          <ul class="list-disc pl-6 space-y-2 text-[#475569] font-light">
+            <li><strong>Acknowledge:</strong> We acknowledge receipt of the report within <strong>a maximum of 48 hours</strong>.</li>
+            <li><strong>Triage:</strong> We confirm the validity of the vulnerability within <strong>5 business days</strong>.</li>
+            <li><strong>Remediation:</strong> We promise to resolve critical issues in <strong>under 24 hours</strong> (Zero-Day/Zero-Egress SLA).</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4">Rules of Engagement</h2>
+          <p> To maintain "Safe Harbor" coverage, we ask you to respect the following principles: </p>
+          <ul class="list-disc pl-6 space-y-4 mt-6 text-[#475569] font-light">
+            <li><strong>No Data Exfiltration:</strong> Do not access, modify, or destroy other users' data (stop immediately once you demonstrate access).</li>
+            <li><strong>No Denial of Service:</strong> Do not launch DoS/DDoS attacks, spam, or automated endurance tests.</li>
+            <li><strong>Coordinated Disclosure:</strong> Please give us 90 days to remediate the issue globally before any publication of the vulnerability (Coordinated Vulnerability Disclosure).</li>
+          </ul>
+        </section>
+
+        <section class="bg-[#fef2f2] border border-[#fecaca] p-8 rounded-3xl">
+          <h2 class="text-xl font-bold text-[#991b1b] mb-4">What IS NOT Reported (Out of Scope)</h2>
+          <ul class="list-disc pl-6 space-y-2 text-[#b91c1c] font-light text-xs">
+            <li>Minor UI interpretation differences that do not affect security.</li>
+            <li>Issues related to missing DNSSEC headers or other standard configurations that do not directly lead to an exploit.</li>
+            <li>Social engineering or physical attacks against our staff or offices.</li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="mt-20 pt-10 border-t border-[#cbd5e1]">
+        <a href="/" class="text-[#10b981] hover:text-[#0f172a] font-bold transition-colors inline-flex items-center gap-2">
+          ← Back to Main Page
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>
+
+<script>
+  // Failsafe for mailto links with copy-to-clipboard fallback
+  document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      // Get exact email from href
+      const href = link.getAttribute('href');
+      if (!href) return;
+      const email = href.replace('mailto:', '');
+      
+      // 1. Copy to clipboard (Expert-grade fallback)
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(email).catch(() => {});
+      }
+
+      // 2. Show feedback visually
+      const originalText = link.innerHTML;
+      link.classList.add('!bg-[#10b981]', 'scale-[1.02]');
+      link.innerHTML = '<span>Email Copied to Clipboard!</span>';
+      
+      setTimeout(() => {
+        link.classList.remove('!bg-[#10b981]', 'scale-[1.02]');
+        link.innerHTML = originalText;
+      }, 2000);
+      
+      // We DO NOT call e.preventDefault() here to let the native mailto work
+    });
+  });
+</script>

@@ -1,0 +1,97 @@
+---
+import { Copy } from "lucide-react";
+---
+
+<section id="quickstart" class="bg-[#F4F1EA] py-24 border-t border-[#c5832b]/10">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-5xl font-black text-[#0f172a] mb-6 tracking-tight">Try Sentinel in 30 seconds</h2>
+      <p class="text-lg text-[#475569] max-w-2xl mx-auto font-light">
+        Install Sentinel, run a scan, and surface compliance gaps in seconds.
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-12 items-start">
+      {/* Step 1: Install */}
+      <div class="space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-full bg-[#0f172a] text-[#F4F1EA] flex items-center justify-center font-bold shadow-lg">1</div>
+          <h3 class="text-xl font-bold text-[#0f172a]">Install</h3>
+        </div>
+        <div class="relative group">
+          <div class="bg-white border border-[#e2e8f0] rounded-xl p-4 font-mono text-sm relative overflow-hidden transition-all group-hover:border-[#c5832b]/30 shadow-sm">
+            <code id="step1-cmd">npx @radu_api/sentinel-scan</code>
+            <button type="button" aria-label="Copy install command" class="copy-trigger absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-[#0f172a]/5 text-[#64748b] transition-colors" data-target="step1-cmd">
+              <Copy className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <p class="text-sm text-[#475569]">Pull the latest Sentinel engine directly via NPX. No global installation needed.</p>
+      </div>
+
+      {/* Step 2: Run */}
+      <div class="space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-full bg-[#0f172a] text-[#F4F1EA] flex items-center justify-center font-bold shadow-lg">2</div>
+          <h3 class="text-xl font-bold text-[#0f172a]">Run a scan</h3>
+        </div>
+        <div class="relative group">
+          <div class="bg-white border border-[#e2e8f0] rounded-xl p-4 font-mono text-sm relative overflow-hidden transition-all group-hover:border-[#c5832b]/30 shadow-sm">
+            <code id="step2-cmd">npx @radu_api/sentinel-scan .</code>
+            <button type="button" aria-label="Copy scan command" class="copy-trigger absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-[#0f172a]/5 text-[#64748b] transition-colors" data-target="step2-cmd">
+              <Copy className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <p class="text-sm text-[#475569]">Scan your local repository and surface compliance gaps, missing documentation, and actionable rule violations.</p>
+      </div>
+
+      {/* Step 3: Result */}
+      <div class="space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-full bg-[#0f172a] text-[#F4F1EA] flex items-center justify-center font-bold shadow-lg">3</div>
+          <h3 class="text-xl font-bold text-[#0f172a]">See the result</h3>
+        </div>
+        <div class="bg-[#0f172a] rounded-xl p-5 shadow-2xl border border-[#c5832b]/30 font-mono text-xs md:text-sm">
+          <div class="flex gap-1.5 mb-4">
+            <div class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-[#fbbf24]"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-[#22c55e]"></div>
+          </div>
+          <div class="space-y-2">
+            <div class="text-[#ef4444] font-bold">❌ Sentinel compliance check failed</div>
+            <div class="text-[#94a3b8] mt-4">
+              <span class="text-[#ef4444] font-bold">✖ EUAI-TECH-001</span> Systems interacting with humans must be transparent about being an AI.
+            </div>
+            <div class="text-[#94a3b8]">
+              <span class="text-[#ef4444] font-bold">✖ EUAI-DOC-001</span> Missing required document: docs/compliance/risk_management.md
+            </div>
+          </div>
+        </div>
+        <p class="text-sm text-[#475569]">
+          Sentinel scans your AI system, detects regulatory gaps, and generates technical evidence required for compliance audits.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.getElementById('quickstart')?.addEventListener('click', async (e) => {
+    const button = (e.target as HTMLElement).closest('.copy-trigger');
+    if (!button) return;
+
+    const targetId = button.getAttribute('data-target');
+    const text = targetId ? document.getElementById(targetId)?.textContent?.trim() : null;
+    if (!text) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      const originalInner = button.innerHTML;
+      button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => { button.innerHTML = originalInner; }, 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  });
+</script>

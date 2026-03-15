@@ -30,6 +30,13 @@ function generateApiToken() {
     return `sntl_live_${hex}`;
 }
 
+async function hashKey(key: string) {
+    const msgUint8 = new TextEncoder().encode(key);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function sendWelcomeEmail(toEmail: string, apiToken: string) {
     const curlSnippet = `curl -X POST https://gettingsentinel.com/api/audit \\
   -H "Authorization: Bearer ${apiToken}" \\
@@ -77,18 +84,37 @@ h1 { color: #0d1117; }
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
-    const env = (locals as any).runtime.env;
+    // SAFE ENV ACCESS - Prevents top-level crash
+    const runtime = (locals as any)?.runtime;
+    const env = runtime?.env || (locals as any)?.env || {};
+
+    const debugInfo: any = {
+        has_db: !!env.DB,
+        has_cache: !!env.CACHE,
+        keys: Object.keys(env || {}),
+        runtime_exists: !!runtime,
+        timestamp: new Date().toISOString(),
+        version: "V3_VERIFIED_22:15"
+    };
+
+    console.log(`[LS-WEBHOOK-V3] --- NEW REQUEST --- Debug: ${JSON.stringify(debugInfo)}`);
+
     const body = await request.text();
     const signature = request.headers.get('x-signature') || '';
 
     if (!env.LEMONSQUEEZY_WEBHOOK_SECRET) {
-        console.error('LEMONSQUEEZY_WEBHOOK_SECRET not configured');
-        return new Response(JSON.stringify({ error: 'Webhook secret not configured' }), { status: 500 });
+        console.error('[LS-WEBHOOK-V3] CRITICAL ERROR: LEMONSQUEEZY_WEBHOOK_SECRET is missing from environment');
+        return new Response(JSON.stringify({
+            error: 'Secret missing',
+            debug: debugInfo,
+            status: "DEPLOYMENT_MISCONFIGURED"
+        }), { status: 500 });
     }
 
     const isValid = await verifyLemonSqueezySignature(body, signature, env.LEMONSQUEEZY_WEBHOOK_SECRET);
     if (!isValid) {
-        return new Response(JSON.stringify({ error: 'Invalid signature' }), { status: 401 });
+        console.error('[LS-WEBHOOK-V3] UNAUTHORIZED: Invalid Signature');
+        return new Response(JSON.stringify({ error: 'Invalid signature', debug: debugInfo }), { status: 401 });
     }
 
     let payload;
@@ -99,56 +125,130 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const eventName = payload.meta.event_name;
+    const eventId = payload.data.id; // order_id or subscription_id
+    console.log(`[LS-WEBHOOK-V3] Event Type: ${eventName} | Event ID: ${eventId}`);
 
-    if (eventName === 'order_created' || eventName === 'subscription_created') {
-        const attributes = payload.data.attributes;
-        const customerEmail = attributes.user_email || attributes.customer_email;
-        const variantId = String(attributes.variant_id); // This is what comes in the webhook
-
-        // Mapping Variant IDs (extracted from URLs provided by user)
-        // Founder: a4afd393...
-        // Freemium: 4239b25b...
-        // Scale-up: 2e6f810b...
-        // Note: LS numeric IDs are usually preferred, but we'll use a safer logic if possible.
-        // For now, we'll try to match the variant name or ID if available.
-
-        let planType = 'founder';
-        if (attributes.variant_name?.toLowerCase().includes('freemium')) planType = 'freemium';
-        if (attributes.variant_name?.toLowerCase().includes('scale-up')) planType = 'scaleup';
-
-        const apiToken = generateApiToken();
-        const clientId = `client_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-        const rpmLimit = planType === 'scaleup' ? 300 : (planType === 'freemium' ? 20 : 80);
-
-        // Save to KV
-        await env.CACHE.put(
-            `apikey:${apiToken}`,
-            JSON.stringify({ client_id: clientId, plan: planType, rpm_limit: rpmLimit }),
-            { metadata: { email: customerEmail } }
-        );
-
-        // Save to D1
-        if (env.DB) {
-            try {
-                await env.DB.prepare(
-                    `INSERT INTO clients (id, email, plan, status, api_key, rpm_limit)
-                     VALUES (?1, ?2, ?3, 'active', ?4, ?5)`
-                ).bind(clientId, customerEmail, planType, apiToken, rpmLimit).run();
-            } catch (err) {
-                console.error('D1 client insert error:', err);
-            }
-        }
-
-        // Send Email
-        try {
-            await sendWelcomeEmail(customerEmail, apiToken);
-        } catch (err) {
-            console.error('Email send error:', err);
+    // ── REPLAY ATTACK PROTECTION ──
+    if (env.CACHE) {
+        const alreadyProcessed = await env.CACHE.get(`ls_event:${eventId}`);
+        if (alreadyProcessed) {
+            console.warn(`[LS-WEBHOOK-V3] Duplicate event detected and ignored: ${eventId}`);
+            return new Response(JSON.stringify({ received: true, duplicate: true }), { status: 200 });
         }
     }
 
-    return new Response(JSON.stringify({ received: true }), {
+    let updateResult = { changes: 0, error: null as string | null };
+
+    if (eventName === 'order_created' || eventName === 'subscription_created') {
+        const attributes = payload.data.attributes;
+        const customerEmail = (attributes.user_email || attributes.customer_email || '').toLowerCase().trim();
+        const variantId = String(attributes.variant_id);
+
+        console.log(`[LS-WEBHOOK-V3] Processing Payment for: ${customerEmail} (Variant: ${variantId})`);
+
+        if (!customerEmail) {
+            return new Response(JSON.stringify({ error: 'No email found in LS payload' }), { status: 400 });
+        }
+
+        const apiToken = generateApiToken();
+        let planType = 'founder';
+        const variantName = (attributes.variant_name || '').toLowerCase();
+
+        // Deterministic Mapping (P1 Audit Remediation)
+        const fortressId = env.LEMON_FORTRESS_ID || '873708';
+        const enterpriseId = env.LEMON_ENTERPRISE_ID || '868657';
+        const proId = env.LEMON_PRO_ID || '868655';
+
+        if (variantId === fortressId || variantName.includes('fortress')) planType = 'fortress';
+        else if (variantId === enterpriseId || variantName.includes('watchtower')) planType = 'watchtower';
+        else if (variantId === proId || variantName.includes('scale-up')) planType = 'scaleup';
+        else if (variantName.includes('freemium')) planType = 'freemium';
+
+        const rpmLimit = planType === 'scaleup' || planType === 'fortress' ? 300 : (planType === 'freemium' ? 20 : 80);
+
+        // 1. KV Authentication Sync
+        try {
+            if (env.CACHE) {
+                await env.CACHE.put(
+                    `apikey:${apiToken}`,
+                    JSON.stringify({ email: customerEmail, plan: planType, rpm_limit: rpmLimit }),
+                    { metadata: { active: true, created_at: new Date().toISOString() } }
+                );
+                console.log('[LS-WEBHOOK-V3] KV Auth Token generated and stored');
+            } else {
+                console.warn('[LS-WEBHOOK-V3] WARNING: CACHE (KV) binding is missing');
+            }
+        } catch (kvErr) {
+            console.error('[LS-WEBHOOK-V3] ERROR writing to KV:', kvErr);
+        }
+
+        // 2. D1 Persistence Update
+        if (env.DB) {
+            try {
+                console.log(`[LS-WEBHOOK-V3] STARTING D1 UPDATE for ${customerEmail}...`);
+
+                // Attempt to update existing reservation
+                const updateRes = await env.DB.prepare(
+                    `UPDATE reservations 
+                     SET is_paid = 1, plan = ?1 
+                     WHERE LOWER(TRIM(email)) = ?2`
+                ).bind(planType, customerEmail).run();
+
+                updateResult.changes = updateRes.meta.changes;
+                console.log(`[LS-WEBHOOK-V3] D1 UPDATE: ${updateRes.meta.changes} rows affected.`);
+
+                // FALLBACK: If no reservation exists, create a permanent client entry
+                if (updateRes.meta.changes === 0) {
+                    console.warn(`[LS-WEBHOOK-V3] No reservation found for ${customerEmail}. Auto-provisioning new client.`);
+                    const clientId = `client_${Date.now()}`;
+                    const hashedToken = await hashKey(apiToken); // Hash the key securely
+
+                    const insertRes = await env.DB.prepare(
+                        `INSERT OR IGNORE INTO clients (id, email, plan, status, api_key_hash, rpm_limit)
+                         VALUES (?1, ?2, ?3, 'active', ?4, ?5)`
+                    ).bind(clientId, customerEmail, planType, hashedToken, rpmLimit).run();
+
+                    if (insertRes.success) {
+                        console.log(`[LS-WEBHOOK-V3] New client created successfully: ${clientId}`);
+                        updateResult.changes = 1; // Mark as successful for the response
+                    }
+                }
+            } catch (err: any) {
+                console.error('[LS-WEBHOOK-V3] CRITICAL D1 EXECUTION ERROR:', err.message);
+                updateResult.error = err.message;
+                return new Response(JSON.stringify({ error: 'DB_COMMIT_FAILURE', details: err.message, debug: debugInfo }), { status: 500 });
+            }
+        } else {
+            console.error('[LS-WEBHOOK-V3] CRITICAL ERROR: DB (D1) binding is missing');
+            return new Response(JSON.stringify({ error: 'DB_BINDING_MISSING', debug: debugInfo }), { status: 500 });
+        }
+
+        try {
+            await sendWelcomeEmail(customerEmail, apiToken);
+            console.log(`[LS-WEBHOOK-V3] Welcome email dispatched to ${customerEmail}`);
+        } catch (err) {
+            console.error('[LS-WEBHOOK-V3] NON-CRITICAL: Email delivery failed:', err);
+        }
+
+        // Mark as processed to prevent replay
+        if (env.CACHE) {
+            await env.CACHE.put(`ls_event:${eventId}`, 'PROCESSED', { expirationTtl: 60 * 60 * 24 * 7 });
+        }
+    }
+
+    console.log(`[LS-WEBHOOK-V3] SUCCESS. Event ${eventName} processed. Returning 200 OK.`);
+
+    return new Response(JSON.stringify({
+        received: true,
+        version: "V3.25_PROVISION_ACTIVE",
+        event: eventName,
+        updated_rows: updateResult.changes,
+        debug: debugInfo
+    }), {
         status: 200,
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Sentinel-Status': 'PROVISION_ACTIVE'
+        }
     });
 };

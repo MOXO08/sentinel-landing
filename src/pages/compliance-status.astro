@@ -1,0 +1,21 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { ComplianceStatusPage } from '../components/react/sentinel/compliance-status-page';
+
+export const prerender = false;
+
+const seoTitle = "Sentinel Platform Status | Real-time AI Act Infrastructure Health";
+const seoDescription = "Live status of Sentinel's deterministic engines, Regulation KV store, and Fortress Vault availability.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load />
+  
+  <main class="bg-[#F4F1EA]">
+    <ComplianceStatusPage client:load />
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

@@ -19,7 +19,7 @@
     <a class="logo" href="/">&#x1F6E1; <span>Sentinel</span> API</a>
     <div style="display:flex;gap:1rem;align-items:center;">
       <a href="/dashboard/login" style="color:var(--gray);text-decoration:none;font-size:0.9rem;">Sign In</a>
-      <a href="https://buy.stripe.com/PLACEHOLDER" class="nav-cta">Get Pro Key &rarr;</a>
+      <a href="/pricing" class="nav-cta">Get Pro Key &rarr;</a>
     </div>
   </nav>
 
@@ -46,13 +46,13 @@
       <p>Integrate EU AI Act compliance checks into your application in under 10 minutes.</p>
 
       <div class="alert">
-        <strong>Base URL:</strong> <code>https://sentinel-api.sentinel-moxo.workers.dev</code>
+        <strong>Base URL:</strong> <code>https://api.gettingsentinel.com/v1</code>
       </div>
 
       <h2 id="quickstart">Quickstart</h2>
       <p>Send a <strong>POST request</strong> with your manifest JSON and API key:</p>
 
-      <pre id="curl"><div class="lang-label">cURL</div><code><span class="hl-green">curl</span> -X POST https://sentinel-api.sentinel-moxo.workers.dev \
+      <pre id="curl"><div class="lang-label">cURL</div><code><span class="hl-green">curl</span> -X POST https://api.gettingsentinel.com/v1/audit \
   -H <span class="hl-str">"Authorization: Bearer sntl_live_YOUR_KEY"</span> \
   -H <span class="hl-str">"Content-Type: application/json"</span> \
   -d <span class="hl-str">'{
@@ -211,7 +211,7 @@
       </table>
 
       <h2 id="nodejs">Node.js</h2>
-      <pre><div class="lang-label">JavaScript</div><code><span class="hl-purple">const</span> response = <span class="hl-purple">await</span> fetch(<span class="hl-str">'https://sentinel-api.sentinel-moxo.workers.dev'</span>, &#123;
+      <pre><div class="lang-label">JavaScript</div><code><span class="hl-purple">const</span> response = <span class="hl-purple">await</span> fetch(<span class="hl-str">'https://api.gettingsentinel.com/v1/audit'</span>, &#123;
   method: <span class="hl-str">'POST'</span>,
   headers: &#123;
     <span class="hl-str">'Authorization'</span>: <span class="hl-str">`Bearer $&#123;process.env.SENTINEL_API_KEY&#125;`</span>,
@@ -232,7 +232,7 @@
       <pre><div class="lang-label">Python</div><code><span class="hl-purple">import</span> requests, os
 
 response = requests.post(
-    <span class="hl-str">'https://sentinel-api.sentinel-moxo.workers.dev'</span>,
+    <span class="hl-str">'https://api.gettingsentinel.com/v1/audit'</span>,
     headers=&#123;<span class="hl-str">'Authorization'</span>: <span class="hl-str">f"Bearer &#123;os.environ['SENTINEL_API_KEY']&#125;"</span>&#125;,
     json=&#123;
         <span class="hl-str">'app_name'</span>: <span class="hl-str">'my-ai-app'</span>, <span class="hl-str">'version'</span>: <span class="hl-str">'1.0.0'</span>,
