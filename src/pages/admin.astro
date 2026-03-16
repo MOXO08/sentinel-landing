@@ -12,6 +12,7 @@ let metrics = {
   uniqueEnvironments: 0,
   projectsScanned: 0,
   cliVersions: [] as { version: string, count: number }[],
+  executionContexts: [] as { context: string, count: number }[],
   recentScans: [] as any[]
 };
 
@@ -39,7 +40,16 @@ try {
     `).all();
     metrics.cliVersions = cliResult.results || [];
 
-    // 5. Last 20 Scans
+    // 5. Execution Context Breakdown
+    const contextResult = await env.DB.prepare(`
+      SELECT execution_context, COUNT(*) as count 
+      FROM audit_logs 
+      GROUP BY execution_context 
+      ORDER BY count DESC
+    `).all();
+    metrics.executionContexts = contextResult.results || [];
+
+    // 6. Last 20 Scans
     const recentResult = await env.DB.prepare(`
       SELECT app_name, cli_version, status, created_at, client_id, project_hash
       FROM audit_logs
@@ -154,6 +164,26 @@ try {
               {metrics.cliVersions.length === 0 && (
                 <p class="text-[11px] text-[#94a3b8] italic text-center">No version data</p>
               )}
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden shadow-sm p-6">
+            <h2 class="text-xs font-bold text-[#0f172a] uppercase tracking-widest mb-6 pb-4 border-b border-[#f1f5f9]">Execution Context</h2>
+            <div class="space-y-4">
+              {metrics.executionContexts.map((ctx) => (
+                <div>
+                  <div class="flex justify-between text-[11px] font-mono mb-1">
+                    <span class="text-[#64748b]">{ctx.execution_context}</span>
+                    <span class="text-[#0f172a] font-bold">{ctx.count} scans</span>
+                  </div>
+                  <div class="w-full bg-[#f1f5f9] h-1.5 rounded-full overflow-hidden">
+                    <div 
+                      class="bg-[#10b981] h-full rounded-full" 
+                      style={`width: ${Math.min(100, (ctx.count / metrics.totalAudits) * 100)}%`}
+                    ></div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
