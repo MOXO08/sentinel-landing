@@ -4,10 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sentinel API — Developer Documentation</title>
+  <title>Sentinel Docs – EU AI Act Compliance Infrastructure</title>
   <meta name="description"
-    content="Sentinel API integration guide. Data contract, code snippets (cURL, Node.js, Python), and verdict reference." />
+    content="Official Sentinel documentation for setup, scanning workflows, rule system, CI/CD integration, and deterministic EU AI Act compliance infrastructure." />
+  <link rel="canonical" href="https://gettingsentinel.com/docs" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
     rel="stylesheet" />
@@ -26,30 +28,33 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="sidebar-section">Getting Started</div>
-      <a href="#quickstart">Quickstart</a>
+      <a href="#what-is-sentinel">What Sentinel Is</a>
+      <a href="#quickstart">Quick Start</a>
       <a href="#authentication">Authentication</a>
       <div class="sidebar-section">API Reference</div>
       <a href="#endpoint">POST /audit</a>
       <a href="#data-contract">Data Contract</a>
-      <a href="#flags">Declared Flags</a>
-      <a href="#verdicts">Verdict Reference</a>
+      <a href="#flags">What Sentinel Scans</a>
+      <a href="#verdicts">Output / Audit Signals</a>
       <div class="sidebar-section">Code Examples</div>
       <a href="#curl">cURL</a>
       <a href="#nodejs">Node.js</a>
       <a href="#python">Python</a>
       <div class="sidebar-section">CLI</div>
-      <a href="#cli">sentinel-scan (offline)</a>
+      <a href="#cli">CI/CD Integration</a>
     </aside>
 
     <main class="content">
       <h1>Developer Documentation</h1>
-      <p>Integrate EU AI Act compliance checks into your application in under 10 minutes.</p>
+      <h2 id="what-is-sentinel">What Sentinel Is</h2>
+      <p>Sentinel is a deterministic compliance infrastructure for teams building, shipping, or auditing AI systems
+        under the EU AI Act. Integrate compliance checks into your application in under 10 minutes.</p>
 
       <div class="alert">
         <strong>Base URL:</strong> <code>https://api.gettingsentinel.com/v1</code>
       </div>
 
-      <h2 id="quickstart">Quickstart</h2>
+      <h2 id="quickstart">Quick Start</h2>
       <p>Send a <strong>POST request</strong> with your manifest JSON and API key:</p>
 
       <pre id="curl"><div class="lang-label">cURL</div><code><span class="hl-green">curl</span> -X POST https://api.gettingsentinel.com/v1/audit \
@@ -86,8 +91,8 @@
   <span class="hl-key">"fallback_ai_verification"</span>: <span class="hl-str">boolean</span> <span class="hl-comment">// optional</span>
 &#125;</code></pre>
 
-      <h2 id="flags">Declared Flags Reference</h2>
-      <h3>Required flags (High-risk AI)</h3>
+      <h2 id="flags">What Sentinel Scans</h2>
+      <h3>Rule Registry: Required flags (High-risk AI)</h3>
       <table>
         <thead>
           <tr>
@@ -172,7 +177,7 @@
         </tbody>
       </table>
 
-      <h2 id="verdicts">Verdict Reference</h2>
+      <h2 id="verdicts">Output / Audit Signals</h2>
       <table>
         <thead>
           <tr>
@@ -242,7 +247,7 @@ response = requests.post(
 )
 <span class="hl-purple">assert</span> response.json()[<span class="hl-str">'verdict'</span>] == <span class="hl-str">'COMPLIANT'</span></code></pre>
 
-      <h2 id="cli">CLI (Offline)</h2>
+      <h2 id="cli">CI/CD Integration</h2>
       <p>Zero network calls — runs the EU AI Act ruleset locally via WASM:</p>
       <pre><div class="lang-label">bash</div><code><span class="hl-comment"># Install once</span>
 npm install -g @radu_api/sentinel-scan
