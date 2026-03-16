@@ -1,0 +1,31 @@
+name: Sentinel Autonomous Discovery
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Run at 02:00 UTC every day
+  workflow_dispatch: # Enable manual trigger
+
+jobs:
+  discovery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          npm install
+          # The script relies on sentinel-cli/bin/sentinel-scan.js
+          # Ensure it exists or download the binary if needed
+          # For development, we assume it's in the repo
+
+      - name: Run Sentinel Discovery Engine
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SENTINEL_API_KEY: ${{ secrets.SENTINEL_API_KEY }}
+        run: node sentinel-discovery.js

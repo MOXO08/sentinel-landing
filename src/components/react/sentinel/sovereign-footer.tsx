@@ -35,6 +35,7 @@ export function SovereignFooter() {
             <ul className="flex flex-col gap-2.5">
               {[
                 { label: "Scanners", href: "/" },
+                { label: "Intelligence Layer", href: "/ai-compliance" },
                 { label: "Documentation", href: "/docs" },
                 { label: "API Reference", href: "/api" },
                 { label: "Pricing", href: "/pricing" },

@@ -1,0 +1,99 @@
+---
+import SovereignLayout from '../../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../components/react/sentinel/sovereign-footer';
+
+export const prerender = false;
+
+const env = (Astro.locals as any).runtime?.env;
+
+let reports = [];
+
+try {
+  if (env?.DB) {
+    const result = await env.DB.prepare(`
+      SELECT repo_name, slug, stars, audit_score, risk_level, scan_timestamp
+      FROM discovery_audits 
+      WHERE is_public = 1
+      ORDER BY scan_timestamp DESC
+      LIMIT 100
+    `).all();
+    reports = result.results || [];
+  }
+} catch (e) {
+  console.error("Reports Fetch Error:", e);
+}
+
+const title = "AI Compliance Technical Reports | Sentinel Intelligence Layer";
+const description = "Public technical assessments and compliance patterns for global AI repositories based on the EU AI Act framework.";
+---
+
+<SovereignLayout title={title} description={description}>
+  <SovereignHeader client:idle />
+  
+  <main class="bg-[#F4F1EA] pt-32 pb-24 px-6">
+    <div class="max-w-6xl mx-auto">
+      
+      <header class="mb-16 border-b border-[#0f172a]/10 pb-12">
+        <h1 class="text-5xl font-black text-[#0f172a] mb-6 tracking-tight">Intelligence Layer</h1>
+        <p class="text-xl text-[#64748b] max-w-2xl leading-relaxed">
+          Sentinel's autonomous discovery engine continuously maps the AI ecosystem. Here we present neutral technical assessments of public AI repositories to improve transparency and compliance standards.
+        </p>
+      </header>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {reports.map((report) => (
+          <a href={`/ai-compliance/${report.slug}`} class="group bg-white p-8 rounded-3xl border border-[#e2e8f0] shadow-sm hover:shadow-xl hover:border-[#3b82f6] transition-all">
+            <div class="flex justify-between items-start mb-6">
+              <h2 class="text-xl font-bold text-[#0f172a] group-hover:text-[#3b82f6] line-clamp-1">{report.repo_name}</h2>
+              <span class="text-[10px] font-mono text-[#94a3b8]">{report.stars} ⭐</span>
+            </div>
+            
+            <div class="flex items-center gap-4 mb-8">
+              <div class="text-2xl font-black text-[#0f172a]">{report.audit_score}<span class="text-xs opacity-30">/100</span></div>
+              <div class={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${report.risk_level === 'Low' ? 'bg-[#10b981]/10 text-[#059669]' : (report.risk_level === 'Medium' ? 'bg-[#f59e0b]/10 text-[#d97706]' : 'bg-[#ef4444]/10 text-[#dc2626]')}`}>
+                {report.risk_level} Risk
+              </div>
+            </div>
+
+            <div class="pt-6 border-t border-[#f1f5f9] flex justify-between items-center">
+              <span class="text-[10px] font-mono text-[#94a3b8]">{new Date(report.scan_timestamp).toLocaleDateString()}</span>
+              <span class="text-xs font-bold text-[#3b82f6] opacity-0 group-hover:opacity-100 transition-opacity">View Report &rarr;</span>
+            </div>
+          </a>
+        ))}
+        {reports.length === 0 && (
+          <div class="col-span-full p-20 text-center bg-white rounded-3xl border border-dashed border-[#e2e8f0]">
+             <p class="text-[#94a3b8] italic">No public reports available at this moment. The intelligence engine is processing the next batch.</p>
+          </div>
+        )}
+      </div>
+
+      <!-- SEO Footer Section -->
+      <section class="mt-24 pt-16 border-t border-[#0f172a]/10">
+        <h2 class="text-2xl font-bold text-[#0f172a] mb-8">About Sentinel Technical Reports</h2>
+        <div class="grid md:grid-cols-2 gap-12 text-[#64748b] text-sm leading-relaxed">
+          <div class="space-y-4">
+            <p>
+              These reports are generated using Sentinel's deterministic compliance engine. Every assessment is strictly limited to public technical signals such as repository architecture, manifest declarations, and technical documentation presence.
+            </p>
+            <p>
+              Our goal is not to pass legal judgment, but to provide developers and auditors with a quantitative starting point for <a href="/ai-compliance-faq" class="hover:text-[#3b82f6] underline">internal risk assessments</a> and EU AI Act technical file preparation.
+            </p>
+          </div>
+          <div class="space-y-4">
+            <p>
+              The reports help identify common <a href="/ai-compliance-tools" class="hover:text-[#3b82f6] underline">AI compliance tools</a> and patterns used in the industry. We encourage all listed repository owners to use the <a href="/docs" class="hover:text-[#3b82f6] underline">Sentinel CLI</a> to perform their own verified scans and include the results as official evidence.
+            </p>
+            <p>
+              Sentinel does not modify any third-party repositories. All analysis is performed on local clones in read-only mode.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <SovereignFooter client:visible />
+</SovereignLayout>

@@ -50,13 +50,26 @@ try {
     `).all();
     metrics.executionContexts = contextResult.results || [];
 
+    // 6. Last 20 Scans (Retrieved correctly now)
+    const recentResult = await env.DB.prepare(`
+      SELECT app_name, cli_version, status, created_at, client_id, project_hash
+      FROM audit_logs
+      ORDER BY created_at DESC
+      LIMIT 20
+    `).all();
     metrics.recentScans = recentResult.results || [];
 
-    // 7. Discovery Audits
+    // 7. Discovery Audits (Added sorting support)
+    const sort = Astro.url.searchParams.get('sort') || 'scan_timestamp';
+    const order = Astro.url.searchParams.get('order') || 'DESC';
+    const validCols = ['stars', 'audit_score', 'scan_timestamp', 'risk_level'];
+    const safeSort = validCols.includes(sort) ? sort : 'scan_timestamp';
+    const safeOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
     const discoveryResult = await env.DB.prepare(`
       SELECT repo_name, stars, detected_ai_stack, audit_score, risk_level, scan_timestamp
       FROM discovery_audits
-      ORDER BY scan_timestamp DESC
+      ORDER BY ${safeSort} ${safeOrder}
       LIMIT 20
     `).all();
     metrics.discoveryAudits = discoveryResult.results || [];
@@ -154,10 +167,10 @@ try {
               <table class="w-full text-left text-sm border-collapse">
                 <thead class="bg-[#f8fafc] text-[#64748b] font-mono text-[10px] uppercase tracking-widest border-b border-[#e2e8f0]">
                   <tr>
-                    <th class="p-4">Repository</th>
+                    <th class="p-4"><a href="?sort=repo_name" class="hover:underline">Repository</a></th>
                     <th class="p-4">AI Stack</th>
-                    <th class="p-4">Score</th>
-                    <th class="p-4">Risk</th>
+                    <th class="p-4"><a href="?sort=audit_score" class="hover:underline">Score</a></th>
+                    <th class="p-4"><a href="?sort=risk_level" class="hover:underline">Risk</a></th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-[#e2e8f0] font-mono text-[11px]">

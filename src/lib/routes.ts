@@ -7,6 +7,7 @@ export const ROUTES = {
   solutions: "/solutions",
   
   // AI Compliance Cluster
+  aiCompliance: "/ai-compliance",
   aiComplianceTools: "/ai-compliance-tools",
   aiComplianceFaq: "/ai-compliance-faq",
   governanceComparison: "/sentinel-vs-governance-tools",

@@ -17,6 +17,7 @@ const seoDescription = "Technical integration guide for Sentinel deterministic A
     
     <div class="sidebar-section">CI/CD & Infrastructure</div>
     <a href="#cli">CI/CD Integration</a>
+    <a href="#badge">Verification Badge</a>
     
     <div class="sidebar-section">Resources</div>
     <a href={ROUTES.aiComplianceTools}>Compliance Tools</a>
@@ -52,6 +53,16 @@ const seoDescription = "Technical integration guide for Sentinel deterministic A
   <div class="lang-label">yaml</div>
   <pre><code><span class="hl-comment"># CI/CD integration (exit 0 = COMPLIANT, exit 1 = NON_COMPLIANT)</span>
   npx @radu_api/sentinel-scan ./manifest.json && kubectl apply -f deployment.yaml</code></pre>
+
+  <h2 id="badge">Verification Badge</h2>
+  <p>Display your technical compliance status directly on your repository. The Sentinel Verification Badge provides an informational, deterministic signal that your project has undergone technical auditing.</p>
+
+  <div class="lang-label">markdown</div>
+  <pre><code>[![Sentinel AI Compliance](https://gettingsentinel.com/badge.svg)](https://gettingsentinel.com)</code></pre>
+
+  <div class="alert" style="background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+    <strong>Safety & Transparency Notice:</strong> The verification badge reflects the result of a deterministic technical scan. It does not constitute official legal certification or regulatory approval by any authority.
+  </div>
 
   <h2 id="ai-compliance-tools">AI Compliance Tools</h2>
   <p>Sentinel is a deterministic compliance infrastructure designed for engineering teams building High-Risk AI systems under the EU AI Act. By integrating directly into development workflows, Sentinel provides a technical evidence layer that links repo-level signals, manifests, and rule evaluations.</p>
