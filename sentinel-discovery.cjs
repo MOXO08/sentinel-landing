@@ -5,8 +5,8 @@ const path = require('path');
 
 // --- Configuration ---
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const SENTINEL_API_KEY = process.env.SENTINEL_API_KEY; 
-const DAILY_LIMIT = 100; 
+const SENTINEL_API_KEY = process.env.SENTINEL_API_KEY;
+const DAILY_LIMIT = 100;
 const BATCH_SIZE = 20;
 const TEMP_DIR = path.join(__dirname, 'discovery_temp');
 const REPO_SIZE_LIMIT_KB = 200 * 1024; // 200MB limit
@@ -17,22 +17,31 @@ if (!SENTINEL_API_KEY) {
 }
 
 // --- Helpers ---
-function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function getDirSize(dirPath) {
     let size = 0;
     const files = fs.readdirSync(dirPath);
-    for (let file of files) {
+
+    for (const file of files) {
         const filePath = path.join(dirPath, file);
         const stats = fs.statSync(filePath);
-        if (stats.isDirectory()) size += getDirSize(filePath);
-        else size += stats.size;
+
+        if (stats.isDirectory()) {
+            size += getDirSize(filePath);
+        } else {
+            size += stats.size;
+        }
     }
+
     return size;
 }
 
-async function githubApiRequest(path) {
-    const url = `https://api.github.com${path}`;
+async function githubApiRequest(apiPath) {
+    const url = `https://api.github.com${apiPath}`;
+
     return new Promise((resolve, reject) => {
         const options = {
             headers: {
@@ -42,23 +51,30 @@ async function githubApiRequest(path) {
         };
 
         https.get(url, options, (res) => {
-            // Rate Limit Header Check
-            const remaining = parseInt(res.headers['x-ratelimit-remaining'] || '100');
-            const resetTime = parseInt(res.headers['x-ratelimit-reset'] || '0') * 1000;
+            const remaining = parseInt(res.headers['x-ratelimit-remaining'] || '100', 10);
+            const resetTime = parseInt(res.headers['x-ratelimit-reset'] || '0', 10) * 1000;
 
             if (res.statusCode === 403 && remaining === 0) {
                 const waitTime = Math.max(0, resetTime - Date.now()) + 1000;
-                console.warn(`[Discovery] Rate limit hit. Cooling down for ${Math.ceil(waitTime/60000)} mins...`);
+                console.warn(`[Discovery] Rate limit hit. Cooling down for ${Math.ceil(waitTime / 60000)} mins...`);
                 return resolve({ rateLimited: true, waitTime });
             }
 
             let data = '';
-            res.on('data', chunk => data += chunk);
+            res.on('data', chunk => {
+                data += chunk;
+            });
+
             res.on('end', () => {
                 if (res.statusCode !== 200) {
                     return reject(new Error(`GitHub API error: ${res.statusCode} ${data}`));
                 }
-                resolve({ data: JSON.parse(data) });
+
+                try {
+                    resolve({ data: JSON.parse(data) });
+                } catch (err) {
+                    reject(new Error(`Failed to parse GitHub API response: ${err.message}`));
+                }
             });
         }).on('error', reject);
     });
@@ -66,18 +82,23 @@ async function githubApiRequest(path) {
 
 // --- Implementation ---
 async function searchRepositories(query) {
-    const res = await githubApiRequest(`/search/repositories?q=${encodeURIComponent(query)}&sort=updated&per_page=${BATCH_SIZE}`);
+    const res = await githubApiRequest(
+        `/search/repositories?q=${encodeURIComponent(query)}&sort=updated&per_page=${BATCH_SIZE}`
+    );
+
     if (res.rateLimited) {
         await sleep(res.waitTime);
         return searchRepositories(query);
     }
+
     return res.data.items;
 }
 
 async function processRepository(repo) {
-    // Phase 14: Size Limit Check
     if (repo.size > REPO_SIZE_LIMIT_KB) {
-        console.log(`[Discovery] Skipping ${repo.full_name}: Too large (${repo.size}KB > ${REPO_SIZE_LIMIT_KB}KB)`);
+        console.log(
+            `[Discovery] Skipping ${repo.full_name}: Too large (${repo.size}KB > ${REPO_SIZE_LIMIT_KB}KB)`
+        );
         return;
     }
 
@@ -85,18 +106,32 @@ async function processRepository(repo) {
     console.log(`\n[Discovery] Processing: ${repo.full_name} (${repo.stargazers_count} stars)`);
 
     try {
-        // Phase 14: Shallow Clone with Timeout
-        if (fs.existsSync(repoPath)) fs.rmSync(repoPath, { recursive: true, force: true });
+        if (fs.existsSync(repoPath)) {
+            fs.rmSync(repoPath, { recursive: true, force: true });
+        }
+
         execSync(`git clone --depth=1 ${repo.clone_url} ${repoPath}`, { timeout: 60000 });
 
-        // Audit Logic
-        const manifestPath = path.join(repoPath, 'manifest.json');
-        let scanCmd = `npx @radu_api/sentinel-scan ${repoPath} --json`;
-        if (fs.existsSync(manifestPath)) scanCmd = `npx @radu_api/sentinel-scan ${manifestPath} --json`;
+        const manifestCandidates = [
+            'manifest.json',
+            'sentinel.manifest.json',
+            'ai-manifest.json'
+        ];
+
+        const foundManifest = manifestCandidates
+            .map(name => path.join(repoPath, name))
+            .find(candidatePath => fs.existsSync(candidatePath));
+
+        if (!foundManifest) {
+            console.log(`[Discovery] Skipping ${repo.name}: No supported manifest found.`);
+            return;
+        }
+
+        const scanCmd = `npx @radu_api/sentinel-scan "${foundManifest}" --json --baseline`;
 
         console.log(`[Discovery] Running Sentinel audit on ${repo.name}...`);
         const output = execSync(scanCmd, { encoding: 'utf8' });
-        
+
         let auditData;
         try {
             auditData = JSON.parse(output);
@@ -104,18 +139,28 @@ async function processRepository(repo) {
             console.error(`[Discovery] Failed to parse scanner output: ${e.message}`);
             return;
         }
-        
-        const isCompliant = auditData.verdict === "COMPLIANT" || auditData.verdict === "PASSED";
-        const auditScore = auditData.score !== undefined ? auditData.score : (isCompliant ? 100 : 65);
-        const violations = Array.isArray(auditData.violations) ? auditData.violations.map(v => v.rule_id) : (isCompliant ? [] : ["AI-ACT-ART-10"]);
-        
-        // Phase 17: Public Report Metadata
-        const slug = repo.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.random().toString(36).substring(2, 5);
-        const summary_text = isCompliant 
+
+        const isCompliant =
+            auditData.verdict === "COMPLIANT" || auditData.verdict === "PASSED";
+
+        const auditScore =
+            auditData.score !== undefined ? auditData.score : (isCompliant ? 100 : 65);
+
+        const violations = Array.isArray(auditData.violations)
+            ? auditData.violations.map(v => v.rule_id)
+            : (isCompliant ? [] : ["AI-ACT-ART-10"]);
+
+        const slug =
+            repo.name.toLowerCase().replace(/[^a-z0-9]/g, '-') +
+            '-' +
+            Math.random().toString(36).substring(2, 5);
+
+        const summary_text = isCompliant
             ? `Automated technical analysis identifies that ${repo.name} aligns with visible AI compliance patterns for its detected architecture.`
             : `Automated technical analysis indicates that ${repo.name} may require additional technical documentation to align with specific framework requirements.`;
-        
-        const visible_gaps = auditData.violations?.map(v => v.description) || (isCompliant ? [] : ["Technical documentation artifacts not detected in public root"]);
+
+        const visible_gaps = auditData.violations?.map(v => v.description) ||
+            (isCompliant ? [] : ["Technical documentation artifacts not detected in public root"]);
 
         await reportToSaaS({
             repo_url: repo.html_url,
@@ -129,8 +174,8 @@ async function processRepository(repo) {
             risk_level: auditScore >= 90 ? "Low" : (auditScore >= 70 ? "Medium" : "High"),
             confidence_level: "Medium",
             summary_text: summary_text,
-            visible_gaps: visible_gaps.slice(0, 3), 
-            is_public: true, 
+            visible_gaps: visible_gaps.slice(0, 3),
+            is_public: true,
             execution_context: "discovery"
         });
 
@@ -138,13 +183,16 @@ async function processRepository(repo) {
     } catch (err) {
         console.error(`[Discovery] Failed to process ${repo.name}: ${err.message}`);
     } finally {
-        if (fs.existsSync(repoPath)) fs.rmSync(repoPath, { recursive: true, force: true });
+        if (fs.existsSync(repoPath)) {
+            fs.rmSync(repoPath, { recursive: true, force: true });
+        }
     }
 }
 
 async function reportToSaaS(payload) {
     return new Promise((resolve, reject) => {
         const postData = JSON.stringify(payload);
+
         const options = {
             hostname: 'gettingsentinel.com',
             path: '/api/discovery',
@@ -155,10 +203,12 @@ async function reportToSaaS(payload) {
                 'Content-Length': Buffer.byteLength(postData)
             }
         };
+
         const req = https.request(options, (res) => {
             res.on('data', () => {});
             res.on('end', () => resolve());
         });
+
         req.on('error', reject);
         req.write(postData);
         req.end();
@@ -168,17 +218,23 @@ async function reportToSaaS(payload) {
 const DISK_QUOTA_BYTES = 2 * 1024 * 1024 * 1024; // 2GB
 
 async function main() {
-    if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR);
+    if (!fs.existsSync(TEMP_DIR)) {
+        fs.mkdirSync(TEMP_DIR);
+    }
+
     const query = 'llm OR rag OR openai OR "ai agent" stars:>10 fork:false';
+
     try {
         const repos = await searchRepositories(query);
         console.log(`[Discovery] Found ${repos.length} candidates. Daily limit: ${DAILY_LIMIT}.`);
 
         let processed = 0;
-        for (const repo of repos) {
-            if (processed >= DAILY_LIMIT) break;
 
-            // Phase 14: Disk Quota Check
+        for (const repo of repos) {
+            if (processed >= DAILY_LIMIT) {
+                break;
+            }
+
             const currentDiskUsage = getDirSize(TEMP_DIR);
             if (currentDiskUsage > DISK_QUOTA_BYTES) {
                 console.warn(`[Discovery] Disk quota exceeded (${currentDiskUsage} bytes). Cleaning up...`);
@@ -188,9 +244,9 @@ async function main() {
 
             await processRepository(repo);
             processed++;
-            // Phase 15: Request Throttling
-            await sleep(2000); 
+            await sleep(2000);
         }
+
         console.log("\n[Discovery] Discovery cycle complete.");
     } catch (err) {
         console.error(`[Discovery] Pipeline error: ${err.message}`);
