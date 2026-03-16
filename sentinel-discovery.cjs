@@ -122,12 +122,17 @@ async function processRepository(repo) {
             .map(name => path.join(repoPath, name))
             .find(candidatePath => fs.existsSync(candidatePath));
 
-        if (!foundManifest) {
-            console.log(`[Discovery] Skipping ${repo.name}: No supported manifest found.`);
-            return;
+        let scanTarget;
+
+        if (foundManifest) {
+            scanTarget = `"${foundManifest}"`;
+            console.log(`[Discovery] Found manifest for ${repo.name}: ${path.basename(foundManifest)}`);
+        } else {
+            scanTarget = `"${repoPath}"`;
+            console.log(`[Discovery] No supported manifest found for ${repo.name}. Falling back to repository scan.`);
         }
 
-        const scanCmd = `npx @radu_api/sentinel-scan "${foundManifest}" --json --baseline`;
+        const scanCmd = `npx @radu_api/sentinel-scan ${scanTarget} --json --baseline`;
 
         console.log(`[Discovery] Running Sentinel audit on ${repo.name}...`);
         const output = execSync(scanCmd, { encoding: 'utf8' });
