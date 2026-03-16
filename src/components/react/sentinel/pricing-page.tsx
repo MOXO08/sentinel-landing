@@ -239,7 +239,7 @@ export function PricingPage() {
             {
               step: "01",
               title: "Install CLI",
-              desc: "Run `npx sentinel-scan` to map your AI manifest to EU AI Act articles locally.",
+              desc: "Run `npx @radu_api/sentinel-scan` to map your AI manifest to EU AI Act articles locally.",
               icon: <Terminal className="w-5 h-5" />
             },
             {
