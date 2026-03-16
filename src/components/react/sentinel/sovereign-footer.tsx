@@ -56,7 +56,7 @@ export function SovereignFooter() {
             <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Resources</h3>
             <ul className="flex flex-col gap-2.5">
               {[
-                { label: "CLI on npm", href: "https://www.npmjs.com/package/sentinel-scan", target: "_blank" },
+                { label: "CLI on npm", href: "https://www.npmjs.com/package/@radu_api/sentinel-scan", target: "_blank" },
                 { label: "GitHub Repository", href: "https://github.com/MOXO08/sentinel", target: "_blank" },
                 { label: "AI Compliance Tools", href: "/ai-compliance-tools" },
                 { label: "AI Compliance FAQ", href: "/ai-compliance-faq" },

@@ -30,6 +30,6 @@ export const ROUTES = {
   
   // External
   github: "https://github.com/MOXO08/sentinel",
-  npm: "https://www.npmjs.com/package/sentinel-scan",
+  npm: "https://www.npmjs.com/package/@radu_api/sentinel-scan",
   downloads: "/#quickstart",
 } as const;
