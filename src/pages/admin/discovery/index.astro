@@ -1,0 +1,319 @@
+---
+import SovereignLayout from '../../../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../../../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../../../components/react/sentinel/sovereign-footer';
+
+export const prerender = false;
+
+const env = (Astro.locals as any).runtime?.env;
+
+let audits = [] as any[];
+let stats = {
+  total: 0,
+  public: 0,
+  hidden: 0
+};
+
+// Sorting/Filtering params
+const sort = Astro.url.searchParams.get('sort') || 'updated_at';
+const order = Astro.url.searchParams.get('order') || 'DESC';
+const filter = Astro.url.searchParams.get('filter') || 'all'; // all, public, hidden, high_risk
+const search = Astro.url.searchParams.get('search') || '';
+
+const validCols = ['stars', 'audit_score', 'updated_at', 'repo_name', 'risk_level'];
+const safeSort = validCols.includes(sort) ? sort : 'updated_at';
+const safeOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
+try {
+  if (env?.DB) {
+     let query = `SELECT * FROM discovery_audits WHERE 1=1`;
+     let params: any[] = [];
+
+     if (filter === 'public') query += ` AND is_public = 1`;
+     if (filter === 'hidden') query += ` AND is_public = 0`;
+     if (filter === 'high_risk') query += ` AND risk_level = 'High'`;
+     
+     if (search) {
+       query += ` AND repo_name LIKE ?`;
+       params.push(`%${search}%`);
+     }
+
+     query += ` ORDER BY ${safeSort} ${safeOrder}`;
+     
+     const result = await env.DB.prepare(query).bind(...params).all();
+     audits = result.results || [];
+
+     const statsResult = await env.DB.prepare(`
+        SELECT 
+          COUNT(*) as total,
+          SUM(CASE WHEN is_public = 1 THEN 1 ELSE 0 END) as public,
+          SUM(CASE WHEN is_public = 0 THEN 1 ELSE 0 END) as hidden
+        FROM discovery_audits
+     `).first();
+     stats = {
+       total: statsResult.total || 0,
+       public: statsResult.public || 0,
+       hidden: statsResult.hidden || 0
+     };
+  }
+} catch (e) {
+  console.error("Discovery Admin Error:", e);
+}
+---
+
+<SovereignLayout title="Discovery Inbox | Sentinel Admin">
+  <SovereignHeader client:idle />
+  
+  <main class="bg-[#F4F1EA] pt-32 pb-24 px-6 min-h-screen font-sans">
+    <div class="max-w-7xl mx-auto">
+      <!-- Breadcrumbs -->
+      <nav class="flex mb-8 text-[10px] font-mono uppercase tracking-widest text-[#94a3b8] gap-2">
+        <a href="/admin" class="hover:text-[#0f172a]">HQ</a>
+        <span>/</span>
+        <span class="text-[#0f172a] font-bold">Discovery Inbox</span>
+      </nav>
+
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+        <div>
+          <h1 class="text-4xl font-black text-[#0f172a] mb-2 tracking-tight italic uppercase">Discovery Inbox</h1>
+          <p class="text-[#64748b] font-mono text-[10px] uppercase tracking-[0.2em]">Autonomous Repository Intelligence Feed</p>
+        </div>
+        
+        <div class="flex gap-4">
+           <div class="bg-white p-4 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col items-center min-w-[100px]">
+              <span class="text-[9px] font-mono text-[#94a3b8] mb-1 uppercase">Total</span>
+              <span class="text-xl font-black text-[#0f172a]">{stats.total}</span>
+           </div>
+           <div class="bg-white p-4 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col items-center min-w-[100px]">
+              <span class="text-[9px] font-mono text-[#10b981] mb-1 uppercase">Public</span>
+              <span class="text-xl font-black text-[#10b981]">{stats.public}</span>
+           </div>
+           <div class="bg-white p-4 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col items-center min-w-[100px]">
+              <span class="text-[9px] font-mono text-[#f59e0b] mb-1 uppercase">Queued</span>
+              <span class="text-xl font-black text-[#f59e0b]">{stats.hidden}</span>
+           </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-sm mb-8 flex flex-col lg:flex-row gap-6 justify-between items-center">
+        <div class="flex flex-wrap gap-2">
+          {['all', 'public', 'hidden', 'high_risk'].map(f => (
+            <a 
+              href={`?filter=${f}&sort=${sort}&order=${order}&search=${search}`}
+              class={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest border transition-all ${filter === f ? 'bg-[#0f172a] text-white border-[#0f172a]' : 'bg-white text-[#64748b] border-[#e2e8f0] hover:bg-[#F4F1EA]'}`}
+            >
+              {f.replace('_', ' ')}
+            </a>
+          ))}
+        </div>
+
+        <div class="flex gap-4 w-full lg:w-auto">
+          <form class="relative flex-1 lg:flex-initial">
+             <input 
+               type="text" 
+               name="search"
+               placeholder="Search by repo_name..." 
+               value={search}
+               class="w-full lg:w-64 pl-10 pr-4 py-2 rounded-xl border border-[#e2e8f0] text-xs font-mono focus:ring-2 focus:ring-[#0f172a] focus:border-transparent outline-none"
+             />
+             <input type="hidden" name="filter" value={filter} />
+             <input type="hidden" name="sort" value={sort} />
+             <input type="hidden" name="order" value={order} />
+             <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#94a3b8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+             </svg>
+          </form>
+          
+          <select 
+            onchange="window.location.href = this.value"
+            class="bg-white border border-[#e2e8f0] rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest outline-none focus:ring-2 focus:ring-[#0f172a]"
+          >
+            <option value={`?sort=updated_at&order=DESC&filter=${filter}&search=${search}`} selected={sort === 'updated_at'}>Newest First</option>
+            <option value={`?sort=stars&order=DESC&filter=${filter}&search=${search}`} selected={sort === 'stars'}>Most Stars</option>
+            <option value={`?sort=audit_score&order=ASC&filter=${filter}&search=${search}`} selected={sort === 'audit_score'}>Lowest Score</option>
+            <option value={`?sort=repo_name&order=ASC&filter=${filter}&search=${search}`} selected={sort === 'repo_name'}>A-Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Audit Grid -->
+      <div class="bg-white rounded-3xl border border-[#e2e8f0] shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-[#f8fafc] border-b border-[#e2e8f0] font-mono text-[10px] uppercase tracking-[0.2em] text-[#64748b]">
+              <tr>
+                <th class="p-6">Repository Intelligence</th>
+                <th class="p-6">AI Stack / Tech</th>
+                <th class="p-6">Compliance Score</th>
+                <th class="p-6">Audit Status</th>
+                <th class="p-6 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#f1f5f9]">
+              {audits.map((item) => {
+                const issues = [];
+                if (item.audit_score === 0) issues.push('Zero Score');
+                if (!item.summary_text || item.summary_text.length < 20) issues.push('Thin Content');
+                if (item.confidence_level === 'Low') issues.push('Low Confidence');
+                
+                const isPublishable = item.audit_score > 0 && item.summary_text && item.summary_text.length > 20;
+
+                return (
+                  <tr class={`group hover:bg-[#F4F1EA]/50 transition-colors ${!isPublishable && item.is_public ? 'bg-[#ef4444]/5' : ''}`}>
+                    <td class="p-6">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-[#0f172a]/5 rounded-xl flex items-center justify-center font-black text-[#0f172a] text-sm">
+                          {item.repo_name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div class="font-black text-[#1e293b] leading-tight mb-1 flex items-center gap-2">
+                            {item.repo_name}
+                            {issues.length > 0 && (
+                              <span class="flex gap-1">
+                                {issues.map(issue => (
+                                  <span class="w-2 h-2 rounded-full bg-[#ef4444]" title={issue}></span>
+                                ))}
+                              </span>
+                            )}
+                          </div>
+                          <div class="flex items-center gap-2 text-[9px] font-mono text-[#94a3b8]">
+                             <span>{item.stars} ⭐</span>
+                             <span>•</span>
+                             <span class="uppercase">{item.language}</span>
+                             <span>•</span>
+                             <a href={item.repo_url} target="_blank" class="hover:text-[#3b82f6] flex items-center gap-0.5">
+                                SRC <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                             </a>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-6">
+                       <div class="w-48 truncate text-[11px] font-mono text-[#64748b] bg-[#f8fafc] px-3 py-1.5 rounded-lg border border-[#f1f5f9]">
+                          {item.detected_ai_stack}
+                       </div>
+                    </td>
+                    <td class="p-6">
+                       <div class="flex flex-col gap-1">
+                          <div class="flex justify-between items-end w-32 mb-1">
+                             <span class="text-[9px] font-bold text-[#94a3b8] uppercase tracking-tighter">TRUST LVL</span>
+                             <span class={`text-[11px] font-black ${item.audit_score > 80 ? 'text-[#059669]' : (item.audit_score > 50 ? 'text-[#d97706]' : 'text-[#dc2626]')}`}>{item.audit_score}/100</span>
+                          </div>
+                          <div class="w-32 bg-[#f1f5f9] h-1.5 rounded-full overflow-hidden">
+                             <div 
+                               class={`h-full rounded-full ${item.audit_score > 80 ? 'bg-[#10b981]' : (item.audit_score > 50 ? 'bg-[#f59e0b]' : 'bg-[#ef4444]')}`}
+                               style={`width: ${item.audit_score}%`}
+                             ></div>
+                          </div>
+                       </div>
+                    </td>
+                    <td class="p-6">
+                       <div class="flex items-center gap-4">
+                          <div class="flex flex-col gap-1">
+                             <span class={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest text-center ${item.risk_level === 'Low' ? 'bg-[#10b981]/10 text-[#10b981]' : (item.risk_level === 'Medium' ? 'bg-[#f59e0b]/10 text-[#f59e0b]' : 'bg-[#ef4444]/10 text-[#ef4444]')}`}>
+                                {item.risk_level} RISK
+                             </span>
+                             <span class={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest text-center ${item.is_public ? 'bg-[#1e293b] text-white' : 'bg-[#94a3b8]/10 text-[#94a3b8]'}`}>
+                                {item.is_public ? 'PUBLIC' : 'QUEUED'}
+                             </span>
+                          </div>
+                       </div>
+                    </td>
+                    <td class="p-6 text-right">
+                       <div class="flex justify-end gap-2">
+                          {issues.length > 0 && (
+                            <div class="group relative">
+                              <div class="p-2 bg-[#ef4444]/10 text-[#ef4444] rounded-lg cursor-help">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                              </div>
+                              <div class="absolute right-0 bottom-full mb-2 hidden group-hover:block w-48 p-3 bg-white border border-[#e2e8f0] rounded-xl shadow-xl z-50 text-[10px] font-mono text-[#64748b]">
+                                <div class="font-bold text-[#dc2626] uppercase mb-2">Integrity Warnings</div>
+                                <ul class="space-y-1 list-disc pl-4">
+                                  {issues.map(issue => <li>{issue}</li>)}
+                                </ul>
+                                {!isPublishable && <div class="mt-2 pt-2 border-t border-[#f1f5f9] text-[#ef4444] font-black uppercase">Blocked from Hub</div>}
+                              </div>
+                            </div>
+                          )}
+                          <a href={`/admin/discovery/${item.slug}`} class="p-2 bg-white border border-[#e2e8f0] rounded-lg hover:bg-[#F4F1EA] text-[#64748b] transition-colors" title="View Detail">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                          </a>
+                          <button 
+                             class="p-2 bg-white border border-[#e2e8f0] rounded-lg hover:bg-[#F4F1EA] text-[#64748b] transition-colors toggle-public-btn"
+                             data-id={item.id}
+                             data-public={item.is_public ? '1' : '0'}
+                             title={item.is_public ? 'Hide' : 'Publish'}
+                          >
+                             {item.is_public ? (
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                             ) : (
+                                <svg class="w-4 h-4 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                             )}
+                          </button>
+                          <button 
+                             class="p-2 bg-white border border-[#e2e8f0] rounded-lg hover:bg-[#F4F1EA] text-[#64748b] transition-colors rescan-btn"
+                             data-url={item.repo_url}
+                             title="Rescan"
+                          >
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                          </button>
+                       </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {audits.length === 0 && (
+            <div class="p-24 text-center">
+               <div class="text-4xl mb-4">🔍</div>
+               <p class="text-[#94a3b8] font-mono text-xs uppercase tracking-[0.2em]">Compliance signals not found for current filter.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Handle Actions
+    const handleAction = async (action: string, payload: any) => {
+       try {
+         const res = await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, payload })
+         });
+         const data = await res.json();
+         if (data.success) {
+            window.location.reload();
+         } else {
+            alert(data.error || 'Action failed');
+         }
+       } catch (e) {
+         console.error(e);
+         alert('Network error');
+       }
+    };
+
+    document.querySelectorAll('.toggle-public-btn').forEach(btn => {
+       btn.addEventListener('click', () => {
+          const id = (btn as HTMLElement).dataset.id;
+          const isPublic = (btn as HTMLElement).dataset.public === '1';
+          handleAction('toggle_discovery_public', { id, is_public: !isPublic });
+       });
+    });
+
+    document.querySelectorAll('.rescan-btn').forEach(btn => {
+       btn.addEventListener('click', () => {
+          const url = (btn as HTMLElement).dataset.url;
+          if (confirm(`Trigger manual rescan for ${url}?`)) {
+             handleAction('rescan_discovery', { repo_url: url });
+          }
+       });
+    });
+  </script>
+
+  <SovereignFooter client:visible />
+</SovereignLayout>

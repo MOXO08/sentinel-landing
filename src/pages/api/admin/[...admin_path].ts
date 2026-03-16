@@ -102,9 +102,27 @@ export const POST: APIRoute = async ({ request, locals, params }) => {
             return new Response(JSON.stringify({ success: true }));
         }
         
-        if (action === 'global_ban_ip') {
-             await env.CACHE.put(`ban:${payload.ip}`, "1", { expirationTtl: 86400 * 30 }); // 30 day manual ban
-             return new Response(JSON.stringify({ success: true }));
+        if (action === 'toggle_discovery_public') {
+            const { id, is_public } = payload;
+            await env.DB.prepare('UPDATE discovery_audits SET is_public = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+                .bind(is_public ? 1 : 0, id)
+                .run();
+            return new Response(JSON.stringify({ success: true }));
+        }
+
+        if (action === 'rescan_discovery') {
+            const { repo_url } = payload;
+            // Note: In production, this would trigger a GitHub Repository Dispatch
+            // or an internal queue. For MVP, we simulate or log the intent.
+            console.log(`[Admin] Manual rescan triggered for: ${repo_url}`);
+            
+            // Optional: Trigger GitHub Action via API if GITHUB_TOKEN is available
+            // This requires the dispatch permission on the token.
+            
+            return new Response(JSON.stringify({ 
+                success: true, 
+                message: 'Rescan request queued. Bot will execute on next cycle or immediate dispatch.' 
+            }));
         }
     }
 

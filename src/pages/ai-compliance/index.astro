@@ -9,15 +9,34 @@ const env = (Astro.locals as any).runtime?.env;
 
 let reports = [];
 
+// Sorting/Filtering params
+const sort = Astro.url.searchParams.get('sort') || 'scan_timestamp';
+const order = Astro.url.searchParams.get('order') || 'DESC';
+const riskFilter = Astro.url.searchParams.get('risk') || 'all';
+
+const validCols = ['stars', 'audit_score', 'scan_timestamp'];
+const safeSort = validCols.includes(sort) ? sort : 'scan_timestamp';
+const safeOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
 try {
   if (env?.DB) {
-    const result = await env.DB.prepare(`
-      SELECT repo_name, slug, stars, audit_score, risk_level, scan_timestamp
+    let query = `
+      SELECT repo_name, slug, stars, audit_score, risk_level, scan_timestamp, summary_text, detected_ai_stack
       FROM discovery_audits 
-      WHERE is_public = 1
-      ORDER BY scan_timestamp DESC
-      LIMIT 100
-    `).all();
+      WHERE is_public = 1 
+      AND audit_score > 0 
+      AND LENGTH(summary_text) > 20
+    `;
+    let params: any[] = [];
+
+    if (riskFilter !== 'all') {
+      query += ` AND risk_level = ?`;
+      params.push(riskFilter);
+    }
+
+    query += ` ORDER BY ${safeSort} ${safeOrder} LIMIT 100`;
+    
+    const result = await env.DB.prepare(query).bind(...params).all();
     reports = result.results || [];
   }
 } catch (e) {
@@ -36,19 +55,59 @@ const description = "Public technical assessments and compliance patterns for gl
       
       <header class="mb-16 border-b border-[#0f172a]/10 pb-12">
         <h1 class="text-5xl font-black text-[#0f172a] mb-6 tracking-tight">Intelligence Layer</h1>
-        <p class="text-xl text-[#64748b] max-w-2xl leading-relaxed">
+        <p class="text-xl text-[#1e293b] max-w-2xl leading-relaxed mb-8">
           Sentinel's autonomous discovery engine continuously maps the AI ecosystem. Here we present neutral technical assessments of public AI repositories to improve transparency and compliance standards.
         </p>
+
+        <!-- Intelligence Navigation -->
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-8">
+           <a href="/ai-compliance/langchain" class="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[10px] font-bold text-[#0f172a] uppercase tracking-widest text-center hover:border-[#3b82f6] hover:text-[#3b82f6] transition-all">LangChain</a>
+           <a href="/ai-compliance/openai" class="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[10px] font-bold text-[#0f172a] uppercase tracking-widest text-center hover:border-[#3b82f6] hover:text-[#3b82f6] transition-all">OpenAI</a>
+           <a href="/ai-compliance/rag" class="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[10px] font-bold text-[#0f172a] uppercase tracking-widest text-center hover:border-[#3b82f6] hover:text-[#3b82f6] transition-all">RAG</a>
+           <a href="/ai-compliance/agents" class="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[10px] font-bold text-[#0f172a] uppercase tracking-widest text-center hover:border-[#3b82f6] hover:text-[#3b82f6] transition-all">Agents</a>
+           <a href="/ai-compliance/highest-score" class="px-3 py-2 bg-[#059669]/5 border border-[#059669]/10 rounded-xl text-[10px] font-bold text-[#059669] uppercase tracking-widest text-center hover:bg-[#059669]/10 transition-all">Top Scores</a>
+           <a href="/ai-compliance/highest-risk" class="px-3 py-2 bg-[#dc2626]/5 border border-[#dc2626]/10 rounded-xl text-[10px] font-bold text-[#dc2626] uppercase tracking-widest text-center hover:bg-[#dc2626]/10 transition-all">High Risk</a>
+           <a href="/ai-compliance/recently-scanned" class="px-3 py-2 bg-[#3b82f6]/5 border border-[#3b82f6]/10 rounded-xl text-[10px] font-bold text-[#3b82f6] uppercase tracking-widest text-center hover:bg-[#3b82f6]/10 transition-all">Recent</a>
+        </div>
+
+        <!-- Sort/Filter Controls -->
+        <div class="flex flex-wrap gap-4 items-center justify-between bg-white/50 p-4 rounded-2xl border border-[#0f172a]/5">
+           <div class="flex gap-2">
+              <a href="?risk=all&sort=scan_timestamp" class={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${riskFilter === 'all' ? 'bg-[#0f172a] text-white' : 'bg-white text-[#64748b] border border-[#e2e8f0]'}`}>All Risks</a>
+              <a href="?risk=Low&sort=scan_timestamp" class={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${riskFilter === 'Low' ? 'bg-[#10b981] text-white' : 'bg-white text-[#64748b] border border-[#e2e8f0]'}`}>Low</a>
+              <a href="?risk=Medium&sort=scan_timestamp" class={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${riskFilter === 'Medium' ? 'bg-[#f59e0b] text-white' : 'bg-white text-[#64748b] border border-[#e2e8f0]'}`}>Medium</a>
+              <a href="?risk=High&sort=scan_timestamp" class={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${riskFilter === 'High' ? 'bg-[#ef4444] text-white' : 'bg-white text-[#64748b] border border-[#e2e8f0]'}`}>High</a>
+           </div>
+
+           <div class="flex gap-4">
+              <select 
+                class="bg-white border border-[#e2e8f0] rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest outline-none"
+                onchange="window.location.href = this.value"
+              >
+                 <option value={`?sort=scan_timestamp&order=DESC&risk=${riskFilter}`} selected={sort === 'scan_timestamp'}>Newest First</option>
+                 <option value={`?sort=audit_score&order=DESC&risk=${riskFilter}`} selected={sort === 'audit_score'}>Highest Score</option>
+                 <option value={`?sort=stars&order=DESC&risk=${riskFilter}`} selected={sort === 'stars'}>Most Stars</option>
+              </select>
+           </div>
+        </div>
       </header>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {reports.map((report) => (
-          <a href={`/ai-compliance/${report.slug}`} class="group bg-white p-8 rounded-3xl border border-[#e2e8f0] shadow-sm hover:shadow-xl hover:border-[#3b82f6] transition-all">
-            <div class="flex justify-between items-start mb-6">
+          <a href={`/ai-compliance/${report.slug}`} class="group bg-white p-8 rounded-3xl border border-[#e2e8f0] shadow-sm hover:shadow-xl hover:border-[#3b82f6] transition-all flex flex-col">
+            <div class="flex justify-between items-start mb-4">
               <h2 class="text-xl font-bold text-[#0f172a] group-hover:text-[#3b82f6] line-clamp-1">{report.repo_name}</h2>
-              <span class="text-[10px] font-mono text-[#94a3b8]">{report.stars} ⭐</span>
+              <span class="text-[10px] font-mono text-[#94a3b8] flex-shrink-0 ml-4">{report.stars} ⭐</span>
+            </div>
+
+            <div class="mb-4">
+               <span class="text-[9px] font-mono bg-[#f8fafc] px-2 py-0.5 border border-[#f1f5f9] rounded text-[#64748b] uppercase">{report.detected_ai_stack}</span>
             </div>
             
+            <p class="text-sm text-[#64748b] line-clamp-3 mb-6 flex-1">
+               {report.summary_text}
+            </p>
+
             <div class="flex items-center gap-4 mb-8">
               <div class="text-2xl font-black text-[#0f172a]">{report.audit_score}<span class="text-xs opacity-30">/100</span></div>
               <div class={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${report.risk_level === 'Low' ? 'bg-[#10b981]/10 text-[#059669]' : (report.risk_level === 'Medium' ? 'bg-[#f59e0b]/10 text-[#d97706]' : 'bg-[#ef4444]/10 text-[#dc2626]')}`}>
@@ -58,7 +117,7 @@ const description = "Public technical assessments and compliance patterns for gl
 
             <div class="pt-6 border-t border-[#f1f5f9] flex justify-between items-center">
               <span class="text-[10px] font-mono text-[#94a3b8]">{new Date(report.scan_timestamp).toLocaleDateString()}</span>
-              <span class="text-xs font-bold text-[#3b82f6] opacity-0 group-hover:opacity-100 transition-opacity">View Report &rarr;</span>
+              <span class="text-xs font-bold text-[#3b82f6] opacity-0 group-hover:opacity-100 transition-opacity">Full Analysis &rarr;</span>
             </div>
           </a>
         ))}

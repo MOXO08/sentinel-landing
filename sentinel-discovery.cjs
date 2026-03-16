@@ -11,6 +11,8 @@ const BATCH_SIZE = 20;
 const TEMP_DIR = path.join(__dirname, 'discovery_temp');
 const REPO_SIZE_LIMIT_KB = 200 * 1024; // 200MB limit
 
+const RUN_ID = `run_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
 // --- Helpers ---
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -111,17 +113,25 @@ function detectEvidence(repoPath) {
         try {
             const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
             const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-            const aiLibs = ['openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 'anthropic', 'pinecone', 'llama-index', 'chromadb'];
+            const aiLibs = [
+                'openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 
+                'anthropic', 'pinecone', 'llama-index', 'chromadb', 'milvus', 'weaviate',
+                'langgraph', 'crewai', 'autogpt', 'babyagi', 'bentoml', 'fastapi', 'streamlit'
+            ];
             evidence.dependencies.push(...aiLibs.filter(lib => allDeps[lib]));
         } catch (e) {}
     }
 
-    const pythonConfigs = ['requirements.txt', 'pyproject.toml', 'setup.py'];
+    const pythonConfigs = ['requirements.txt', 'pyproject.toml', 'setup.py', 'Pipfile'];
     for (const pyFile of pythonConfigs) {
         const fullPath = path.join(repoPath, pyFile);
         if (fs.existsSync(fullPath)) {
             const content = fs.readFileSync(fullPath, 'utf8').toLowerCase();
-            const aiLibs = ['openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 'anthropic', 'pinecone', 'llama-index', 'chromadb'];
+            const aiLibs = [
+                'openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 
+                'anthropic', 'pinecone', 'llama-index', 'chromadb', 'milvus', 'weaviate',
+                'langgraph', 'crewai', 'autogpt', 'babyagi', 'bentoml', 'fastapi', 'streamlit'
+            ];
             const found = aiLibs.filter(lib => content.includes(lib));
             evidence.dependencies.push(...found);
         }
@@ -358,13 +368,26 @@ async function processRepository(repo) {
             (isCompliant ? [] : ['Technical documentation artifacts not detected in public root']);
 
         // Refine AI Stack and Gaps from evidence if available
-        const actualStack = repo._discoveryEvidence?.dependencies?.length > 0 
-            ? `AI Stack: ${repo._discoveryEvidence.dependencies.join(', ')}` 
+        const dependencies = repo._discoveryEvidence?.dependencies || [];
+        
+        // Categorization logic
+        const categories = new Set();
+        if (dependencies.includes('openai') || dependencies.includes('anthropic')) categories.add('openai');
+        if (dependencies.includes('langchain') || dependencies.includes('langgraph') || dependencies.includes('crewai')) categories.add('langchain');
+        if (dependencies.includes('llama-index') || dependencies.includes('pinecone') || dependencies.includes('chromadb') || dependencies.includes('milvus')) categories.add('rag');
+        if (dependencies.includes('autogpt') || dependencies.includes('babyagi') || dependencies.includes('crewai')) categories.add('agents');
+        if (dependencies.includes('transformers') || dependencies.includes('torch') || dependencies.includes('tensorflow')) categories.add('transformers');
+        
+        const actualStack = dependencies.length > 0 
+            ? `AI Stack: ${dependencies.join(', ')}` 
             : 'Heuristic (Discovery Mode)';
+
+        const categoryArray = Array.isArray(auditData.categories) ? auditData.categories : [...categories];
 
         await reportToSaaS({
             repo_url: repo.html_url,
             repo_name: repo.full_name,
+            repo_owner: repo.owner?.login || 'unknown',
             slug: slug,
             stars: repo.stargazers_count,
             language: repo.language || 'unknown',
@@ -372,11 +395,13 @@ async function processRepository(repo) {
             audit_score: auditScore,
             rules_failed: violations,
             risk_level: risk_level,
+            compliance_status: auditData.compliance_status || 'unknown',
             confidence_level: 'Medium',
             summary_text: summary_text,
             visible_gaps: visible_gaps.slice(0, 3),
             is_public: true,
-            execution_context: 'discovery'
+            execution_context: 'discovery',
+            categories: JSON.stringify(categoryArray)
         });
 
         console.log(`[Discovery] Audit recorded for ${repo.name} (Score: ${auditScore})`);
@@ -436,13 +461,32 @@ async function main() {
         fs.mkdirSync(TEMP_DIR);
     }
 
-    const query = 'llm OR rag OR openai OR "ai agent" stars:>10 fork:false';
+    const queries = [
+        'llm OR rag OR openai OR anthropic OR "ai agent" stars:>10 fork:false',
+        'langchain OR "llama-index" OR "vector db" OR pinecone stars:>5 fork:false',
+        'transformers OR huggingface OR "ml pipeline" stars:>20 fork:false'
+    ];
+    const query = queries[Math.floor(Math.random() * queries.length)];
 
     try {
+        await reportToSaaS({
+            type: 'run_start',
+            run_id: RUN_ID,
+            query: query
+        });
+
         const repos = await searchRepositories(query);
         console.log(`[Discovery] Found ${repos.length} candidates. Daily limit: ${DAILY_LIMIT}.`);
 
+        await reportToSaaS({
+            type: 'run_update',
+            run_id: RUN_ID,
+            candidates_found: repos.length
+        });
+
         let processed = 0;
+        let recorded = 0;
+        let errors = 0;
 
         for (const repo of repos) {
             if (processed >= DAILY_LIMIT) {
@@ -456,14 +500,48 @@ async function main() {
                 fs.mkdirSync(TEMP_DIR);
             }
 
-            await processRepository(repo);
+            try {
+                const result = await processRepository(repo);
+                recorded++;
+            } catch (e) {
+                console.error(`[Discovery] Error processing ${repo.full_name}: ${e.message}`);
+                errors++;
+            }
+
             processed++;
+            
+            // Progress update every 10 repos
+            if (processed % 10 === 0) {
+                await reportToSaaS({
+                    type: 'run_update',
+                    run_id: RUN_ID,
+                    processed_count: processed,
+                    recorded_count: recorded,
+                    error_count: errors
+                });
+            }
+
             await sleep(2000);
         }
+
+        await reportToSaaS({
+            type: 'run_end',
+            run_id: RUN_ID,
+            status: 'completed',
+            processed_count: processed,
+            recorded_count: recorded,
+            error_count: errors
+        });
 
         console.log('\n[Discovery] Discovery cycle complete.');
     } catch (err) {
         console.error(`[Discovery] Pipeline error: ${err.message}`);
+        await reportToSaaS({
+            type: 'run_end',
+            run_id: RUN_ID,
+            status: 'failed',
+            error: err.message
+        });
     }
 }
 
