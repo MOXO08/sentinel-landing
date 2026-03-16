@@ -135,7 +135,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         // 5. Verdict routing
         if (verdict.verdict === "NON_COMPLIANT") {
-            if (env.DB) await logToD1(env.DB, verdict, client.client_id, edgeNode);
+            if (env.DB) await logToD1(env.DB, verdict, client.client_id, edgeNode, manifest);
             return new Response(JSON.stringify(verdict), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json' }
@@ -150,7 +150,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         // 7. D1 Logging
         if (env.DB) {
-            await logToD1(env.DB, verdict, client.client_id, edgeNode);
+            await logToD1(env.DB, verdict, client.client_id, edgeNode, manifest);
         }
 
         return response;
@@ -163,12 +163,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 };
 
-async function logToD1(db: any, verdict: any, clientId: string, coloNode: string) {
+async function logToD1(db: any, verdict: any, clientId: string, coloNode: string, manifest: any) {
     try {
         const isCompliant = (verdict.verdict === "COMPLIANT" || verdict.verdict === "COMPLIANT_VIA_AI_REVIEW") ? 1 : 0;
         await db.prepare(
-            `INSERT INTO audit_logs (app_name, version, client_id, status, is_compliant, rules_version, colo_node)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)`
+            `INSERT INTO audit_logs (
+                app_name, version, client_id, status, is_compliant, 
+                rules_version, colo_node, anonymous_client_id, scan_id, 
+                project_hash, cli_version
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`
         ).bind(
             verdict.app_name,
             verdict.version,
@@ -176,7 +179,11 @@ async function logToD1(db: any, verdict: any, clientId: string, coloNode: string
             verdict.verdict,
             isCompliant,
             verdict.rules_version || "unknown",
-            coloNode
+            coloNode,
+            manifest.anonymous_client_id || null,
+            manifest.scan_id || null,
+            manifest.project_hash || null,
+            manifest.cli_version || null
         ).run();
     } catch (err) {
         console.error("D1 Insert Error:", err);

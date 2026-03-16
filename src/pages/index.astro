@@ -19,13 +19,26 @@ export const prerender = false;
 Astro.response.headers.set('Cache-Control', 'public, max-age=60');
 
 const env = (Astro.locals as any).runtime?.env;
-let totalAudits = 0;  // Real-time counter base
+let metrics = {
+  totalAudits: 0,
+  uniqueClients: 0,
+  uniqueProjects: 0
+};
 
 try {
   if (env?.DB) {
-    const cnt = await env.DB.prepare(`SELECT COUNT(*) AS c FROM audit_logs`).first<{c:number}>();
-    if (cnt?.c) {
-      totalAudits += cnt.c;
+    const data = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) AS total, 
+        COUNT(DISTINCT anonymous_client_id) AS clients,
+        COUNT(DISTINCT project_hash) AS projects
+      FROM audit_logs
+    `).first<{total:number, clients:number, projects:number}>();
+    
+    if (data) {
+      metrics.totalAudits = data.total;
+      metrics.uniqueClients = data.clients;
+      metrics.uniqueProjects = data.projects;
     }
   }
 } catch {
@@ -36,12 +49,12 @@ try {
 <SovereignLayout title="Sentinel — AI Compliance Infrastructure for CI/CD">
   <SovereignHeader client:idle />
   <main class="bg-[#F4F1EA]">
-    <Hero totalAudits={totalAudits} />
+    <Hero totalAudits={metrics.totalAudits} />
     <WhySentinel />
     <Quickstart />
     <ArchitectureDiagram />
     <CiCdIntegration />
-    <AdoptionSection totalAudits={totalAudits} />
+    <AdoptionSection {...metrics} />
     <BuiltForEngineering />
     <InfrastructureSection />
     <FinalCTA />

@@ -1,0 +1,119 @@
+
+> sentinel-landing@0.0.1 build
+> astro build
+
+[2m10:06:33[22m [34m[@astrojs/cloudflare][39m Enabling sessions with Cloudflare KV with the "SESSION" KV binding.
+[2m10:06:33[22m [34m[@astrojs/cloudflare][39m If you see the error "Invalid binding `SESSION`" in your build output, you need to add the binding to your wrangler config file.
+[33m[1m10:06:33[22m [WARN] [adapter][39m Cloudflare does not support sharp at runtime. However, you can configure `imageService: "compile"` to optimize images with sharp on prerendered pages during build time.
+[2m10:06:34[22m [34m[content][39m Syncing content
+[2m10:06:34[22m [34m[content][39m Synced content
+[2m10:06:34[22m [34m[types][39m Generated [2m215ms[22m
+[2m10:06:34[22m [34m[build][39m output: [34m"server"[39m
+[2m10:06:34[22m [34m[build][39m mode: [34m"server"[39m
+[2m10:06:34[22m [34m[build][39m directory: [34mD:\AI Act Compliance API\sentinel-landing\dist\[39m
+[2m10:06:34[22m [34m[build][39m adapter: [32m@astrojs/cloudflare[39m
+[2m10:06:34[22m [34m[build][39m Collecting build info...
+[2m10:06:34[22m [34m[build][39m [32mΓ£ô Completed in 581ms.[39m
+[2m10:06:34[22m [34m[build][39m Building server entrypoints...
+[2m10:06:54[22m [34m[vite][39m [32mΓ£ô built in 19.82s[39m
+[2m10:06:54[22m [34m[build][39m [32mΓ£ô Completed in 19.92s.[39m
+
+[42m[30m building client (vite) [39m[49m
+[2m10:06:54[22m [34m[vite][39m transforming...
+[2m10:07:01[22m [34m[vite][39m [32mΓ£ô[39m 2191 modules transformed.
+[2m10:07:02[22m [34m[vite][39m rendering chunks...
+[2m10:07:02[22m [34m[vite][39m computing gzip size...
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/check.CicTmR2z.js                   [39m[1m[2m  0.30 kB[22m[1m[22m[2m Γöé gzip:  0.25 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/chevron-right.azbA6sBe.js           [39m[1m[2m  0.31 kB[22m[1m[22m[2m Γöé gzip:  0.25 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/x.Fvh1ummx.js                       [39m[1m[2m  0.34 kB[22m[1m[22m[2m Γöé gzip:  0.26 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/terminal.CIrWvwRP.js                [39m[1m[2m  0.35 kB[22m[1m[22m[2m Γöé gzip:  0.27 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/code.k-5_Etsr.js                    [39m[1m[2m  0.35 kB[22m[1m[22m[2m Γöé gzip:  0.26 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/arrow-right.Dg_LMZJi.js             [39m[1m[2m  0.35 kB[22m[1m[22m[2m Γöé gzip:  0.27 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/circle-check.DjdCeao3.js            [39m[1m[2m  0.36 kB[22m[1m[22m[2m Γöé gzip:  0.28 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/trending-up.B2NDq5G9.js             [39m[1m[2m  0.36 kB[22m[1m[22m[2m Γöé gzip:  0.28 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/lock.CHAIWJ7l.js                    [39m[1m[2m  0.39 kB[22m[1m[22m[2m Γöé gzip:  0.30 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/mail.BEC5oJz_.js                    [39m[1m[2m  0.40 kB[22m[1m[22m[2m Γöé gzip:  0.31 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/target.D4ts1hiM.js                  [39m[1m[2m  0.41 kB[22m[1m[22m[2m Γöé gzip:  0.27 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/git-branch.Cnm_oM3e.js              [39m[1m[2m  0.41 kB[22m[1m[22m[2m Γöé gzip:  0.30 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/copy.DPdBbOHB.js                    [39m[1m[2m  0.42 kB[22m[1m[22m[2m Γöé gzip:  0.32 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/download.BsZbru11.js                [39m[1m[2m  0.42 kB[22m[1m[22m[2m Γöé gzip:  0.30 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/activity.Be2SjvZJ.js                [39m[1m[2m  0.42 kB[22m[1m[22m[2m Γöé gzip:  0.31 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/globe.CRrX4Xct.js                   [39m[1m[2m  0.42 kB[22m[1m[22m[2m Γöé gzip:  0.30 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/circle-question-mark.DCPiF5Jn.js    [39m[1m[2m  0.43 kB[22m[1m[22m[2m Γöé gzip:  0.32 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/database.DDPCHza8.js                [39m[1m[2m  0.43 kB[22m[1m[22m[2m Γöé gzip:  0.31 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/circle-alert.C0EYexZp.js            [39m[1m[2m  0.43 kB[22m[1m[22m[2m Γöé gzip:  0.30 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/key.Cv3c1EVg.js                     [39m[1m[2m  0.44 kB[22m[1m[22m[2m Γöé gzip:  0.33 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/zap.BltWKglx.js                     [39m[1m[2m  0.45 kB[22m[1m[22m[2m Γöé gzip:  0.32 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/triangle-alert.B_LBOsCc.js          [39m[1m[2m  0.45 kB[22m[1m[22m[2m Γöé gzip:  0.32 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/shield.BuGsM6zC.js                  [39m[1m[2m  0.45 kB[22m[1m[22m[2m Γöé gzip:  0.34 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/book-open.DkJuBWVg.js               [39m[1m[2m  0.46 kB[22m[1m[22m[2m Γöé gzip:  0.32 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/users.DjEGK4si.js                   [39m[1m[2m  0.49 kB[22m[1m[22m[2m Γöé gzip:  0.33 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/file-check.KG2bi4H2.js              [39m[1m[2m  0.50 kB[22m[1m[22m[2m Γöé gzip:  0.34 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/refresh-cw.DRDLLEX5.js              [39m[1m[2m  0.51 kB[22m[1m[22m[2m Γöé gzip:  0.33 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/scale.DGjgoKwn.js                   [39m[1m[2m  0.52 kB[22m[1m[22m[2m Γöé gzip:  0.33 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/server.CJxVz4Be.js                  [39m[1m[2m  0.52 kB[22m[1m[22m[2m Γöé gzip:  0.33 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/shield-alert.CsrB4U8T.js            [39m[1m[2m  0.54 kB[22m[1m[22m[2m Γöé gzip:  0.37 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/file-text.BKKidOfX.js               [39m[1m[2m  0.57 kB[22m[1m[22m[2m Γöé gzip:  0.36 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/eye-off.CoRs6KpU.js                 [39m[1m[2m  0.61 kB[22m[1m[22m[2m Γöé gzip:  0.39 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/rocket.BpvXDQeS.js                  [39m[1m[2m  0.63 kB[22m[1m[22m[2m Γöé gzip:  0.42 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/jsx-runtime.D_zvdyIk.js             [39m[1m[2m  0.73 kB[22m[1m[22m[2m Γöé gzip:  0.46 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/building.BtulvGbl.js                [39m[1m[2m  0.75 kB[22m[1m[22m[2m Γöé gzip:  0.40 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/cpu.CKH58EOw.js                     [39m[1m[2m  0.83 kB[22m[1m[22m[2m Γöé gzip:  0.41 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/createLucideIcon.DwjmCPeJ.js        [39m[1m[2m  2.58 kB[22m[1m[22m[2m Γöé gzip:  0.81 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/BottomCTA.BQWzR9PA.js               [39m[1m[2m  3.53 kB[22m[1m[22m[2m Γöé gzip:  1.39 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/index.V2PEJawd.js                   [39m[1m[2m  3.90 kB[22m[1m[22m[2m Γöé gzip:  1.86 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/sovereign-header.BmfhGPLt.js        [39m[1m[2m  4.24 kB[22m[1m[22m[2m Γöé gzip:  1.59 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/sovereign-footer.Cj-cpahS.js        [39m[1m[2m  5.48 kB[22m[1m[22m[2m Γöé gzip:  1.53 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/fortress-vault-page.DDFo9nTz.js     [39m[1m[2m  5.48 kB[22m[1m[22m[2m Γöé gzip:  2.16 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/scout-vault-page.DTldro9v.js        [39m[1m[2m  6.23 kB[22m[1m[22m[2m Γöé gzip:  2.49 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/compliance-status-page.DW-NoIKl.js  [39m[1m[2m  7.02 kB[22m[1m[22m[2m Γöé gzip:  2.29 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/about-page.Dw8BS6Ew.js              [39m[1m[2m  7.07 kB[22m[1m[22m[2m Γöé gzip:  2.76 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/FortressRequestForm.C6yBfNzO.js     [39m[1m[2m  7.41 kB[22m[1m[22m[2m Γöé gzip:  2.40 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/onboarding-page.D_1Jb-df.js         [39m[1m[2m  7.69 kB[22m[1m[22m[2m Γöé gzip:  2.88 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/index.DiEladB3.js                   [39m[1m[2m  7.85 kB[22m[1m[22m[2m Γöé gzip:  3.05 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/solutions-page.Bgl-8Oj-.js          [39m[1m[2m  8.38 kB[22m[1m[22m[2m Γöé gzip:  2.80 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/retail-page.D_Tjugts.js             [39m[1m[2m  8.74 kB[22m[1m[22m[2m Γöé gzip:  3.13 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/admin-dashboard.Dd3LRp0d.js         [39m[1m[2m  9.85 kB[22m[1m[22m[2m Γöé gzip:  2.96 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/saas-page.BniAOvID.js               [39m[1m[2m  9.99 kB[22m[1m[22m[2m Γöé gzip:  3.35 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/security-page.BtICbYdy.js           [39m[1m[2m 10.24 kB[22m[1m[22m[2m Γöé gzip:  3.50 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/compliance-page.BUIziKh8.js         [39m[1m[2m 10.98 kB[22m[1m[22m[2m Γöé gzip:  4.03 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/nis2-dora-page.BJU3aA64.js          [39m[1m[2m 11.42 kB[22m[1m[22m[2m Γöé gzip:  3.98 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/government-page.CLSouXK9.js         [39m[1m[2m 11.75 kB[22m[1m[22m[2m Γöé gzip:  4.04 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/methodology-page.C05Gmcsw.js        [39m[1m[2m 12.04 kB[22m[1m[22m[2m Γöé gzip:  3.76 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/integrity-console-page.CUUKhERW.js  [39m[1m[2m 13.24 kB[22m[1m[22m[2m Γöé gzip:  3.98 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/finance-page.BlRFK1sx.js            [39m[1m[2m 13.24 kB[22m[1m[22m[2m Γöé gzip:  4.04 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/api-docs-page.BB8-93uz.js           [39m[1m[2m 13.59 kB[22m[1m[22m[2m Γöé gzip:  4.27 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/dashboard-page.BJBSQjxT.js          [39m[1m[2m 13.91 kB[22m[1m[22m[2m Γöé gzip:  4.10 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/healthcare-page.C0OHFVoJ.js         [39m[1m[2m 15.93 kB[22m[1m[22m[2m Γöé gzip:  4.77 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/pricing-page.B9HIcKqw.js            [39m[1m[2m 27.90 kB[22m[1m[22m[2m Γöé gzip:  7.15 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/proxy.BeobNzYQ.js                   [39m[1m[2m120.24 kB[22m[1m[22m[2m Γöé gzip: 39.41 kB[22m
+[2m10:07:02[22m [34m[vite][39m [2mdist/[22m[36m_astro/client.Dc9Vh3na.js                  [39m[1m[2m186.62 kB[22m[1m[22m[2m Γöé gzip: 58.54 kB[22m
+[2m10:07:02[22m [34m[vite][39m [32mΓ£ô built in 8.15s[39m
+
+[42m[30m prerendering static routes [39m[49m
+[2m10:07:02[22m [32mΓû╢[39m src/pages/certifications.astro
+[2m10:07:02[22m   [34mΓööΓöÇ[39m [2m/certifications/index.html[22m[33m[1m10:07:02[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/certifications.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+[33m[1m10:07:02[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/certifications.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+ [2m(+128ms)[22m 
+[2m10:07:03[22m [32mΓû╢[39m src/pages/legal/privacy.astro
+[2m10:07:03[22m   [34mΓööΓöÇ[39m [2m/legal/privacy/index.html[22m[33m[1m10:07:03[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/legal/privacy.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+[33m[1m10:07:03[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/legal/privacy.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+ [2m(+43ms)[22m 
+[2m10:07:03[22m [32mΓû╢[39m src/pages/legal/sovereignty.astro
+[2m10:07:03[22m   [34mΓööΓöÇ[39m [2m/legal/sovereignty/index.html[22m[33m[1m10:07:03[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/legal/sovereignty.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+[33m[1m10:07:03[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/legal/sovereignty.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+ [2m(+54ms)[22m 
+[2m10:07:03[22m [32mΓû╢[39m src/pages/legal/terms.astro
+[2m10:07:03[22m   [34mΓööΓöÇ[39m [2m/legal/terms/index.html[22m[33m[1m10:07:03[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/legal/terms.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+[33m[1m10:07:03[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/legal/terms.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+ [2m(+19ms)[22m 
+[2m10:07:03[22m [32mΓû╢[39m src/pages/legal/vdp.astro
+[2m10:07:03[22m   [34mΓööΓöÇ[39m [2m/legal/vdp/index.html[22m[33m[1m10:07:03[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/legal/vdp.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+[33m[1m10:07:03[22m [WARN][39m `Astro.request.headers` was used when rendering the route `src/pages/legal/vdp.astro'`. `Astro.request.headers` is not available on prerendered pages. If you need access to request headers, make sure that the page is server-rendered using `export const prerender = false;` or by setting `output` to `"server"` in your Astro config to make all your pages server-rendered by default.
+ [2m(+14ms)[22m 
+[2m10:07:03[22m [32mΓ£ô Completed in 513ms.
+[39m
+[2m10:07:03[22m [34m[build][39m Rearranging server assets...
+[2m10:07:03[22m [34m[@astrojs/sitemap][39m `sitemap-index.xml` created at `dist`
+[2m10:07:03[22m [34m[build][39m Server built in [1m29.64s[22m
+[2m10:07:03[22m [34m[build][39m [1mComplete![22m
