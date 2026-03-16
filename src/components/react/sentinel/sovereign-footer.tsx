@@ -36,7 +36,7 @@ export function SovereignFooter() {
               {[
                 { label: "Scanners", href: "/" },
                 { label: "Documentation", href: "/docs" },
-                { label: "API Reference", href: "/docs#curl" },
+                { label: "API Reference", href: "/api" },
                 { label: "Pricing", href: "/pricing" },
               ].map((item) => (
                 <li key={item.label}>
@@ -56,10 +56,11 @@ export function SovereignFooter() {
             <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Resources</h3>
             <ul className="flex flex-col gap-2.5">
               {[
+                { label: "CLI on npm", href: "https://www.npmjs.com/package/sentinel-scan", target: "_blank" },
+                { label: "GitHub Repository", href: "https://github.com/MOXO08/sentinel", target: "_blank" },
                 { label: "AI Compliance Tools", href: "/ai-compliance-tools" },
                 { label: "AI Compliance FAQ", href: "/ai-compliance-faq" },
-                { label: "Sentinel vs Governance", href: "/sentinel-vs-governance-tools" },
-                { label: "GitHub Repository", href: "https://github.com/MOXO08/sentinel", target: "_blank" },
+                { label: "Sentinel vs AI Governance Tools", href: "/sentinel-vs-governance-tools" },
               ].map((item) => (
                 <li key={item.label}>
                   <a

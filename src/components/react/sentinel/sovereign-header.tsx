@@ -8,7 +8,7 @@ const navItems = [
   { label: "Scanners", href: "/#quickstart" },
   { label: "Docs", href: "/docs" },
   { label: "API", href: "/api" },
-  { label: "Pricing", href: "/pricing" },
+  { label: "Downloads", href: "/#quickstart" },
   { label: "GitHub", href: "https://github.com/MOXO08/sentinel", target: "_blank" },
 ]
 
