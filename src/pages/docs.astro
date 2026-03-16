@@ -13,9 +13,7 @@ const seoDescription = "Technical integration guide for Sentinel deterministic A
     <a href="#architecture">Architecture</a>
     
     <div class="sidebar-section">API Reference</div>
-    <a href="#curl">cURL</a>
-    <a href="#nodejs">Node.js</a>
-    <a href="#python">Python</a>
+    <a href="#audit">API Audit Endpoint</a>
     
     <div class="sidebar-section">CI/CD & Infrastructure</div>
     <a href="#cli">CI/CD Integration</a>
@@ -40,33 +38,13 @@ const seoDescription = "Technical integration guide for Sentinel deterministic A
   <h3>Sovereign Evidence Collection</h3>
   <p>By using deterministic article mapping, Sentinel translates repository signals (metadata, configs, oversight logs) into verifiable compliance artifacts.</p>
 
-  <h2 id="curl">cURL Implementation</h2>
+  <h2 id="audit">API Audit Endpoint</h2>
   <div class="lang-label">shell</div>
-  <pre><code>curl -X POST https://api.gettingsentinel.com/v1/scan \
+  <pre><code>curl -X POST https://api.gettingsentinel.com/api/audit \
   -H "Authorization: Bearer YOUR_KEY" \
   -H "Content-Type: application/json" \
   -d @manifest.json</code></pre>
 
-  <h2 id="nodejs">Node.js SDK</h2>
-  <div class="lang-label">javascript</div>
-  <pre><code><span class="hl-purple">import</span> &#123; Sentinel &#125; <span class="hl-purple">from</span> <span class="hl-str">'@sentinel/sdk'</span>;
-
-<span class="hl-comment">// Initialize deterministic engine</span>
-<span class="hl-purple">const</span> client = <span class="hl-purple">new</span> Sentinel(&#123; apiKey: process.env.SENTINEL_KEY &#125;);
-
-<span class="hl-comment">// Execute local compliance check</span>
-<span class="hl-purple">const</span> result = <span class="hl-purple">await</span> client.scan(<span class="hl-str">'./manifest.json'</span>);
-console.log(result.compliance_status); <span class="hl-comment">// "COMPLIANT"</span></code></pre>
-
-  <h2 id="python">Python client</h2>
-  <div class="lang-label">python</div>
-  <pre><code><span class="hl-purple">from</span> sentinel <span class="hl-purple">import</span> SentinelEngine
-
-engine = SentinelEngine(api_key=<span class="hl-str">"sk_live_..."</span>)
-report = engine.verify_manifest(<span class="hl-str">"manifest.json"</span>)
-
-<span class="hl-purple">if</span> report.is_compliant:
-    print(<span class="hl-str">"Compliance check passed"</span>)</code></pre>
 
   <h2 id="cli">CI/CD Integration</h2>
   <p>Run Sentinel in your GitHub Actions or GitLab pipelines to block non-compliant PRs before they hit production.</p>
@@ -82,6 +60,6 @@ sentinel-scan ./manifest.json &amp;&amp; kubectl apply -f deployment.yaml</code>
 
   <div class="alert" style={{ marginTop: '48px' }}>
     <strong>Ready to automate compliance?</strong> &mdash;
-    <a href="/dashboard/login" style={{ color: 'var(--cyan)' }}>Get your Free Developer Key &rarr;</a>
+    <a href="https://github.com/MOXO08/sentinel" style={{ color: 'var(--cyan)' }}>Download the CLI and start scanning &rarr;</a>
   </div>
 </DocsLayout>
