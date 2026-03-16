@@ -1,0 +1,135 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+
+const seoTitle = "Sentinel vs AI Governance Tools | Sentinel";
+const seoDescription = "Technical comparison between deterministic AI compliance scanners and governance platforms for EU AI Act compliance workflows.";
+const canonicalURL = "https://gettingsentinel.com/sentinel-vs-governance-tools";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription} canonical={canonicalURL}>
+  <SovereignHeader client:load activePage="/sentinel-vs-governance-tools" />
+
+  <main class="bg-[#F4F1EA] py-16 px-6 sm:px-12 lg:px-24 text-[#2A2A2A]">
+    <div class="max-w-4xl mx-auto space-y-12">
+      
+      <header class="border-b border-black/10 pb-8">
+        <h1 class="text-4xl font-bold tracking-tight text-[#1A1A1A]">
+          Sentinel vs AI Governance Tools
+        </h1>
+        <p class="mt-4 text-lg text-gray-600">
+          Understanding the distinction between high-level governance platforms and deterministic AI compliance scanners in the regulatory ecosystem.
+        </p>
+      </header>
+
+      <section class="space-y-8">
+        <p class="leading-relaxed text-gray-700">
+          Organizations aligning with the EU AI Act typically evaluate two distinct software categories: **AI Governance Platforms** for organizational oversight and **Deterministic Compliance Scanners** for technical validation. While both support regulatory readiness, they address different layers of the compliance lifecycle. For a broader overview of the AI compliance tool ecosystem, see our <a href="/ai-compliance-tools" class="text-[#10b981] hover:underline">AI Compliance Tools</a> overview.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="p-8 bg-white border border-black/5 rounded-xl shadow-sm space-y-4">
+            <h2 class="text-xl font-bold text-[#1A1A1A]">AI Governance Platforms</h2>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              Governance platforms provide the administrative and policy layer for compliance, focusing on cross-team coordination and high-level risk management.
+            </p>
+            <ul class="text-sm space-y-2 list-disc pl-4 text-gray-600">
+              <li>Policy management and team coordination</li>
+              <li>Organizational risk tracking and inventory</li>
+              <li>Workflow-based compliance assessments</li>
+              <li>Executive dashboarding for oversight</li>
+            </ul>
+          </div>
+
+          <div class="p-8 bg-white border-2 border-[#10b981] rounded-xl shadow-md space-y-4">
+            <h2 class="text-xl font-bold text-[#1A1A1A]">Deterministic Scanners (Sentinel)</h2>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              Deterministic scanners operate on the software implementation layer, linking regulatory rules directly to technical evidence in the codebase.
+            </p>
+            <ul class="text-sm space-y-2 list-disc pl-4 text-gray-600">
+              <li>Repository-level rule verification</li>
+              <li>Code-linked evidence generation</li>
+              <li>Automated CI/CD compliance gating</li>
+              <li>Structural manifest-vs-code validation</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-2xl font-bold text-[#1A1A1A]">Key Differences</h2>
+        
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-black/5 pb-4">
+            <div class="font-bold text-sm uppercase tracking-wider text-gray-500">Feature</div>
+            <div class="font-semibold">Governance Platforms</div>
+            <div class="font-semibold text-[#10b981]">Sentinel (Scanner)</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-black/5 pb-4">
+            <div class="text-xs font-mono uppercase text-gray-400">Primary Actor</div>
+            <div class="text-sm">Legal & Compliance Officers</div>
+            <div class="text-sm">Engineering & DevOps Teams</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-black/5 pb-4">
+            <div class="text-xs font-mono uppercase text-gray-400">Validation Method</div>
+            <div class="text-sm">Declarations & Policy Checks</div>
+            <div class="text-sm">Deterministic Implementation Checks</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-black/5 pb-4">
+            <div class="text-xs font-mono uppercase text-gray-400">Workflow</div>
+            <div class="text-sm">Project Management / Oversight</div>
+            <div class="text-sm">CI/CD / Developer Workflow</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-xs font-mono uppercase text-gray-400">Core Output</div>
+            <div class="text-sm">Risk Register / Policy Reports</div>
+            <div class="text-sm">Technical Evidence / Audit Signals</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-bold text-[#1A1A1A]">How Teams Use Both</h2>
+        <p class="leading-relaxed">
+          Governance platforms and technical scanners are often complementary. A legal team may define organizational policies in a governance platform, while engineering teams use Sentinel to verify that the actual code implementation adheres to those policies. Sentinel feeds its **scan outputs** and **evidence artifacts** into the governance layer to provide a "ground truth" verification of the system's state.
+        </p>
+      </section>
+
+      <section class="bg-white p-8 border border-black/5 rounded-xl space-y-4">
+        <h2 class="text-2xl font-bold text-[#1A1A1A]">Why This Matters Under the EU AI Act</h2>
+        <p class="leading-relaxed">
+          Regulators under the EU AI Act (specifically for High-Risk AI) require both a clear governance structure and rigorous technical documentation (Annex IV). By using a deterministic scanner, teams move from "saying" they are compliant to "proving" it with code-linked data, significantly streamlining the third-party audit process.
+        </p>
+      </section>
+
+      <section class="border-t border-black/10 pt-12">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A] mb-6">Learn More</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <a href="/docs" class="block p-6 border border-black/10 rounded-lg hover:bg-white hover:border-black transition-colors text-center">
+            <span class="block font-bold">Documentation</span>
+            <span class="text-sm text-gray-600">Technical setup</span>
+          </a>
+          <a href="/ai-compliance-tools" class="block p-6 border border-black/10 rounded-lg hover:bg-white hover:border-black transition-colors text-center">
+            <span class="block font-bold">Compliance Tools</span>
+            <span class="text-sm text-gray-600">Category overview</span>
+          </a>
+          <a href="/ai-compliance-faq" class="block p-6 border border-black/10 rounded-lg hover:bg-white hover:border-black transition-colors text-center">
+            <span class="block font-bold">Compliance FAQ</span>
+            <span class="text-sm text-gray-600">Technical Q&A</span>
+          </a>
+        </div>
+        <div class="mt-8 text-center text-sm text-gray-500">
+           See also: <a href="/pricing" class="underline">Pricing</a> | <a href="/" class="underline">Homepage</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

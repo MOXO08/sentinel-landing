@@ -1,0 +1,59 @@
+---
+import { SEO_DEFAULTS, getCanonicalURL } from "../lib/seo";
+import { SITE_CONFIG } from "../lib/site";
+import { ROUTES } from "../lib/routes";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "Documentation", 
+  description = SEO_DEFAULTS.defaultDescription 
+} = Astro.props;
+
+const canonicalURL = getCanonicalURL(ROUTES.docs);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title} | {SITE_CONFIG.brandName}</title>
+  <meta name="description" content={description}>
+  <link rel="canonical" href={canonicalURL}>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/docs.css">
+</head>
+<body>
+  <nav>
+    <a href={ROUTES.home} class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      {SITE_CONFIG.brandName}<span>Sovereign</span>
+    </a>
+    <div style="display: flex; gap: 24px; align-items: center;">
+      <a href={ROUTES.docs} style="color:var(--text); text-decoration:none; font-size:0.85rem; font-weight:600;">Docs</a>
+      <a href={ROUTES.pricing} style="color:var(--muted); text-decoration:none; font-size:0.85rem; font-weight:600;">Pricing</a>
+      <a href={SITE_CONFIG.githubUrl} class="nav-cta">GitHub</a>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <slot name="sidebar" />
+    </aside>
+
+    <main class="content">
+      <slot />
+    </main>
+  </div>
+</body>
+</html>

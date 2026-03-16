@@ -335,6 +335,7 @@ export function PricingPage() {
         <div className="text-center mb-16">
           <HelpCircle className="w-8 h-8 text-[#10b981] mx-auto mb-4 opacity-30" />
           <h2 className="text-2xl font-black text-[#0f172a] tracking-tight">Frequently Asked Questions</h2>
+          <p className="mt-2 text-sm text-[#64748b]">For technical implementation details, visit our <a href="/ai-compliance-faq" className="text-[#10b981] hover:underline">AI Compliance FAQ</a>.</p>
         </div>
         
         <div className="grid md:grid-cols-2 gap-6">

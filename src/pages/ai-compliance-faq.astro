@@ -1,0 +1,148 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+
+const seoTitle = "AI Compliance FAQ | Sentinel";
+const seoDescription = "Frequently asked questions about AI compliance, the EU AI Act, deterministic compliance scanning, and integrating with engineering workflows.";
+const canonicalURL = "https://gettingsentinel.com/ai-compliance-faq";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription} canonical={canonicalURL}>
+  <SovereignHeader client:load activePage="/ai-compliance-faq" />
+
+  <main class="bg-[#F4F1EA] py-16 px-6 sm:px-12 lg:px-24 text-[#2A2A2A]">
+    <div class="max-w-4xl mx-auto space-y-12">
+      
+      <header class="border-b border-black/10 pb-8">
+        <h1 class="text-4xl font-bold tracking-tight text-[#1A1A1A]">
+          AI Compliance FAQ
+        </h1>
+        <p class="mt-4 text-lg text-gray-600">
+          Technical and operational perspectives on AI compliance, EU AI Act readiness, engineering workflows, and deterministic compliance scanning.
+        </p>
+      </header>
+
+      <section class="space-y-10">
+        
+        {/* Q1 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">1. What is AI compliance?</h2>
+          <p class="leading-relaxed">
+            AI compliance refers to the process of ensuring that an artificial intelligence system meets specific regulatory, ethical, and technical standards. This involves verifying that the system adheres to rules regarding data usage, transparency, safety, and risk management as defined by frameworks like the EU AI Act.
+          </p>
+        </div>
+
+        {/* Q2 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">2. What is the EU AI Act?</h2>
+          <p class="leading-relaxed">
+            The EU AI Act is a comprehensive regulatory framework established by the European Union to govern the development and use of AI. It introduces legal obligations based on a hierarchy of risk—Minimal, Limited, High, and Unacceptable—requiring organizations to maintain technical documentation, ensure human oversight, and perform conformity assessments.
+          </p>
+        </div>
+
+        {/* Q3 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">3. How do companies check AI compliance?</h2>
+          <p class="leading-relaxed">
+            Organizations typically use a combination of qualitative documentation, legal consulting, and internal governance processes. However, as systems scale, many are shifting toward **deterministic compliance scanners** that can provide code-linked verification of compliance rules directly within the development environment.
+          </p>
+        </div>
+
+        {/* Q4 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">4. What tools help with AI compliance?</h2>
+          <p class="leading-relaxed">
+            The technical ecosystem for regulatory adherence is categorized as follows:
+          </p>
+          <ul class="list-disc pl-6 space-y-2 mt-2">
+            <li><strong>AI Governance Platforms:</strong> High-level systems for policy management and risk oversight.</li>
+            <li><strong>Responsible AI Toolkits:</strong> Specialized utilities for model evaluation and bias analysis.</li>
+            <li><strong>Security / DevSecOps:</strong> Infrastructure security tools adapted for AI data pipelines.</li>
+            <li><strong>Compliance Scanners:</strong> Technical verification engines that evaluate codebases against deterministic rules.</li>
+          </ul>
+        </div>
+
+        {/* Q5 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">5. What is an AI compliance scanner?</h2>
+          <p class="leading-relaxed">
+            An AI compliance scanner is a technical utility designed to analyze repositories, configuration manifests, and implementation signals. It compares these findings against a set of regulatory rules to identify discrepancies, non-compliant configurations, or risks before the system is deployed.
+          </p>
+        </div>
+
+        {/* Q6 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">6. How does Sentinel work?</h2>
+          <p class="leading-relaxed">
+            Sentinel scans target repositories to compare actual implementation signals against a `manifest.json`. It evaluates deterministic rules—such as verifying human oversight logic in code—and generates structured evidence artifacts required for Annex IV technical documentation.
+          </p>
+          <div class="bg-black text-white p-4 rounded font-mono text-sm mt-4">
+            sentinel-scan ./manifest.json
+          </div>
+        </div>
+
+        {/* Q7 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">7. Can AI compliance checks run in CI/CD?</h2>
+          <p class="leading-relaxed">
+            Yes. Integrating compliance checks into CI/CD pipelines allows engineering teams to implement "compliance-as-code." This ensures that every update is automatically verified against regulatory gates, preventing non-compliant code from reaching production.
+          </p>
+        </div>
+
+        {/* Q8 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">8. Why does deterministic compliance matter?</h2>
+          <p class="leading-relaxed">
+            Deterministic compliance utilizes explicit code-based rules to verify system state, ensuring repeatable and objective results. This eliminates the variability of manual audits or probabilistic AI-based reviews, providing technical evidence that accurately reflects the system's operational state.
+          </p>
+        </div>
+
+        {/* Q9 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">9. What is zero-egress compliance scanning?</h2>
+          <p class="leading-relaxed">
+            Zero-egress scanning indicates that the analysis engine operates entirely within the organization's controlled environment. Sensitive source code, model configurations, and proprietary implementation details are processed locally, ensuring data remains sovereign and does not leave the restricted infrastructure.
+          </p>
+        </div>
+
+        {/* Q10 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">10. When do engineering teams use compliance scanners?</h2>
+          <p class="leading-relaxed">
+            Common use cases include:
+          </p>
+          <ul class="list-disc pl-6 space-y-2 mt-2">
+            <li><strong>Automated Gating:</strong> Running checks on Pull Requests to block non-compliant changes.</li>
+            <li><strong>Audit Preparation:</strong> Generating technical evidence artifacts for regulators.</li>
+            <li><strong>Procurement:</strong> Proving compliance to enterprise customers as a pre-condition for sale.</li>
+            <li><strong>Documentation:</strong> Automatically populating technical files like the EU AI Act Annex IV.</li>
+          </ul>
+        </div>
+
+        {/* Q11 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">11. Is Sentinel a governance platform?</h2>
+          <p class="leading-relaxed">
+            Sentinel is an **AI Compliance Infrastructure** layer. While governance platforms focus on policy and team coordination, Sentinel focuses on the technical verification of compliance at the code and manifest level. Sentinel typically provides the technical evidence that feeds into a broader governance system.
+          </p>
+        </div>
+
+        {/* Q12 */}
+        <div class="space-y-3">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">12. Where can I learn more?</h2>
+          <div class="flex flex-wrap gap-4 mt-2">
+            <a href="/docs" class="text-[#10b981] font-semibold hover:underline">Documentation &rarr;</a>
+            <a href="/ai-compliance-tools" class="text-[#10b981] font-semibold hover:underline">Compliance Tools &rarr;</a>
+            <a href="/sentinel-vs-governance-tools" class="text-[#10b981] font-semibold hover:underline">Comparison Page &rarr;</a>
+            <a href="/pricing" class="text-[#10b981] font-semibold hover:underline">Pricing &rarr;</a>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

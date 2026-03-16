@@ -1,0 +1,27 @@
+
+> sentinel-landing@0.0.1 build
+> astro build
+
+[2m08:53:39[22m [34m[@astrojs/cloudflare][39m Enabling sessions with Cloudflare KV with the "SESSION" KV binding.
+[2m08:53:39[22m [34m[@astrojs/cloudflare][39m If you see the error "Invalid binding `SESSION`" in your build output, you need to add the binding to your wrangler config file.
+[33m[1m08:53:39[22m [WARN] [adapter][39m Cloudflare does not support sharp at runtime. However, you can configure `imageService: "compile"` to optimize images with sharp on prerendered pages during build time.
+[2m08:53:39[22m [34m[content][39m Syncing content
+[2m08:53:39[22m [34m[content][39m Synced content
+[2m08:53:39[22m [34m[types][39m Generated [2m125ms[22m
+[2m08:53:39[22m [34m[build][39m output: [34m"server"[39m
+[2m08:53:39[22m [34m[build][39m mode: [34m"server"[39m
+[2m08:53:39[22m [34m[build][39m directory: [34mD:\AI Act Compliance API\sentinel-landing\dist\[39m
+[2m08:53:39[22m [34m[build][39m adapter: [32m@astrojs/cloudflare[39m
+[2m08:53:39[22m [34m[build][39m Collecting build info...
+[2m08:53:39[22m [34m[build][39m [32mΓ£ô Completed in 239ms.[39m
+[2m08:53:39[22m [34m[build][39m Building server entrypoints...
+08:53:42 [ERROR] [vite] Γ£ù Build failed in 3.33s
+Expected "}" but found ":"
+  Location:
+    D:/AI Act Compliance API/sentinel-landing/src/pages/docs.astro:39:99
+  Stack trace:
+    at failureErrorWithLog (D:\AI Act Compliance API\sentinel-landing\node_modules\vite\node_modules\esbuild\lib\main.js:1467:15)
+    at responseCallbacks.<computed> (D:\AI Act Compliance API\sentinel-landing\node_modules\vite\node_modules\esbuild\lib\main.js:603:9)
+    at Socket.readFromStdout (D:\AI Act Compliance API\sentinel-landing\node_modules\vite\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:domain:489:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)

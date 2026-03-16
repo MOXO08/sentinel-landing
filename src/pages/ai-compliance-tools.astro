@@ -1,0 +1,201 @@
+---
+import SovereignLayout from '../layouts/SovereignLayout.astro';
+import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
+import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+
+const seoTitle = "AI Compliance Tools for the EU AI Act | Sentinel";
+const seoDescription = "Technical overview of AI compliance tools, technical infrastructure, and deterministic scanners for EU AI Act regulatory requirements.";
+---
+
+<SovereignLayout title={seoTitle} description={seoDescription}>
+  <SovereignHeader client:load activePage="/ai-compliance-tools" />
+
+  <main class="bg-[#F4F1EA] py-16 px-6 sm:px-12 lg:px-24 text-[#2A2A2A]">
+    <div class="max-w-4xl mx-auto space-y-12">
+      
+      {/* H1 */}
+      <header class="border-b border-black/10 pb-8">
+        <h1 class="text-4xl font-bold tracking-tight text-[#1A1A1A]">
+          AI Compliance Tools for the EU AI Act
+        </h1>
+        <p class="mt-6 text-lg font-medium text-[#334155] leading-relaxed">
+          Sentinel is a deterministic AI compliance scanner for engineering teams building regulated AI systems. It links repository signals, manifests, rule evaluation, and audit-ready evidence directly inside CI/CD workflows to ensure alignment with the EU AI Act.
+        </p>
+      </header>
+
+      {/* SECTION 1: Introduction */}
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A]">Introduction</h2>
+        <p class="leading-relaxed">
+          The introduction of the EU AI Act and other global AI regulations is creating a critical need for technical compliance infrastructure. As AI systems become more integrated into core business processes, organizations must now demonstrate a high level of technical rigor in how these systems are developed and deployed.
+        </p>
+        <p class="leading-relaxed">
+          To meet regulatory standards, organizations must be able to provide evidence of:
+        </p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li><strong>Auditability:</strong> Maintaining a clear record of system evaluations and changes.</li>
+          <li><strong>Transparency:</strong> Explaining how AI systems function and make decisions.</li>
+          <li><strong>Documentation:</strong> Generating comprehensive technical files as required by law.</li>
+          <li><strong>Risk Management:</strong> Identifying and mitigating potential failures or biases.</li>
+          <li><strong>Technical Evidence:</strong> Providing quantitative proof of compliance directly from the system architecture.</li>
+        </ul>
+        <p class="leading-relaxed">
+          Traditional compliance methods have often relied on static documentation, intermittent consulting, and manual audits. However, these approaches are increasingly difficult to maintain in modern software environments where codebases evolve daily. There is a growing shift toward tools that can automate the verification of compliance rules through <a href="/docs" class="text-[#10b981] hover:underline">technical documentation</a> and deterministic scanning.
+        </p>
+      </section>
+
+      {/* SECTION 2: Categories of AI Compliance Tools */}
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A]">Categories of AI Compliance Tools</h2>
+        <p class="leading-relaxed">
+          The ecosystem of AI governance tools is diversifying to address different aspects of the regulatory lifecycle. Currently, the landscape includes several key categories:
+        </p>
+        <div class="grid gap-6 mt-6">
+          <div class="p-6 bg-white border border-black/5 rounded-lg shadow-sm">
+            <h3 class="font-bold text-lg mb-2">1. AI Governance Platforms</h3>
+            <p class="text-sm">Focused on high-level policy management, risk oversight, and organizational compliance tracking across multiple departments.</p>
+          </div>
+          <div class="p-6 bg-white border border-black/5 rounded-lg shadow-sm">
+            <h3 class="font-bold text-lg mb-2">2. Responsible AI Toolkits</h3>
+            <p class="text-sm">Tools designed for model evaluation, bias analysis, and performance monitoring to ensure models behave according to ethical and safety standards.</p>
+          </div>
+          <div class="p-6 bg-white border border-black/5 rounded-lg shadow-sm">
+            <h3 class="font-bold text-lg mb-2">3. Security and DevSecOps Tools</h3>
+            <p class="text-sm">Leveraging software security scanning to identify vulnerabilities in the AI software stack, including dependencies and data pipelines.</p>
+          </div>
+          <div class="p-6 bg-white border border-black/5 rounded-lg shadow-sm">
+            <h3 class="font-bold text-lg mb-2">4. Documentation and Audit Tools</h3>
+            <p class="text-sm">Platforms that streamline the generation of regulatory documentation such as Annex IV technical files and conformity assessments.</p>
+          </div>
+          <div class="p-6 bg-white border border-black/5 rounded-lg shadow-sm">
+            <h3 class="font-bold text-lg mb-2">5. CI/CD Compliance Scanners</h3>
+            <p class="text-sm">Tools integrated directly into engineering workflows to provide real-time feedback to developers as they write code. Unlike high-level <a href="/sentinel-vs-governance-tools" class="text-[#10b981] hover:underline">governance platforms</a>, these scanners operate on the implementation layer.</p>
+          </div>
+        </div>
+        <p class="leading-relaxed mt-4">
+          Modern engineering teams increasingly require compliance checks that are integrated into development pipelines, moving beyond post-hoc manual reviews toward continuous verification.
+        </p>
+      </section>
+
+      {/* SECTION 3: AI Compliance Infrastructure */}
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A]">AI Compliance Infrastructure</h2>
+        <p class="leading-relaxed">
+          A new category is emerging labeled as AI Compliance Infrastructure. Unlike general governance platforms, this category focuses on the low-level technical bridge between legal requirements and engineering reality.
+        </p>
+        <p class="leading-relaxed font-medium">This category focuses on:</p>
+        <ul class="list-disc pl-6 space-y-2 text-[#3A3A3A]">
+          <li><strong>Deterministic compliance verification:</strong> Moving from subjective interpretation to objective, code-based rule enforcement.</li>
+          <li><strong>Integration with development workflows:</strong> Ensuring compliance logic lives where the code is written (e.g., Git repositories).</li>
+          <li><strong>Code-linked verification:</strong> Directly mapping regulatory rules to specific code modules or configurations.</li>
+          <li><strong>Generation of technical evidence:</strong> Automatically producing structured data that can serve as proof for auditors.</li>
+          <li><strong>Continuous compliance monitoring:</strong> Running checks on every commit or pull request.</li>
+        </ul>
+      </section>
+
+      {/* SECTION 4: Sentinel: Deterministic AI Compliance Scanner */}
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A]">Sentinel: Deterministic AI Compliance Scanner</h2>
+        <p class="leading-relaxed">
+          Sentinel is a developer-first compliance scanner designed to operate inside engineering workflows. It provides a technical layer that interprets regulatory requirements as machine-executable rules.
+        </p>
+        <p class="leading-relaxed">Sentinel functions by:</p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>Scanning repositories for AI-specific signals and configurations.</li>
+          <li>Evaluating deterministic compliance rules against the detected system state.</li>
+          <li>Detecting risk signals and <a href="/ai-compliance-faq" class="text-[#10b981] hover:underline">manifest vs code discrepancies</a>.</li>
+          <li>Generating structured compliance evidence (SARIF findings, JSON, HTML) for technical files.</li>
+          <li>Integrating with CI/CD pipelines to block non-compliant deployments.</li>
+        </ul>
+        <div class="bg-black text-white p-6 rounded-md font-mono text-sm shadow-inner">
+          <p class="text-[#888] mb-2"># Example Developer Workflow</p>
+          <p>sentinel-scan ./manifest.json</p>
+        </div>
+        <p class="leading-relaxed">
+          By operating at the code level, Sentinel produces <strong>compliance summaries</strong> and <strong>evidence artifacts</strong> that directly support engineering review, the creation of Annex IV technical documentation, and preparation for third-party audits.
+        </p>
+
+        <div class="pt-8 border-t border-black/5 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-medium">
+          <a href="/docs" class="text-[#10b981] hover:underline">Technical Docs &rarr;</a>
+          <a href="/ai-compliance-faq" class="text-[#10b981] hover:underline">Compliance FAQ &rarr;</a>
+          <a href="/sentinel-vs-governance-tools" class="text-[#10b981] hover:underline">Tool Comparison &rarr;</a>
+          <a href="/pricing" class="text-[#10b981] hover:underline">Pricing Plans &rarr;</a>
+        </div>
+      </section>
+
+      {/* SECTION 5: How Sentinel Fits Into the AI Compliance Stack */}
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A]">How Sentinel Fits Into the AI Compliance Stack</h2>
+        <p class="leading-relaxed">
+          Within a broader governance framework, Sentinel serves as the technical evidence layer. It connects the high-level policy requirements defined by legal teams with the actual implementation maintained by engineers.
+        </p>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8 py-6">
+          <div class="text-center p-4 border border-black/10 rounded w-full">AI System Code</div>
+          <div class="text-xl">→</div>
+          <div class="text-center p-4 bg-white border-2 border-black rounded w-full font-bold">Sentinel Rules</div>
+          <div class="text-xl">→</div>
+          <div class="text-center p-4 border border-black/10 rounded w-full">Audit Evidence</div>
+        </div>
+        <p class="leading-relaxed">
+          Sentinel is designed to run in diverse environments: locally on developer machines, as a step in CI/CD pipelines, or inside isolated enterprise infrastructure. Its <strong>Zero-Egress architecture</strong> ensures that sensitive code and data do not need to leave the organization's environment for analysis.
+        </p>
+      </section>
+
+      {/* SECTION 6: When Engineering Teams Use Compliance Scanners */}
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A]">When Engineering Teams Use Compliance Scanners</h2>
+        <p class="leading-relaxed">
+          Compliance scanners are utilized at various stages of the AI development lifecycle:
+        </p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li><strong>Pre-release validation:</strong> Ensuring all regulatory gates are passed before an AI system is deployed.</li>
+          <li><strong>Technical documentation:</strong> Extracting the necessary data to populate legally required reports.</li>
+          <li><strong>Internal risk review:</strong> Assessing the impact of new features on the system's compliance status.</li>
+          <li><strong>Procurement requirements:</strong> Providing evidence of compliance to enterprise customers or partners.</li>
+          <li><strong>Audit preparation:</strong> Compiling a comprehensive and verifiable record for regulatory inspectors.</li>
+        </ul>
+      </section>
+
+      {/* SECTION 7: Example Compliance Workflow */}
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A]">Example Compliance Workflow</h2>
+        <p class="leading-relaxed">
+          A typical workflow using Sentinel might follow this sequence:
+        </p>
+        <ol class="list-decimal pl-6 space-y-3">
+          <li><strong>AI Repository:</strong> The developer maintains the AI system code and model configurations.</li>
+          <li><strong>manifest.json:</strong> A descriptive file defines the system's intended behavior and compliance declarations.</li>
+          <li><strong>Sentinel Scan:</strong> The scanner evaluates the repository against the manifest and regulatory rules.</li>
+          <li><strong>Rule Evaluation:</strong> The system determines if code implementations match the legal requirements.</li>
+          <li><strong>Evidence Artifacts:</strong> The scan generates structured logs and reports for the compliance file.</li>
+          <li><strong>CI/CD Compliance Gate:</strong> If violations are found, the pipeline fails, preventing non-compliant code from reaching production.</li>
+        </ol>
+      </section>
+
+      {/* SECTION 8: Learn More */}
+      <section class="border-t border-black/10 pt-12">
+        <h2 class="text-2xl font-semibold text-[#1A1A1A] mb-6">Learn More</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <a href="/docs" class="block p-6 border border-black/10 rounded-lg hover:bg-white hover:border-black transition-colors text-center">
+            <span class="block font-bold">Documentation</span>
+            <span class="text-sm text-gray-600">Explore technical guides</span>
+          </a>
+          <a href="https://github.com/MOXO08/sentinel" target="_blank" rel="noopener noreferrer" class="block p-6 border border-black/10 rounded-lg hover:bg-white hover:border-black transition-colors text-center">
+            <span class="block font-bold">GitHub Repository</span>
+            <span class="text-sm text-gray-600">View source code</span>
+          </a>
+          <a href="/" class="block p-6 border border-black/10 rounded-lg hover:bg-white hover:border-black transition-colors text-center">
+            <span class="block font-bold">Quick Start</span>
+            <span class="text-sm text-gray-600">Back to homepage</span>
+          </a>
+        </div>
+        <div class="mt-8 text-center text-sm text-gray-500">
+           See also: <a href="/pricing" class="underline">Pricing</a> | <a href="/ai-compliance-faq" class="underline">FAQ</a> | <a href="/sentinel-vs-governance-tools" class="underline">Comparison</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <SovereignFooter client:idle />
+</SovereignLayout>

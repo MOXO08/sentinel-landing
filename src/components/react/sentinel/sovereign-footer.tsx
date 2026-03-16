@@ -29,13 +29,37 @@ export function SovereignFooter() {
             </a>
           </div>
 
-          {/* Developers */}
+          {/* Product */}
           <div>
-            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Developers</h3>
+            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Product</h3>
             <ul className="flex flex-col gap-2.5">
               {[
+                { label: "Scanners", href: "/" },
+                { label: "Documentation", href: "/docs" },
+                { label: "API Reference", href: "/docs#curl" },
+                { label: "Pricing", href: "/pricing" },
+              ].map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    className="text-xs font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-wide"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Resources</h3>
+            <ul className="flex flex-col gap-2.5">
+              {[
+                { label: "AI Compliance Tools", href: "/ai-compliance-tools" },
+                { label: "AI Compliance FAQ", href: "/ai-compliance-faq" },
+                { label: "Sentinel vs Governance", href: "/sentinel-vs-governance-tools" },
                 { label: "GitHub Repository", href: "https://github.com/MOXO08/sentinel", target: "_blank" },
-                { label: "NPM Package", href: "https://www.npmjs.com/package/@radu_api/sentinel-scan", target: "_blank" },
               ].map((item) => (
                 <li key={item.label}>
                   <a
@@ -51,36 +75,17 @@ export function SovereignFooter() {
             </ul>
           </div>
 
-          {/* Infrastructure */}
+          {/* Trust */}
           <div>
-            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Infrastructure</h3>
-            <ul className="flex flex-col gap-2.5">
-              {[
-                { label: "Security Policy", href: "/security" },
-                { label: "Compliance Mapping", href: "/compliance" },
-                { label: "Data Residency", href: "/legal/data-residency" },
-                { label: "Sovereignty Model", href: "/legal/sovereignty" },
-              ].map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="text-xs font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-wide"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Legal</h3>
+            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Trust</h3>
             <ul className="flex flex-col gap-2.5">
               {[
                 { label: "Privacy Policy", href: "/legal/privacy" },
                 { label: "Terms of Service", href: "/legal/terms" },
-                { label: "Pricing & Licensing", href: "/pricing" },
+                { label: "Sovereignty Model", href: "/legal/sovereignty" },
+                { label: "Security Policy", href: "/security" },
+                { label: "Data Residency", href: "/legal/data-residency" },
+                { label: "Compliance Mapping", href: "/compliance" },
               ].map((item) => (
                 <li key={item.label}>
                   <a
@@ -94,21 +99,39 @@ export function SovereignFooter() {
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Use Cases & Contact */}
           <div>
-            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4">Contact</h3>
-            <p className="text-sm text-[#475569] mb-6 leading-relaxed">
-              Technical inquiries &<br />
-              Audit Architecture
-            </p>
-            <a
-              href="mailto:office@gettingsentinel.com"
-              data-contact-link="office@gettingsentinel.com"
-              className="flex items-center gap-2 text-sm text-[#475569] hover:text-[#10b981] transition-colors cursor-pointer"
-            >
-              <Mail className="w-4 h-4" />
-              office@gettingsentinel.com
-            </a>
+            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Use Cases</h3>
+            <ul className="flex flex-col gap-4">
+              <li>
+                <ul className="flex flex-col gap-2.5">
+                  {[
+                    { label: "Finance", href: "/use-cases/finance" },
+                    { label: "Healthcare", href: "/use-cases/healthcare" },
+                    { label: "SaaS & Engineering", href: "/use-cases/saas" },
+                  ].map((item) => (
+                    <li key={item.label}>
+                      <a
+                        href={item.href}
+                        className="text-xs font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-wide"
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+              <li className="pt-4 border-t border-[#e2e8f0]">
+                <h3 className="text-[10px] font-semibold uppercase text-[#94a3b8] mb-3 tracking-[0.1em]">Contact</h3>
+                <a
+                  href="mailto:office@gettingsentinel.com"
+                  className="flex items-center gap-2 text-xs text-[#64748b] hover:text-[#10b981] transition-colors cursor-pointer font-mono"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  office@gettingsentinel.com
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
