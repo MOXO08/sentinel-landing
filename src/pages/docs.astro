@@ -51,7 +51,7 @@ const seoDescription = "Technical integration guide for Sentinel deterministic A
 
   <div class="lang-label">yaml</div>
   <pre><code><span class="hl-comment"># CI/CD integration (exit 0 = COMPLIANT, exit 1 = NON_COMPLIANT)</span>
-sentinel-scan ./manifest.json &amp;&amp; kubectl apply -f deployment.yaml</code></pre>
+  npx @radu_api/sentinel-scan ./manifest.json && kubectl apply -f deployment.yaml</code></pre>
 
   <h2 id="ai-compliance-tools">AI Compliance Tools</h2>
   <p>Sentinel is a deterministic compliance infrastructure designed for engineering teams building High-Risk AI systems under the EU AI Act. By integrating directly into development workflows, Sentinel provides a technical evidence layer that links repo-level signals, manifests, and rule evaluations.</p>
