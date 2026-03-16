@@ -12,7 +12,7 @@ const TEMP_DIR = path.join(__dirname, 'discovery_temp');
 const REPO_SIZE_LIMIT_KB = 200 * 1024; // 200MB limit
 
 if (!SENTINEL_API_KEY) {
-    console.error("Error: SENTINEL_API_KEY is required for discovery engine.");
+    console.error('Error: SENTINEL_API_KEY is required for discovery engine.');
     process.exit(1);
 }
 
@@ -127,19 +127,36 @@ async function processRepository(repo) {
         if (foundManifest) {
             scanTarget = `"${foundManifest}"`;
             console.log(`[Discovery] Found manifest for ${repo.name}: ${path.basename(foundManifest)}`);
+
+            const policyPath = path.join(repoPath, 'sentinel.policy.json');
+            if (!fs.existsSync(policyPath)) {
+                const policy = {
+                    policy_version: '1.0',
+                    mode: 'discovery',
+                    ruleset: 'baseline'
+                };
+                fs.writeFileSync(policyPath, JSON.stringify(policy, null, 2));
+                console.log(`[Discovery] Generated temporary policy for ${repo.name}.`);
+            }
         } else {
             console.log(`[Discovery] No supported manifest found for ${repo.name}. Generating auto manifest.`);
 
             const autoManifestPath = path.join(repoPath, 'sentinel.auto.manifest.json');
-
             const autoManifest = {
                 project: repo.name,
                 discovery_mode: true,
                 repository: repo.html_url,
                 generated_by: 'sentinel-discovery-engine'
             };
-
             fs.writeFileSync(autoManifestPath, JSON.stringify(autoManifest, null, 2));
+
+            const policyPath = path.join(repoPath, 'sentinel.policy.json');
+            const policy = {
+                policy_version: '1.0',
+                mode: 'discovery',
+                ruleset: 'baseline'
+            };
+            fs.writeFileSync(policyPath, JSON.stringify(policy, null, 2));
 
             scanTarget = `"${autoManifestPath}"`;
         }
@@ -147,7 +164,10 @@ async function processRepository(repo) {
         const scanCmd = `npx @radu_api/sentinel-scan ${scanTarget} --json --baseline`;
 
         console.log(`[Discovery] Running Sentinel audit on ${repo.name}...`);
-        const output = execSync(scanCmd, { encoding: 'utf8' });
+        const output = execSync(scanCmd, {
+            encoding: 'utf8',
+            cwd: repoPath
+        });
 
         let auditData;
         try {
@@ -222,8 +242,19 @@ async function reportToSaaS(payload) {
         };
 
         const req = https.request(options, (res) => {
-            res.on('data', () => {});
-            res.on('end', () => resolve());
+            let responseData = '';
+
+            res.on('data', chunk => {
+                responseData += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+                    resolve();
+                } else {
+                    reject(new Error(`SaaS API error: ${res.statusCode} ${responseData}`));
+                }
+            });
         });
 
         req.on('error', reject);
