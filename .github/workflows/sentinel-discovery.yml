@@ -28,4 +28,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SENTINEL_API_KEY: ${{ secrets.SENTINEL_API_KEY }}
-        run: node sentinel-discovery.cjs
+        run: node sentinel-discovery.cjs # Compatibility fix: use .cjs for ESM project support
