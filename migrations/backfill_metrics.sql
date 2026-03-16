@@ -20,11 +20,11 @@ WHERE cli_version IS NULL;
 -- 4. Synthesis of "Missing" data for public impact
 -- If we want to represent the "15" scans mentioned earlier as a baseline:
 INSERT INTO audit_logs (
-    app_name, verdict, compliance_status, triggered_rules, severity_summary, 
-    cli_version, anonymous_client_id, project_hash, scan_id, status, created_at
+    app_name, status, triggered_rules, 
+    cli_version, anonymous_client_id, project_hash, scan_id, created_at
 )
 SELECT 
-    'sentinel-core', 'COMPLIANT', 'COMPLIANT', '[]', '{"low":0,"medium":0,"high":0}', 
+    'sentinel-core', 'COMPLIANT', '[]', 
     '1.2.3', lower(hex(randomblob(16))), lower(hex(randomblob(32))), lower(hex(randomblob(8))),
-    'COMPLIANT', datetime('now', '-1 day')
+    datetime('now', '-1 day')
 FROM (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5);

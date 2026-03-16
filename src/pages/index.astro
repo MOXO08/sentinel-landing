@@ -27,22 +27,22 @@ let metrics = {
 
 try {
   if (env?.DB) {
-    const data = await env.DB.prepare(`
+    const stats: any = await env.DB.prepare(`
       SELECT 
         COUNT(*) AS total, 
         COUNT(DISTINCT anonymous_client_id) AS clients,
         COUNT(DISTINCT project_hash) AS projects
       FROM audit_logs
-    `).first<{total:number, clients:number, projects:number}>();
+    `).first();
     
-    if (data) {
-      metrics.totalAudits = data.total;
-      metrics.uniqueClients = data.clients;
-      metrics.uniqueProjects = data.projects;
+    if (stats) {
+      metrics.totalAudits = Number(stats.total) || 0;
+      metrics.uniqueClients = Number(stats.clients) || 0;
+      metrics.uniqueProjects = Number(stats.projects) || 0;
     }
   }
-} catch {
-  // Silent fail for production resilience
+} catch (e) {
+  console.error("Landing Metrics Error:", e);
 }
 ---
 
