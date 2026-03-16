@@ -28,4 +28,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SENTINEL_API_KEY: ${{ secrets.SENTINEL_API_KEY }}
-        run: node sentinel-discovery.js
+        run: node sentinel-discovery.cjs
