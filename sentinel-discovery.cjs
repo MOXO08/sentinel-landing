@@ -243,6 +243,7 @@ async function reportToSaaS(payload) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'User-Agent': 'Sentinel-Discovery-Bot/1.0',
                 'X-Sentinel-API-Key': SENTINEL_API_KEY,
                 'Content-Length': Buffer.byteLength(postData)
             }
