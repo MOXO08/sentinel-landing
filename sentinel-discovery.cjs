@@ -187,12 +187,26 @@ try {
         const isCompliant =
             auditData.verdict === 'COMPLIANT' || auditData.verdict === 'PASSED';
 
-        const auditScore =
-            auditData.score !== undefined ? auditData.score : (isCompliant ? 100 : 65);
+        // High-fidelity scoring heuristic derived from summary counts
+        let derivedScore = isCompliant ? 100 : 95;
+        if (auditData.summary) {
+            derivedScore -= (auditData.summary.high || 0) * 20;
+            derivedScore -= (auditData.summary.medium || 0) * 10;
+            derivedScore -= (auditData.summary.low || 0) * 5;
+        }
+        const auditScore = Math.max(10, derivedScore);
 
         const violations = Array.isArray(auditData.violations)
             ? auditData.violations.map(v => v.rule_id)
             : (isCompliant ? [] : ['AI-ACT-ART-10']);
+
+        // Align risk level with compliance_status and score
+        let risk_level = 'Low';
+        if (auditData.compliance_status === 'high_risk' || auditData.compliance_status === 'blocked' || auditScore < 70) {
+            risk_level = 'High';
+        } else if (auditScore < 90) {
+            risk_level = 'Medium';
+        }
 
         const slug =
             repo.name.toLowerCase().replace(/[^a-z0-9]/g, '-') +
@@ -215,7 +229,7 @@ try {
             detected_ai_stack: 'Heuristic (Discovery Mode)',
             audit_score: auditScore,
             rules_failed: violations,
-            risk_level: auditScore >= 90 ? 'Low' : (auditScore >= 70 ? 'Medium' : 'High'),
+            risk_level: risk_level,
             confidence_level: 'Medium',
             summary_text: summary_text,
             visible_gaps: visible_gaps.slice(0, 3),
