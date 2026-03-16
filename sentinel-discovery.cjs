@@ -11,11 +11,6 @@ const BATCH_SIZE = 20;
 const TEMP_DIR = path.join(__dirname, 'discovery_temp');
 const REPO_SIZE_LIMIT_KB = 200 * 1024; // 200MB limit
 
-if (!SENTINEL_API_KEY) {
-    console.error('Error: SENTINEL_API_KEY is required for discovery engine.');
-    process.exit(1);
-}
-
 // --- Helpers ---
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -80,6 +75,148 @@ async function githubApiRequest(apiPath) {
     });
 }
 
+function detectEvidence(repoPath) {
+    const evidence = {
+        files: [],
+        dependencies: [],
+        keywords: [],
+        flags: []
+    };
+
+    const complianceFiles = {
+        'LICENSE': 'audit_license_present',
+        'PRIVACY.md': 'transparency_policy_documented',
+        'SECURITY.md': 'security_policy_documented',
+        'GOVERNANCE.md': ['human_oversight_documented', 'data_governance_policy_documented'],
+        'CONTRIBUTING.md': 'developer_guidelines_present',
+        'model-card.md': 'model_card_present',
+        'dataset-card.md': 'dataset_card_present',
+        'POLICY.md': 'data_governance_policy_documented',
+        'CONFORMITY.md': 'conformity_assessment_completed',
+        'AUDIT.md': 'conformity_assessment_completed',
+        'Dockerfile': 'deployment_containerized'
+    };
+
+    for (const [file, flags] of Object.entries(complianceFiles)) {
+        if (fs.existsSync(path.join(repoPath, file))) {
+            evidence.files.push(file);
+            const flagList = Array.isArray(flags) ? flags : [flags];
+            evidence.flags.push(...flagList);
+        }
+    }
+
+    // Dependency Analysis
+    const pkgPath = path.join(repoPath, 'package.json');
+    if (fs.existsSync(pkgPath)) {
+        try {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+            const aiLibs = ['openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 'anthropic', 'pinecone', 'llama-index', 'chromadb'];
+            evidence.dependencies.push(...aiLibs.filter(lib => allDeps[lib]));
+        } catch (e) {}
+    }
+
+    const pythonConfigs = ['requirements.txt', 'pyproject.toml', 'setup.py'];
+    for (const pyFile of pythonConfigs) {
+        const fullPath = path.join(repoPath, pyFile);
+        if (fs.existsSync(fullPath)) {
+            const content = fs.readFileSync(fullPath, 'utf8').toLowerCase();
+            const aiLibs = ['openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 'anthropic', 'pinecone', 'llama-index', 'chromadb'];
+            const found = aiLibs.filter(lib => content.includes(lib));
+            evidence.dependencies.push(...found);
+        }
+    }
+    evidence.dependencies = [...new Set(evidence.dependencies)];
+
+    // CI and Artifact Analysis
+    const ciPaths = [
+        '.github/workflows',
+        '.gitlab-ci.yml',
+        'sentinel-results',
+        'audit-results'
+    ];
+    for (const ciPath of ciPaths) {
+        if (fs.existsSync(path.join(repoPath, ciPath))) {
+            evidence.flags.push('ci_integration_detected');
+            evidence.files.push(ciPath);
+        }
+    }
+
+    const sarifFiles = fs.readdirSync(repoPath).filter(f => f.endsWith('.sarif'));
+    if (sarifFiles.length > 0) {
+        evidence.flags.push('static_analysis_artifacts_present');
+        evidence.files.push(sarifFiles[0]);
+    }
+
+    // Keyword Analysis (README)
+    const readmePath = path.join(repoPath, 'README.md');
+    if (fs.existsSync(readmePath)) {
+        const content = fs.readFileSync(readmePath, 'utf8').toLowerCase();
+        const keywords = {
+            'transparency': 'transparency_measures_declared',
+            'bias': 'bias_assessment_performed',
+            'fairness': 'bias_assessment_performed',
+            'human oversight': 'human_oversight_enabled',
+            'notification': 'user_notification_ai_interaction',
+            'transparent': 'user_notification_ai_interaction',
+            'safety': 'safety_protocols_mentioned',
+            'governance': 'data_governance_policy_documented',
+            'conformity': 'conformity_assessment_completed'
+        };
+        for (const [word, flag] of Object.entries(keywords)) {
+            if (content.includes(word)) {
+                evidence.keywords.push(word);
+                evidence.flags.push(flag);
+            }
+        }
+    }
+
+    evidence.flags = [...new Set(evidence.flags)];
+    return evidence;
+}
+
+function calculateScore(auditData, repo) {
+    const isCompliant =
+        auditData.verdict === 'COMPLIANT' || auditData.verdict === 'PASSED';
+
+    // Hybrid scoring heuristic: Scanner Results + Raw Evidence Signals
+    let baseScore = isCompliant ? 100 : 90;
+    
+    // 1. Penalize based on scanner findings
+    if (auditData.summary) {
+        baseScore -= (auditData.summary.high || 0) * 15;
+        baseScore -= (auditData.summary.medium || 0) * 8;
+        baseScore -= (auditData.summary.low || 0) * 4;
+    }
+
+    // 2. Bonus for detected artifacts (differentiator)
+    const evidence = repo._discoveryEvidence || { flags: [], dependencies: [] };
+    const uniqueSignals = new Set(evidence.flags);
+    
+    // Critical compliance signals (5 points each)
+    const criticalFlags = [
+        'audit_license_present',
+        'transparency_policy_documented',
+        'security_policy_documented',
+        'human_oversight_enabled',
+        'bias_assessment_performed',
+        'conformity_assessment_completed',
+        'model_card_present'
+    ];
+    
+    criticalFlags.forEach(flag => {
+        if (uniqueSignals.has(flag)) baseScore += 5;
+        else if (!isCompliant) baseScore -= 3; // Penalty for missing expected discovery signals
+    });
+
+    // 3. Modifiers for stack and integration
+    if (evidence.dependencies.length > 0) baseScore += 2; // Real AI stack detected
+    if (uniqueSignals.has('ci_integration_detected')) baseScore += 3;
+    if (uniqueSignals.has('static_analysis_artifacts_present')) baseScore += 3;
+
+    return Math.min(100, Math.max(10, baseScore));
+}
+
 // --- Implementation ---
 async function searchRepositories(query) {
     const res = await githubApiRequest(
@@ -141,13 +278,19 @@ async function processRepository(repo) {
         } else {
             console.log(`[Discovery] No supported manifest found for ${repo.name}. Generating auto manifest.`);
 
+            const evidence = detectEvidence(repoPath);
             const autoManifestPath = path.join(repoPath, 'sentinel.auto.manifest.json');
+            
             const autoManifest = {
                 project: repo.name,
                 discovery_mode: true,
                 repository: repo.html_url,
-                generated_by: 'sentinel-discovery-engine'
+                generated_by: 'sentinel-discovery-engine',
+                ai_stack_evidence: evidence.dependencies,
+                declared_flags: evidence.flags,
+                detected_artifacts: evidence.files
             };
+            
             fs.writeFileSync(autoManifestPath, JSON.stringify(autoManifest, null, 2));
 
             const policyPath = path.join(repoPath, 'sentinel.policy.json');
@@ -159,6 +302,7 @@ async function processRepository(repo) {
             fs.writeFileSync(policyPath, JSON.stringify(policy, null, 2));
 
             scanTarget = `"${autoManifestPath}"`;
+            repo._discoveryEvidence = evidence; // Store for later reporting
         }
 
         const scanCmd = `npx @radu_api/sentinel-scan ${scanTarget} --json --baseline`;
@@ -166,15 +310,15 @@ async function processRepository(repo) {
         console.log(`[Discovery] Running Sentinel audit on ${repo.name}...`);
         let output;
 
-try {
-    output = execSync(scanCmd, {
-        encoding: 'utf8',
-        cwd: repoPath,
-        stdio: ['pipe', 'pipe', 'pipe']
-    });
-} catch (err) {
-    output = err.stdout ? err.stdout.toString() : "";
-}
+        try {
+            output = execSync(scanCmd, {
+                encoding: 'utf8',
+                cwd: repoPath,
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+        } catch (err) {
+            output = err.stdout ? err.stdout.toString() : "";
+        }
 
         let auditData;
         try {
@@ -187,14 +331,7 @@ try {
         const isCompliant =
             auditData.verdict === 'COMPLIANT' || auditData.verdict === 'PASSED';
 
-        // High-fidelity scoring heuristic derived from summary counts
-        let derivedScore = isCompliant ? 100 : 95;
-        if (auditData.summary) {
-            derivedScore -= (auditData.summary.high || 0) * 20;
-            derivedScore -= (auditData.summary.medium || 0) * 10;
-            derivedScore -= (auditData.summary.low || 0) * 5;
-        }
-        const auditScore = Math.max(10, derivedScore);
+        const auditScore = calculateScore(auditData, repo);
 
         const violations = Array.isArray(auditData.violations)
             ? auditData.violations.map(v => v.rule_id)
@@ -202,9 +339,9 @@ try {
 
         // Align risk level with compliance_status and score
         let risk_level = 'Low';
-        if (auditData.compliance_status === 'high_risk' || auditData.compliance_status === 'blocked' || auditScore < 70) {
+        if (auditData.compliance_status === 'high_risk' || auditData.compliance_status === 'blocked' || auditScore < 60) {
             risk_level = 'High';
-        } else if (auditScore < 90) {
+        } else if (auditScore < 85) {
             risk_level = 'Medium';
         }
 
@@ -220,13 +357,18 @@ try {
         const visible_gaps = auditData.violations?.map(v => v.description) ||
             (isCompliant ? [] : ['Technical documentation artifacts not detected in public root']);
 
+        // Refine AI Stack and Gaps from evidence if available
+        const actualStack = repo._discoveryEvidence?.dependencies?.length > 0 
+            ? `AI Stack: ${repo._discoveryEvidence.dependencies.join(', ')}` 
+            : 'Heuristic (Discovery Mode)';
+
         await reportToSaaS({
             repo_url: repo.html_url,
             repo_name: repo.full_name,
             slug: slug,
             stars: repo.stargazers_count,
             language: repo.language || 'unknown',
-            detected_ai_stack: 'Heuristic (Discovery Mode)',
+            detected_ai_stack: actualStack,
             audit_score: auditScore,
             rules_failed: violations,
             risk_level: risk_level,
@@ -247,6 +389,7 @@ try {
     }
 }
 
+// Helper for reporting
 async function reportToSaaS(payload) {
     return new Promise((resolve, reject) => {
         const postData = JSON.stringify(payload);
@@ -265,11 +408,7 @@ async function reportToSaaS(payload) {
 
         const req = https.request(options, (res) => {
             let responseData = '';
-
-            res.on('data', chunk => {
-                responseData += chunk;
-            });
-
+            res.on('data', chunk => { responseData += chunk; });
             res.on('end', () => {
                 if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
                     resolve();
@@ -288,6 +427,11 @@ async function reportToSaaS(payload) {
 const DISK_QUOTA_BYTES = 2 * 1024 * 1024 * 1024; // 2GB
 
 async function main() {
+    if (!SENTINEL_API_KEY) {
+        console.error('Error: SENTINEL_API_KEY is required for discovery engine.');
+        process.exit(1);
+    }
+
     if (!fs.existsSync(TEMP_DIR)) {
         fs.mkdirSync(TEMP_DIR);
     }
@@ -323,4 +467,8 @@ async function main() {
     }
 }
 
-main();
+if (require.main === module) {
+    main();
+}
+
+module.exports = { detectEvidence, calculateScore };
