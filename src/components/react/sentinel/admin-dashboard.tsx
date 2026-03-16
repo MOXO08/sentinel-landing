@@ -113,7 +113,7 @@ export function AdminDashboard() {
         </div>
 
         {/* Global Metrics Panels */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
             <div className="bg-white/5 border border-white/10 p-6 rounded relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-[#10b981]/20 blur-[20px] -translate-y-1/2 translate-x-1/2"></div>
                 <Activity className="w-5 h-5 text-[#10b981] mb-4" />
@@ -136,6 +136,72 @@ export function AdminDashboard() {
                 <button className="bg-black/40 border border-[#ef4444]/50 py-2 px-4 text-xs font-bold text-[#ef4444] rounded hover:bg-[#ef4444] hover:text-white transition-all flex items-center justify-between w-full">
                     PURGE EDGE CACHE <Power className="w-3 h-3" />
                 </button>
+            </div>
+            <div className="bg-white/5 border border-white/10 p-6 rounded relative overflow-hidden">
+                <Globe className="w-5 h-5 text-[#3b82f6] mb-4" />
+                <div className="text-[10px] text-[#94a3b8] uppercase tracking-widest mb-1">Autonomous Discovery</div>
+                <div className="text-3xl font-bold">{metrics.totals?.discovery?.toLocaleString() || 0}</div>
+                <div className="text-[10px] text-[#3b82f6] mt-2">+ Mapping AI Ecosystem</div>
+            </div>
+        </div>
+
+        {/* Discovery Section */}
+        <div className="mb-12">
+            <div className="flex items-center gap-2 mb-6">
+              <Globe className="w-4 h-4 text-[#3b82f6]" />
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#3b82f6]">Discovery Index (Internal Analysis)</h2>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-white/10 bg-black/20 text-[#94a3b8] uppercase tracking-widest text-[10px]">
+                    <th className="p-4">Repository</th>
+                    <th className="p-4">Context</th>
+                    <th className="p-4">Signals</th>
+                    <th className="p-4">Audit Result</th>
+                    <th className="p-4 text-right">Review</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/10">
+                  {metrics.discovery?.map((item: any) => (
+                    <tr key={item.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-4">
+                        <div className="font-bold">{item.repo_name}</div>
+                        <a href={item.repo_url} target="_blank" rel="noreferrer" className="text-[10px] text-[#3b82f6] hover:underline mt-1 block truncate max-w-[200px]">{item.repo_url}</a>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] font-mono text-[#94a3b8]">{item.stars} ⭐</span>
+                          <span className="text-[9px] uppercase font-bold text-[#64748b] bg-white/5 px-1 rounded">{item.language}</span>
+                        </div>
+                        <div className="text-[9px] text-[#94a3b8]">{item.detected_ai_stack}</div>
+                      </td>
+                      <td className="p-4">
+                        <div className={`text-[10px] font-bold uppercase tracking-tighter ${item.risk_level === 'Low' ? 'text-[#10b981]' : (item.risk_level === 'Medium' ? 'text-[#f59e0b]' : 'text-[#ef4444]')}`}>
+                          {item.risk_level} RISK
+                        </div>
+                        <div className="text-[9px] text-[#64748b] mt-1">{JSON.parse(item.rules_failed || '[]').length} Violations</div>
+                      </td>
+                      <td className="p-4">
+                         <div className="text-lg font-black">{item.audit_score}<span className="text-[10px] opacity-30">/100</span></div>
+                         <div className="text-[9px] text-[#64748b]">{new Date(item.scan_timestamp).toLocaleDateString()}</div>
+                      </td>
+                      <td className="p-4 text-right">
+                         <span className="text-[9px] font-bold uppercase text-[#94a3b8] bg-white/5 border border-white/10 px-2 py-1 rounded">
+                           Pending Review
+                         </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {(!metrics.discovery || metrics.discovery.length === 0) && (
+                    <tr>
+                      <td colSpan={5} className="p-12 text-center text-[#64748b] italic">
+                        Discovery queue empty. Trigger manual scan or wait for schedule.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
         </div>
 

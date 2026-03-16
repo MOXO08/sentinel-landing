@@ -43,13 +43,18 @@ export const GET: APIRoute = async ({ request, locals, params }) => {
         const latestThreats = await env.DB.prepare('SELECT id, incident_type, ip_address, endpoint, colo_node, severity, created_at FROM threat_intel ORDER BY created_at DESC LIMIT 20').all();
         const totalThreats = await env.DB.prepare('SELECT COUNT(*) as total FROM threat_intel').first();
 
+        const latestDiscovery = await env.DB.prepare('SELECT * FROM discovery_audits ORDER BY scan_timestamp DESC LIMIT 50').all();
+        const totalDiscovery = await env.DB.prepare('SELECT COUNT(*) as total FROM discovery_audits').first();
+
         return new Response(JSON.stringify({ 
             traffic: trafficResult.results || [],
             totals: {
                 audits: totalAuditLogs.total,
-                threats: totalThreats.total
+                threats: totalThreats.total,
+                discovery: totalDiscovery.total
             },
-            threats: latestThreats.results || []
+            threats: latestThreats.results || [],
+            discovery: latestDiscovery.results || []
         }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
 
