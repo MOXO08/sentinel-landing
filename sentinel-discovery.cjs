@@ -164,10 +164,17 @@ async function processRepository(repo) {
         const scanCmd = `npx @radu_api/sentinel-scan ${scanTarget} --json --baseline`;
 
         console.log(`[Discovery] Running Sentinel audit on ${repo.name}...`);
-        const output = execSync(scanCmd, {
-            encoding: 'utf8',
-            cwd: repoPath
-        });
+        let output;
+
+try {
+    output = execSync(scanCmd, {
+        encoding: 'utf8',
+        cwd: repoPath,
+        stdio: ['pipe', 'pipe', 'pipe']
+    });
+} catch (err) {
+    output = err.stdout ? err.stdout.toString() : "";
+}
 
         let auditData;
         try {
