@@ -128,8 +128,20 @@ async function processRepository(repo) {
             scanTarget = `"${foundManifest}"`;
             console.log(`[Discovery] Found manifest for ${repo.name}: ${path.basename(foundManifest)}`);
         } else {
-            scanTarget = `"${repoPath}"`;
-            console.log(`[Discovery] No supported manifest found for ${repo.name}. Falling back to repository scan.`);
+            console.log(`[Discovery] No supported manifest found for ${repo.name}. Generating auto manifest.`);
+
+            const autoManifestPath = path.join(repoPath, 'sentinel.auto.manifest.json');
+
+            const autoManifest = {
+                project: repo.name,
+                discovery_mode: true,
+                repository: repo.html_url,
+                generated_by: 'sentinel-discovery-engine'
+            };
+
+            fs.writeFileSync(autoManifestPath, JSON.stringify(autoManifest, null, 2));
+
+            scanTarget = `"${autoManifestPath}"`;
         }
 
         const scanCmd = `npx @radu_api/sentinel-scan ${scanTarget} --json --baseline`;
@@ -146,14 +158,14 @@ async function processRepository(repo) {
         }
 
         const isCompliant =
-            auditData.verdict === "COMPLIANT" || auditData.verdict === "PASSED";
+            auditData.verdict === 'COMPLIANT' || auditData.verdict === 'PASSED';
 
         const auditScore =
             auditData.score !== undefined ? auditData.score : (isCompliant ? 100 : 65);
 
         const violations = Array.isArray(auditData.violations)
             ? auditData.violations.map(v => v.rule_id)
-            : (isCompliant ? [] : ["AI-ACT-ART-10"]);
+            : (isCompliant ? [] : ['AI-ACT-ART-10']);
 
         const slug =
             repo.name.toLowerCase().replace(/[^a-z0-9]/g, '-') +
@@ -165,23 +177,23 @@ async function processRepository(repo) {
             : `Automated technical analysis indicates that ${repo.name} may require additional technical documentation to align with specific framework requirements.`;
 
         const visible_gaps = auditData.violations?.map(v => v.description) ||
-            (isCompliant ? [] : ["Technical documentation artifacts not detected in public root"]);
+            (isCompliant ? [] : ['Technical documentation artifacts not detected in public root']);
 
         await reportToSaaS({
             repo_url: repo.html_url,
             repo_name: repo.full_name,
             slug: slug,
             stars: repo.stargazers_count,
-            language: repo.language || "unknown",
-            detected_ai_stack: "Heuristic (Discovery Mode)",
+            language: repo.language || 'unknown',
+            detected_ai_stack: 'Heuristic (Discovery Mode)',
             audit_score: auditScore,
             rules_failed: violations,
-            risk_level: auditScore >= 90 ? "Low" : (auditScore >= 70 ? "Medium" : "High"),
-            confidence_level: "Medium",
+            risk_level: auditScore >= 90 ? 'Low' : (auditScore >= 70 ? 'Medium' : 'High'),
+            confidence_level: 'Medium',
             summary_text: summary_text,
             visible_gaps: visible_gaps.slice(0, 3),
             is_public: true,
-            execution_context: "discovery"
+            execution_context: 'discovery'
         });
 
         console.log(`[Discovery] Audit recorded for ${repo.name} (Score: ${auditScore})`);
@@ -252,7 +264,7 @@ async function main() {
             await sleep(2000);
         }
 
-        console.log("\n[Discovery] Discovery cycle complete.");
+        console.log('\n[Discovery] Discovery cycle complete.');
     } catch (err) {
         console.error(`[Discovery] Pipeline error: ${err.message}`);
     }
