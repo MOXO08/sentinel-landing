@@ -97,8 +97,17 @@ async function processRepository(repo) {
         console.log(`[Discovery] Running Sentinel audit on ${repo.name}...`);
         const output = execSync(scanCmd, { encoding: 'utf8' });
         
-        const isCompliant = output.includes("PASSED") || output.includes("COMPLIANT");
-        const auditScore = isCompliant ? 100 : 65; 
+        let auditData;
+        try {
+            auditData = JSON.parse(output);
+        } catch (e) {
+            console.error(`[Discovery] Failed to parse scanner output: ${e.message}`);
+            return;
+        }
+        
+        const isCompliant = auditData.verdict === "COMPLIANT" || auditData.verdict === "PASSED";
+        const auditScore = auditData.score !== undefined ? auditData.score : (isCompliant ? 100 : 65);
+        const violations = Array.isArray(auditData.violations) ? auditData.violations.map(v => v.rule_id) : (isCompliant ? [] : ["AI-ACT-ART-10"]);
         
         // Phase 17: Public Report Metadata
         const slug = repo.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.random().toString(36).substring(2, 5);
@@ -106,11 +115,7 @@ async function processRepository(repo) {
             ? `Automated technical analysis identifies that ${repo.name} aligns with visible AI compliance patterns for its detected architecture.`
             : `Automated technical analysis indicates that ${repo.name} may require additional technical documentation to align with specific framework requirements.`;
         
-        const visible_gaps = isCompliant ? [] : [
-            "Technical documentation artifacts not detected in public root",
-            "Missing explicit risk management declaration",
-            "Incomplete architecture transparency signals"
-        ];
+        const visible_gaps = auditData.violations?.map(v => v.description) || (isCompliant ? [] : ["Technical documentation artifacts not detected in public root"]);
 
         await reportToSaaS({
             repo_url: repo.html_url,
@@ -120,16 +125,16 @@ async function processRepository(repo) {
             language: repo.language || "unknown",
             detected_ai_stack: "Heuristic (Discovery Mode)",
             audit_score: auditScore,
-            rules_failed: isCompliant ? [] : ["AI-ACT-ART-10"],
+            rules_failed: violations,
             risk_level: auditScore >= 90 ? "Low" : (auditScore >= 70 ? "Medium" : "High"),
             confidence_level: "Medium",
             summary_text: summary_text,
-            visible_gaps: visible_gaps,
-            is_public: true, // Default to true for now as requested
+            visible_gaps: visible_gaps.slice(0, 3), 
+            is_public: true, 
             execution_context: "discovery"
         });
 
-        console.log(`[Discovery] Audit recorded for ${repo.name}`);
+        console.log(`[Discovery] Audit recorded for ${repo.name} (Score: ${auditScore})`);
     } catch (err) {
         console.error(`[Discovery] Failed to process ${repo.name}: ${err.message}`);
     } finally {
@@ -142,7 +147,7 @@ async function reportToSaaS(payload) {
         const postData = JSON.stringify(payload);
         const options = {
             hostname: 'gettingsentinel.com',
-            path: '/discovery',
+            path: '/api/discovery',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

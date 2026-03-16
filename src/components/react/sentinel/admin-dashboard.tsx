@@ -35,6 +35,18 @@ export function AdminDashboard() {
   const [metrics, setMetrics] = useState<any>(null)
   const [clients, setClients] = useState<ClientData[]>([])
   const [loading, setLoading] = useState(true)
+  const [discoverySort, setDiscoverySort] = useState({ key: 'scan_timestamp', dir: 'desc' })
+
+  const sortedDiscovery = React.useMemo(() => {
+    if (!metrics?.discovery) return []
+    return [...metrics.discovery].sort((a, b) => {
+      const aVal = a[discoverySort.key]
+      const bVal = b[discoverySort.key]
+      if (aVal < bVal) return discoverySort.dir === 'asc' ? -1 : 1
+      if (aVal > bVal) return discoverySort.dir === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [metrics?.discovery, discoverySort])
 
   useEffect(() => {
     fetchData()
@@ -155,15 +167,15 @@ export function AdminDashboard() {
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-white/10 bg-black/20 text-[#94a3b8] uppercase tracking-widest text-[10px]">
-                    <th className="p-4">Repository</th>
-                    <th className="p-4">Context</th>
-                    <th className="p-4">Signals</th>
-                    <th className="p-4">Audit Result</th>
+                    <th className="p-4 cursor-pointer hover:text-white" onClick={() => setDiscoverySort({ key: 'repo_name', dir: discoverySort.dir === 'asc' ? 'desc' : 'asc' })}>Repository</th>
+                    <th className="p-4 cursor-pointer hover:text-white" onClick={() => setDiscoverySort({ key: 'stars', dir: discoverySort.dir === 'asc' ? 'desc' : 'asc' })}>Context</th>
+                    <th className="p-4 cursor-pointer hover:text-white" onClick={() => setDiscoverySort({ key: 'risk_level', dir: discoverySort.dir === 'asc' ? 'desc' : 'asc' })}>Signals</th>
+                    <th className="p-4 cursor-pointer hover:text-white" onClick={() => setDiscoverySort({ key: 'audit_score', dir: discoverySort.dir === 'asc' ? 'desc' : 'asc' })}>Audit Result</th>
                     <th className="p-4 text-right">Review</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10">
-                  {metrics.discovery?.map((item: any) => (
+                  {sortedDiscovery.map((item: any) => (
                     <tr key={item.id} className="hover:bg-white/5 transition-colors">
                       <td className="p-4">
                         <div className="font-bold">{item.repo_name}</div>
