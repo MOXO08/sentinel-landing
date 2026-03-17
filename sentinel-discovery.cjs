@@ -36,6 +36,33 @@ function getDirSize(dirPath) {
     return size;
 }
 
+function getFileInventory(repoPath) {
+    const inventory = [];
+    const scanDirs = ['', 'docs', '.github', 'config', 'policies', 'audit', 'governance'];
+    
+    for (const subDir of scanDirs) {
+        const dirFullPath = path.join(repoPath, subDir);
+        if (fs.existsSync(dirFullPath) && fs.statSync(dirFullPath).isDirectory()) {
+            try {
+                const items = fs.readdirSync(dirFullPath);
+                for (const item of items) {
+                    const itemPath = path.join(dirFullPath, item);
+                    const stats = fs.statSync(itemPath);
+                    if (stats.isFile()) {
+                        const relativePath = path.join(subDir, item).replace(/\\/g, '/').replace(/^\//, '');
+                        inventory.push({
+                            path: relativePath,
+                            name: item.toLowerCase(),
+                            fullPath: itemPath
+                        });
+                    }
+                }
+            } catch (e) {}
+        }
+    }
+    return inventory;
+}
+
 async function githubApiRequest(apiPath) {
     const url = `https://api.github.com${apiPath}`;
 
@@ -78,66 +105,82 @@ async function githubApiRequest(apiPath) {
 }
 
 function detectEvidence(repoPath) {
+    const inventory = getFileInventory(repoPath);
     const evidence = {
-        files: [],
+        files: inventory.map(f => f.path),
         dependencies: [],
-        keywords: [],
-        flags: [],
         passedRules: [],
         failedRules: [],
         detectedSignals: [],
-        missingSignals: []
+        missingSignals: [],
+        inventory
     };
 
-    const repoName = path.basename(repoPath);
-    const readmePath = path.join(repoPath, 'README.md');
-    const readmeContent = fs.existsSync(readmePath) ? fs.readFileSync(readmePath, 'utf8').toLowerCase() : '';
+    const readmeFile = inventory.find(f => f.name === 'readme.md');
+    const readmeContent = readmeFile ? fs.readFileSync(readmeFile.fullPath, 'utf8').toLowerCase() : '';
+    
+    const docsText = inventory
+        .filter(f => f.path.startsWith('docs/'))
+        .slice(0, 5)
+        .map(f => {
+            try { return fs.readFileSync(f.fullPath, 'utf8').toLowerCase(); } catch(e) { return ''; }
+        })
+        .join(' ');
 
-    // 1. Documentation & Transparency (EUAI-DOC)
-    const hasTechnicalDocs = fs.existsSync(path.join(repoPath, 'docs')) || readmeContent.length > 2000;
-    const hasUsageDisclosure = readmeContent.includes('usage') || readmeContent.includes('how to use') || readmeContent.includes('getting started');
-    const hasModelCard = fs.existsSync(path.join(repoPath, 'model-card.md')) || readmeContent.includes('model card');
+    const fullBlob = (readmeContent + ' ' + docsText).slice(0, 50000);
 
-    if (hasModelCard) {
+    // Helper: Pattern match in inventory or blob
+    const hasPattern = (patterns, searchInBlob = true) => {
+        const pathMatch = inventory.some(f => patterns.some(p => f.path.toLowerCase().includes(p)));
+        const blobMatch = searchInBlob && patterns.some(p => fullBlob.includes(p));
+        return pathMatch || blobMatch;
+    };
+
+    // 1. Model / Documentation Evidence (EUAI-DOC)
+    const modelPatterns = ['model-card', 'modelcard', 'architecture', 'inference-guide', 'usage-disclosure'];
+    const modelKeywords = ['model card', 'usage disclosure', 'system prompt', 'inference pipeline', 'how to use this model'];
+    
+    if (hasPattern(modelPatterns) || hasPattern(modelKeywords)) {
         evidence.passedRules.push('EUAI-DOC-001');
-        evidence.detectedSignals.push('Model Card / Technical File (Art. 13)');
+        evidence.detectedSignals.push('Model Card / Technical Usage Disclosure (Art. 13)');
     } else {
         evidence.failedRules.push('EUAI-DOC-001');
-        evidence.missingSignals.push('Model Card / Technical File (Art. 13)');
+        evidence.missingSignals.push('Model Card / Technical Usage Disclosure (Art. 13)');
     }
 
-    if (hasUsageDisclosure) {
+    if (readmeContent.length > 1000 || inventory.some(f => f.path.startsWith('docs/'))) {
         evidence.passedRules.push('EUAI-DOC-002');
     } else {
         evidence.failedRules.push('EUAI-DOC-002');
-        evidence.missingSignals.push('Technical Usage Disclosure');
+        evidence.missingSignals.push('Technical Documentation Depth');
     }
 
-    // 2. Data & Provenance (EUAI-DATA)
-    const hasDatasetRefs = readmeContent.includes('dataset') || readmeContent.includes('data source') || fs.existsSync(path.join(repoPath, 'dataset-card.md'));
-    const hasProvenance = readmeContent.includes('provenance') || readmeContent.includes('curation') || readmeContent.includes('training data');
+    // 2. Data & Provenance Evidence (EUAI-DATA)
+    const dataPatterns = ['dataset', 'provenance', 'training', 'corpus', 'annotation', 'curation'];
+    const dataKeywords = ['training data', 'data source', 'dataset provenance', 'evaluation corpus', 'fine-tuning data'];
 
-    if (hasDatasetRefs || hasProvenance) {
+    if (hasPattern(dataPatterns) || hasPattern(dataKeywords)) {
         evidence.passedRules.push('EUAI-DATA-001');
-        evidence.detectedSignals.push('Dataset Provenance / Training Logs (Art. 10)');
+        evidence.detectedSignals.push('Dataset Provenance / Training References (Art. 10)');
     } else {
         evidence.failedRules.push('EUAI-DATA-001');
-        evidence.missingSignals.push('Dataset Provenance / Training Logs (Art. 10)');
+        evidence.missingSignals.push('Dataset Provenance / Training References (Art. 10)');
     }
 
-    // 3. Risk & Governance (EUAI-RISK / EUAI-GOV)
-    const hasRiskDocs = readmeContent.includes('risk') || readmeContent.includes('mitigation') || fs.existsSync(path.join(repoPath, 'audit'));
-    const hasGovDocs = fs.existsSync(path.join(repoPath, 'GOVERNANCE.md')) || readmeContent.includes('governance') || readmeContent.includes('policy');
+    // 3. Risk & Governance (EUAI-RISK)
+    const riskPatterns = ['risk', 'mitigation', 'audit', 'controls', 'security-policy', 'threat-model'];
+    const riskKeywords = ['risk assessment', 'mitigation strategy', 'safety guardrails', 'security controls', 'bias audit'];
 
-    if (hasRiskDocs) {
+    if (hasPattern(riskPatterns) || hasPattern(riskKeywords)) {
         evidence.passedRules.push('EUAI-RISK-001');
-        evidence.detectedSignals.push('Risk Assessment / Mitigation Policy (Art. 9)');
+        evidence.detectedSignals.push('Risk Assessment / Mitigation Strategy (Art. 9)');
     } else {
         evidence.failedRules.push('EUAI-RISK-001');
-        evidence.missingSignals.push('Risk Assessment / Mitigation Policy (Art. 9)');
+        evidence.missingSignals.push('Risk Assessment / Mitigation Strategy (Art. 9)');
     }
 
-    if (hasGovDocs) {
+    const govPatterns = ['governance', 'policy', 'compliance', 'compliance-report'];
+    if (hasPattern(govPatterns) || hasPattern(['governance policy', 'compliance framework'])) {
         evidence.passedRules.push('EUAI-GOV-001');
         evidence.detectedSignals.push('Governance Framework / Policy (Art. 10)');
     } else {
@@ -146,8 +189,8 @@ function detectEvidence(repoPath) {
     }
 
     // 4. Privacy (EUAI-PRIVACY)
-    const hasPrivacy = fs.existsSync(path.join(repoPath, 'PRIVACY.md')) || readmeContent.includes('privacy') || readmeContent.includes('data handling');
-    if (hasPrivacy) {
+    const privacyPatterns = ['privacy', 'gdpr', 'data-handling', 'data-retention'];
+    if (hasPattern(privacyPatterns) || hasPattern(['privacy policy', 'personal data handling', 'gdpr compliance'])) {
         evidence.passedRules.push('EUAI-PRIVACY-001');
         evidence.detectedSignals.push('Privacy Policy / Data Handling (GDPR)');
     } else {
@@ -155,74 +198,86 @@ function detectEvidence(repoPath) {
         evidence.missingSignals.push('Privacy Policy / Data Handling (GDPR)');
     }
 
-    // 5. Positive Evidence (EUAI-EVIDENCE)
-    if (fs.existsSync(path.join(repoPath, 'LICENSE'))) {
+    // 5. Technical Evidence (EUAI-EVIDENCE)
+    if (inventory.some(f => f.name === 'license' || f.name === 'license.md' || f.name === 'copying')) {
         evidence.passedRules.push('EUAI-EVIDENCE-001');
         evidence.detectedSignals.push('LICENSE');
-        evidence.files.push('LICENSE');
     }
 
-    const ciPath = path.join(repoPath, '.github/workflows');
-    if (fs.existsSync(ciPath)) {
+    if (inventory.some(f => f.path.startsWith('.github/workflows')) || hasPattern(['workflow', 'pipeline', 'ci.yml'])) {
         evidence.passedRules.push('EUAI-EVIDENCE-002');
-        evidence.detectedSignals.push('CI workflow');
-        evidence.files.push('.github/workflows');
+        evidence.detectedSignals.push('CI/CD compliance pipeline detected');
     }
 
-    const hasSarif = fs.readdirSync(repoPath).some(f => f.endsWith('.sarif'));
-    if (hasSarif) {
+    if (inventory.some(f => f.name.endsWith('.sarif')) || hasPattern(['audit.json', 'security-scan'])) {
         evidence.passedRules.push('EUAI-EVIDENCE-003');
-        evidence.detectedSignals.push('SARIF Artifact');
+        evidence.detectedSignals.push('Technical Audit Artifact (SARIF)');
     }
 
     // Dependency Analysis
-    const pkgPath = path.join(repoPath, 'package.json');
-    if (fs.existsSync(pkgPath)) {
+    const pkgFile = inventory.find(f => f.name === 'package.json');
+    if (pkgFile) {
         try {
-            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            const pkg = JSON.parse(fs.readFileSync(pkgFile.fullPath, 'utf8'));
             const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
             const aiLibs = ['openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 'anthropic', 'pinecone', 'llama-index'];
             evidence.dependencies.push(...aiLibs.filter(lib => allDeps[lib]));
         } catch (e) {}
     }
 
-    evidence.flags = evidence.passedRules;
     return evidence;
 }
 
 function calculateScore(evidence) {
     let score = 100;
     let breakdown = {
-        base: 100,
-        deductions: [],
-        bonuses: []
+        base_score: 100,
+        penalties: [],
+        bonuses: [],
+        final_score: 100
     };
 
-    const criticalAbsence = ['EUAI-DOC-001', 'EUAI-DATA-001', 'EUAI-RISK-001'];
-    criticalAbsence.forEach(rule => {
-        if (evidence.failedRules.includes(rule)) {
-            score -= 20;
-            breakdown.deductions.push({ rule, penalty: 20, reason: 'Missing critical compliance signal' });
-        } else if (evidence.passedRules.includes(rule)) {
-            breakdown.bonuses.push({ rule, bonus: 5, reason: 'Verified technical manifest' });
-            score += 5;
+    const criticalRules = [
+        { code: 'EUAI-DOC-001', points: 20, reason: 'Model / Technical documentation missing' },
+        { code: 'EUAI-DATA-001', points: 20, reason: 'Dataset provenance signals missing' },
+        { code: 'EUAI-RISK-001', points: 20, reason: 'Risk assessment / mitigation missing' }
+    ];
+
+    criticalRules.forEach(rule => {
+        if (evidence.failedRules.includes(rule.code)) {
+            score -= rule.points;
+            breakdown.penalties.push({ code: rule.code, points: -rule.points, reason: rule.reason });
+        } else {
+            score += 5; // Bonus for explicit evidence
+            breakdown.bonuses.push({ code: rule.code, points: 5, reason: `Verified technical artifact: ${rule.code}` });
         }
     });
 
-    const standardAbsence = ['EUAI-DOC-002', 'EUAI-GOV-001', 'EUAI-PRIVACY-001'];
-    standardAbsence.forEach(rule => {
-        if (evidence.failedRules.includes(rule)) {
-            score -= 10;
-            breakdown.deductions.push({ rule, penalty: 10, reason: 'Missing standard documentation' });
+    const standardRules = [
+        { code: 'EUAI-DOC-002', points: 10, reason: 'Incomplete technical documentation' },
+        { code: 'EUAI-GOV-001', points: 10, reason: 'Governance policy missing' },
+        { code: 'EUAI-PRIVACY-001', points: 10, reason: 'Privacy policy (GDPR) missing' }
+    ];
+
+    standardRules.forEach(rule => {
+        if (evidence.failedRules.includes(rule.code)) {
+            score -= rule.points;
+            breakdown.penalties.push({ code: rule.code, points: -rule.points, reason: rule.reason });
         }
     });
 
     if (evidence.passedRules.includes('EUAI-EVIDENCE-002')) {
         score += 5;
-        breakdown.bonuses.push({ reason: 'CI/CD pipeline detected', bonus: 5 });
+        breakdown.bonuses.push({ code: 'EUAI-EVIDENCE-002', points: 5, reason: 'CI/CD compliance pipeline detected' });
+    }
+    
+    if (evidence.passedRules.includes('EUAI-EVIDENCE-001')) {
+        score += 2;
+        breakdown.bonuses.push({ code: 'EUAI-EVIDENCE-001', points: 2, reason: 'Explicit license present' });
     }
 
     score = Math.min(100, Math.max(10, score));
+    breakdown.final_score = score;
     return { score, breakdown };
 }
 
@@ -359,12 +414,15 @@ async function processRepository(repo) {
 
         // Repo-specific technical summary generation
         let summary_text = "";
-        if (finalEvidence.missingSignals.length === 0) {
-            summary_text = `Autonomous technical mapping identifies that ${repo.name} aligns with visible AI compliance patterns, including verified documentation and CI/CD artifacts.`;
-        } else if (finalEvidence.detectedSignals.length > 0) {
-            summary_text = `Technical evidence for ${repo.name} indicates signs of ${finalEvidence.detectedSignals.slice(0, 2).join(' and ')}. However, gaps remain for ${finalEvidence.missingSignals.slice(0, 2).join(', ')}.`;
+        const missing = finalEvidence.missingSignals.map(s => s.split(' (')[0]);
+        const found = finalEvidence.detectedSignals.map(s => s.split(' (')[0]);
+        
+        if (missing.length === 0) {
+            summary_text = `Deterministic audit confirms that ${repo.name} aligns with visible AI compliance patterns, including verified documentation and CI/CD evidence.`;
+        } else if (found.length > 0) {
+            summary_text = `Technical evidence for ${found.slice(0, 2).join(' and ')} detected. However, critical gaps remain for ${missing.slice(0, 2).join(', ')}.`;
         } else {
-            summary_text = `Technical assessment of ${repo.name} indicates restricted public compliance evidence. Specifically, ${finalEvidence.missingSignals[0]} was not detected in the repository root.`;
+            summary_text = `Static technical analysis indicates a lack of public compliance artifacts. Specifically, ${missing[0]} was not detected in root or documentation paths.`;
         }
 
         // Categorization logic
@@ -405,7 +463,7 @@ async function processRepository(repo) {
             categories: JSON.stringify(categoryArray)
         });
 
-        console.log(`[Discovery] Audit recorded for ${repo.name} (Score: ${auditScore})`);
+        console.log(`[Discovery] Audit recorded for ${repo.name} (Score: ${score})`);
     } catch (err) {
         console.error(`[Discovery] Failed to process ${repo.name}: ${err.message}`);
     } finally {
