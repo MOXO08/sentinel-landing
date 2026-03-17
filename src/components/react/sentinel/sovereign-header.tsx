@@ -39,7 +39,7 @@ export function SovereignHeader({ activePage = "/" }: { activePage?: string }) {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#10b981]"></span>
             </span>
             <span className="text-xs font-mono text-[#475569]">
-              Regulatory Ruleset: Updated 10 March 2026
+              Regulatory Ruleset: Updated 18 March 2026
             </span>
           </div>
         </div>
