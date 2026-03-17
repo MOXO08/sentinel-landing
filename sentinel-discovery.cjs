@@ -361,10 +361,10 @@ async function processRepository(repo) {
         let summary_text = "";
         if (finalEvidence.missingSignals.length === 0) {
             summary_text = `Autonomous technical mapping identifies that ${repo.name} aligns with visible AI compliance patterns, including verified documentation and CI/CD artifacts.`;
-        } else if (finalEvidence.detectedSignals.length > 3) {
-            summary_text = `Technical evidence for ${repo.name} indicates a baseline of transparency with detected signals for ${finalEvidence.detectedSignals.slice(0, 2).join(' and ')}, though some governance gaps remain.`;
+        } else if (finalEvidence.detectedSignals.length > 0) {
+            summary_text = `Technical evidence for ${repo.name} indicates signs of ${finalEvidence.detectedSignals.slice(0, 2).join(' and ')}. However, gaps remain for ${finalEvidence.missingSignals.slice(0, 2).join(', ')}.`;
         } else {
-            summary_text = `Technical assessment of ${repo.name} indicates limited public compliance artifacts. ${finalEvidence.missingSignals[0]} was not detected in the repository root.`;
+            summary_text = `Technical assessment of ${repo.name} indicates restricted public compliance evidence. Specifically, ${finalEvidence.missingSignals[0]} was not detected in the repository root.`;
         }
 
         // Categorization logic

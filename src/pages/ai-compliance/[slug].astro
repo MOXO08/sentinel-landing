@@ -90,11 +90,16 @@ const missingSignalsTable = parseJSON(report.missing_signals);
 
 // Signal Logic (Standardized Taxonomy - No Articles)
 function getSignalCode() {
+    // 1. Prioritize Missing Signals (Critical Gaps)
     if (missingSignalsTable.some((s: string) => s.includes('Art. 10'))) return "DATA-PROVENANCE-MISSING";
     if (missingSignalsTable.some((s: string) => s.includes('Art. 13'))) return "DOC-MODEL-MISSING";
     if (missingSignalsTable.some((s: string) => s.includes('Art. 9'))) return "RISK-ASSESSMENT-MISSING";
     if (missingSignalsTable.some((s: string) => s.includes('GDPR'))) return "PRIVACY-POLICY-MISSING";
 
+    // 2. Identify Found Signals
+    if (detectedSignalsTable.length > 0) return "TECHNICAL-SIGNALS-FOUND";
+
+    // 3. Fallback to heuristic mapping for legacy rows (only if new fields are empty)
     const allSignals = [...gaps.map((g: string) => g.toLowerCase()), ...rules.map((r: string) => r.toLowerCase())];
     
     if (allSignals.some(s => s.includes('dataset') || s.includes('provenance') || s.includes('art-10'))) return "DATA-PROVENANCE-MISSING";
@@ -102,7 +107,6 @@ function getSignalCode() {
     if (allSignals.some(s => s.includes('risk assessment') || s.includes('art-9'))) return "RISK-ASSESSMENT-MISSING";
     if (allSignals.some(s => s.includes('privacy'))) return "PRIVACY-POLICY-MISSING";
 
-    if (detectedSignalsTable.length > 0) return "TECHNICAL-SIGNALS-FOUND";
     return null;
 }
 
@@ -116,23 +120,25 @@ function getRegulatoryRelevance() {
 }
 
 function getConcreteFinding() {
-    const code = getSignalCode();
-    switch (code) {
-        case "DATA-PROVENANCE-MISSING": return "No dataset provenance or training data references found";
-        case "DATA-TRAINING-REF-MISSING": return "No training data source or technical references detected";
-        case "DOC-MODEL-MISSING": return "No model documentation or usage disclosure detected";
-        case "DOC-USAGE-MISSING": return "No clear model usage disclosure found in public artifacts";
-        case "DOC-GENERAL-MISSING": return "Primary technical documentation file not detected in root";
-        case "RISK-ASSESSMENT-MISSING": return "No risk assessment or mitigation signals found in public artifacts";
-        case "RISK-POLICY-MISSING": return "No risk management policy or framework detected";
-        case "PRIVACY-POLICY-MISSING": return "Privacy policy or data handling signal not detected";
-        case "GOV-DOCS-MISSING": return "Governance or policy documentation not detected";
-        case "CI-EVIDENCE-PRESENT": return "CI pipeline detected with verifiable compliance artifacts";
-        case "LICENSE-PRESENT": return "Open source license present but missing regulatory technical files";
-        default: 
-            if (report.audit_score > 94) return "Strong presence of technical documentation and governance artifacts";
-            return "Public technical evidence is limited for this repository.";
+    const summary = report.summary_text || "";
+
+    // 1. First Missing Signal (Highest Priority for Transparency)
+    if (missingSignalsTable.length > 0) {
+        return `Missing critical artifact: ${missingSignalsTable[0].split(' (')[0]}`;
     }
+
+    // 2. First Detected Signal (If no missing)
+    if (detectedSignalsTable.length > 0) {
+        return `Technical evidence detected for ${detectedSignalsTable[0].split(' (')[0]}`;
+    }
+
+    // 3. Persisted Summary (if non-generic/short)
+    if (summary && summary.length > 20 && !summary.includes("Automated technical analysis indicates")) {
+        return summary;
+    }
+
+    // 4. Legacy Fallback (Last Resort)
+    return "Public technical evidence is limited for this repository.";
 }
 
 // Found Signals (Strict Artifact-Backed)

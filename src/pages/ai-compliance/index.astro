@@ -86,13 +86,16 @@ function getSignalCode(report: any) {
     const detected = typeof report.detected_signals === 'string' ? JSON.parse(report.detected_signals) : (report.detected_signals || []);
     const missing = typeof report.missing_signals === 'string' ? JSON.parse(report.missing_signals) : (report.missing_signals || []);
     
-    // Prioritize persisted signal mapping
+    // 1. Prioritize Missing Signals (Critical Gaps)
     if (missing.some((s: string) => s.includes('Art. 10'))) return "DATA-PROVENANCE-MISSING";
     if (missing.some((s: string) => s.includes('Art. 13'))) return "DOC-MODEL-MISSING";
     if (missing.some((s: string) => s.includes('Art. 9'))) return "RISK-ASSESSMENT-MISSING";
     if (missing.some((s: string) => s.includes('GDPR'))) return "PRIVACY-POLICY-MISSING";
     
-    // Fallback to heuristic mapping for legacy rows
+    // 2. Identify Found Signals
+    if (detected.length > 0) return "TECHNICAL-SIGNALS-FOUND";
+    
+    // 3. Fallback to heuristic mapping for legacy rows (only if new fields are empty)
     const gaps = typeof report.visible_gaps === 'string' ? JSON.parse(report.visible_gaps) : (report.visible_gaps || []);
     const rules = typeof report.rules_failed === 'string' ? JSON.parse(report.rules_failed) : (report.rules_failed || []);
     const allSignals = [...gaps.map((g: string) => g.toLowerCase()), ...rules.map((r: string) => r.toLowerCase())];
@@ -101,8 +104,6 @@ function getSignalCode(report: any) {
     if (allSignals.some(s => s.includes('model card') || s.includes('art-13'))) return "DOC-MODEL-MISSING";
     if (allSignals.some(s => s.includes('risk assessment') || s.includes('art-9'))) return "RISK-ASSESSMENT-MISSING";
     if (allSignals.some(s => s.includes('privacy'))) return "PRIVACY-POLICY-MISSING";
-
-    if (detected.length > 0) return "TECHNICAL-SIGNALS-FOUND";
 
     return "SIGNAL-PENDING";
 }
@@ -117,26 +118,29 @@ function getRegulatoryRelevance(code: string | null) {
     return "Baseline Compliance";
 }
 
-// Concrete Finding Generation (Neutral Fallbacks)
+// Concrete Finding Generation (Priority-Based)
 function getConcreteFinding(report: any) {
-    const code = getSignalCode(report);
-    
-    switch (code) {
-        case "DATA-PROVENANCE-MISSING": return "No dataset provenance or training data references found";
-        case "DATA-TRAINING-REF-MISSING": return "No training data source or technical references detected";
-        case "DOC-MODEL-MISSING": return "No model documentation or usage disclosure detected";
-        case "DOC-USAGE-MISSING": return "No clear model usage disclosure found in public artifacts";
-        case "DOC-GENERAL-MISSING": return "Primary technical documentation file not detected in root";
-        case "RISK-ASSESSMENT-MISSING": return "No risk assessment or mitigation signals found in public artifacts";
-        case "RISK-POLICY-MISSING": return "No risk management policy or framework detected";
-        case "PRIVACY-POLICY-MISSING": return "Privacy policy or data handling signal not detected";
-        case "GOV-DOCS-MISSING": return "Governance or policy documentation not detected";
-        case "CI-EVIDENCE-PRESENT": return "CI pipeline detected with verifiable compliance artifacts";
-        case "LICENSE-PRESENT": return "Open source license present but missing regulatory technical files";
-        default: 
-            if (report.audit_score > 94) return "Strong presence of technical documentation and governance artifacts";
-            return "Public technical evidence is limited for this repository.";
+    const missing = typeof report.missing_signals === 'string' ? JSON.parse(report.missing_signals) : (report.missing_signals || []);
+    const detected = typeof report.detected_signals === 'string' ? JSON.parse(report.detected_signals) : (report.detected_signals || []);
+    const summary = report.summary_text || "";
+
+    // 1. First Missing Signal (Highest Priority for Transparency)
+    if (missing.length > 0) {
+        return `Missing critical artifact: ${missing[0].split(' (')[0]}`;
     }
+
+    // 2. First Detected Signal (If no missing)
+    if (detected.length > 0) {
+        return `Technical evidence detected for ${detected[0].split(' (')[0]}`;
+    }
+
+    // 3. Persisted Summary (if non-generic/short)
+    if (summary && summary.length > 20 && !summary.includes("Automated technical analysis indicates")) {
+        return summary;
+    }
+
+    // 4. Legacy Fallback (Last Resort)
+    return "Public technical evidence is limited for this repository.";
 }
 
 // Missing vs Found Signals (Strict Artifact-Backed)

@@ -183,6 +183,7 @@ const visibleGaps = JSON.parse(audit.visible_gaps || '[]');
                                {r}
                             </span>
                          ))}
+                         {rulesFailed.length === 0 && <span class="text-[9px] font-mono text-[#94a3b8] italic text-xs uppercase italic">No rule violations detected.</span>}
                       </div>
                    </div>
                 </div>
