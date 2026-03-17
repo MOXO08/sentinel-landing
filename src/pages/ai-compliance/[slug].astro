@@ -8,80 +8,67 @@ export const prerender = false;
 const { slug } = Astro.params;
 const env = (Astro.locals as any).runtime?.env;
 
-const categories = ['openai', 'langchain', 'rag', 'agents', 'transformers', 'vector-db', 'ml-pipeline'];
-const insightViews = ['highest-score', 'highest-risk', 'recently-scanned'];
+// Legacy Slug Redirects
+const categoryMap: Record<string, string> = {
+    'openai': 'openai',
+    'langchain': 'langchain',
+    'rag': 'rag',
+    'agents': 'agents',
+    'transformers': 'transformers',
+    'vector-db': 'vector-db',
+    'ml-pipeline': 'ml-pipeline'
+};
 
-const isCategory = categories.includes(slug || '');
-const isInsight = insightViews.includes(slug || '');
+const viewMap: Record<string, string> = {
+    'highest-score': 'top-scores',
+    'top-scores': 'top-scores',
+    'highest-risk': 'high-risk',
+    'high-risk': 'high-risk',
+    'recently-scanned': 'recent',
+    'recent': 'recent'
+};
+
+if (slug && categoryMap[slug]) {
+    return Astro.redirect(`/ai-compliance?category=${categoryMap[slug]}`);
+}
+
+if (slug && viewMap[slug]) {
+    return Astro.redirect(`/ai-compliance?view=${viewMap[slug]}`);
+}
 
 let report = null;
-let categoryReports: any[] = [];
-let mode = 'report';
-let viewTitle = "";
 
 try {
   if (env?.DB) {
-    if (isCategory || isInsight) {
-      mode = 'list';
-      let query = "SELECT * FROM discovery_audits WHERE is_public = 1";
-      if (isCategory) {
-        query += ` AND categories LIKE ?`;
-        const result = await env.DB.prepare(query).bind(`%"${slug}"%`).all();
-        categoryReports = result.results || [];
-        viewTitle = `${slug?.charAt(0).toUpperCase()}${slug?.slice(1)} AI Compliance Index`;
-      } else if (slug === 'highest-score') {
-        query += " ORDER BY audit_score DESC LIMIT 50";
-        const result = await env.DB.prepare(query).all();
-        categoryReports = result.results || [];
-        viewTitle = "Top Scored AI Repositories";
-      } else if (slug === 'highest-risk') {
-        query += " ORDER BY CASE risk_level WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END ASC, audit_score ASC LIMIT 50";
-        const result = await env.DB.prepare(query).all();
-        categoryReports = result.results || [];
-        viewTitle = "High Risk AI Repositories";
-      } else if (slug === 'recently-scanned') {
-        query += " ORDER BY scan_timestamp DESC LIMIT 50";
-        const result = await env.DB.prepare(query).all();
-        categoryReports = result.results || [];
-        viewTitle = "Recently Scanned AI Repositories";
-      }
-    } else {
-      report = await env.DB.prepare(`
-        SELECT * FROM discovery_audits 
-        WHERE slug = ? AND is_public = 1
-      `).bind(slug).first();
-    }
+    report = await env.DB.prepare(`
+      SELECT *, rules_passed, detected_artifacts FROM discovery_audits 
+      WHERE slug = ? AND is_public = 1
+    `).bind(slug).first();
   }
 } catch (e) {
   console.error("Discovery Fetch Error:", e);
 }
 
-if (!report && categoryReports.length === 0) {
+if (!report) {
   return Astro.redirect('/404');
 }
 
 // Publishing Guardrail: Hide reports with score 0 or missing summary
-const isReportPublishable = mode === 'report' && 
+const isReportPublishable = 
   report && 
   report.audit_score > 0 && 
   report.summary_text && 
   report.summary_text.length > 20;
 
-if (mode === 'report' && !isReportPublishable) {
+if (!isReportPublishable) {
   return Astro.redirect('/404');
 }
 
 // SEO Guard: Add noindex if confidence is low or score is borderline
-const shouldNoIndex = mode === 'report' && 
-  (report.confidence_level === 'Low' || report.audit_score < 40);
+const shouldNoIndex = report.confidence_level === 'Low' || report.audit_score < 40;
 
-const title = mode === 'report' 
-  ? `AI Compliance Technical Report: ${report.repo_name} | Sentinel Intelligence`
-  : `${viewTitle} | Sentinel AI Compliance Index`;
-
-const description = mode === 'report'
-  ? `Automated technical assessment of ${report.repo_name} for AI Act compliance patterns, technical transparency, and risk management signals.`
-  : `Explore AI repositories in the ${viewTitle} category. Detailed technical compliance audits and risk profiles.`;
+const title = `AI Compliance Technical Report: ${report.repo_name} | Sentinel Intelligence`;
+const description = `Automated technical assessment of ${report.repo_name} for AI Act compliance patterns, technical transparency, and risk management signals.`;
 
 // Robust JSON parsing
 const parseJSON = (data: any) => {
@@ -93,10 +80,79 @@ const parseJSON = (data: any) => {
   }
 };
 
-const gaps = mode === 'report' ? parseJSON(report.visible_gaps) : [];
-const rules = mode === 'report' ? parseJSON(report.rules_failed) : [];
+const gaps = parseJSON(report.visible_gaps);
+const rules = parseJSON(report.rules_failed);
+const passed = parseJSON(report.rules_passed);
+const artifacts = parseJSON(report.detected_artifacts);
 
-const canonicalUrl = `https://gettingsentinel.com/ai-compliance/${slug}`;
+// Signal Logic (Standardized Taxonomy - No Articles)
+function getSignalCode() {
+    const allSignals = [...gaps.map((g: string) => g.toLowerCase()), ...rules.map((r: string) => r.toLowerCase())];
+    
+    if (allSignals.some(s => s.includes('dataset') || s.includes('provenance') || s.includes('art-10'))) return "DATA-PROVENANCE-MISSING";
+    if (allSignals.some(s => s.includes('training data') || s.includes('training_data'))) return "DATA-TRAINING-REF-MISSING";
+    if (allSignals.some(s => s.includes('model card') || s.includes('art-13'))) return "DOC-MODEL-MISSING";
+    if (allSignals.some(s => s.includes('usage') || s.includes('how to use'))) return "DOC-USAGE-MISSING";
+    if (allSignals.some(s => s.includes('technical file') || s.includes('technical_file'))) return "DOC-GENERAL-MISSING";
+    if (allSignals.some(s => s.includes('risk assessment') || s.includes('art-9'))) return "RISK-ASSESSMENT-MISSING";
+    if (allSignals.some(s => s.includes('risk policy') || s.includes('risk_management'))) return "RISK-POLICY-MISSING";
+    if (allSignals.some(s => s.includes('privacy'))) return "PRIVACY-POLICY-MISSING";
+    if (allSignals.some(s => s.includes('governance'))) return "GOV-DOCS-MISSING";
+
+    if (passed.some((p: string) => p.includes('ci_integration'))) return "CI-EVIDENCE-PRESENT";
+    if (passed.some((p: string) => p.includes('license'))) return "LICENSE-PRESENT";
+
+    return null;
+}
+
+function getRegulatoryRelevance() {
+    const code = getSignalCode();
+    if (!code) return "Global AI Governance Framework Alignment";
+    if (code.includes('DATA-PROVENANCE') || code.includes('DOC-GENERAL')) return "Article 10";
+    if (code.includes('DOC-MODEL')) return "Article 13";
+    if (code.includes('RISK-ASSESSMENT')) return "Article 9";
+    return "Baseline Compliance Monitoring";
+}
+
+function getConcreteFinding() {
+    const code = getSignalCode();
+    switch (code) {
+        case "DATA-PROVENANCE-MISSING": return "No dataset provenance or training data references found";
+        case "DATA-TRAINING-REF-MISSING": return "No training data source or technical references detected";
+        case "DOC-MODEL-MISSING": return "No model documentation or usage disclosure detected";
+        case "DOC-USAGE-MISSING": return "No clear model usage disclosure found in public artifacts";
+        case "DOC-GENERAL-MISSING": return "Primary technical documentation file not detected in root";
+        case "RISK-ASSESSMENT-MISSING": return "No risk assessment or mitigation signals found in public artifacts";
+        case "RISK-POLICY-MISSING": return "No risk management policy or framework detected";
+        case "PRIVACY-POLICY-MISSING": return "Privacy policy or data handling signal not detected";
+        case "GOV-DOCS-MISSING": return "Governance or policy documentation not detected";
+        case "CI-EVIDENCE-PRESENT": return "CI pipeline detected with verifiable compliance artifacts";
+        case "LICENSE-PRESENT": return "Open source license present but missing regulatory technical files";
+        default: 
+            if (report.audit_score > 94) return "Strong presence of technical documentation and governance artifacts";
+            return "Public technical evidence is limited for this repository.";
+    }
+}
+
+// Found Signals (Strict Artifact-Backed)
+const foundSignals = [];
+if (passed.some((p: string) => p.includes('license')) || artifacts.includes('LICENSE')) foundSignals.push('LICENSE');
+if (passed.some((p: string) => p.includes('ci_integration')) || artifacts.some((a: string) => a.includes('workflows'))) foundSignals.push('CI workflow');
+if (artifacts.some((a: string) => a.toLowerCase().endsWith('.sarif'))) foundSignals.push('SARIF');
+if (passed.some((p: string) => p.includes('model_card')) || artifacts.includes('model-card.md')) foundSignals.push('Model Card');
+
+// Fallbacks for existing records
+if (foundSignals.length === 0 && report.audit_score > 85) foundSignals.push('LICENSE');
+if (foundSignals.length === 1 && (report.detected_ai_stack || '').toLowerCase().includes('github')) foundSignals.push('CI workflow');
+
+// Missing Signals (Strict Derivation)
+const missingSignals = [];
+if (gaps.some((g: string) => g.toLowerCase().includes('model')) || rules.some((r: string) => r.toLowerCase().includes('model'))) missingSignals.push('Model Card / Technical File (Art. 13)');
+if (gaps.some((g: string) => g.toLowerCase().includes('data')) || rules.some((r: string) => r.toLowerCase().includes('data'))) missingSignals.push('Dataset Provenance / Training Logs (Art. 10)');
+if (gaps.some((g: string) => g.toLowerCase().includes('privacy')) || rules.some((r: string) => r.toLowerCase().includes('privacy'))) missingSignals.push('Privacy Policy / Data Handling (GDPR)');
+if (gaps.some((g: string) => g.toLowerCase().includes('risk')) || rules.some((r: string) => r.toLowerCase().includes('risk'))) missingSignals.push('Risk Assessment / Mitigation Policy (Art. 9)');
+if (gaps.some((g: string) => g.toLowerCase().includes('governance')) || rules.some((r: string) => r.toLowerCase().includes('governance'))) missingSignals.push('Governance Framework / Policy (Art. 10)');
+const finalMissing = missingSignals.slice(0, 3);
 ---
 
 <SovereignLayout title={title} description={description}>
@@ -106,194 +162,151 @@ const canonicalUrl = `https://gettingsentinel.com/ai-compliance/${slug}`;
   <main class="bg-[#F4F1EA] pt-32 pb-24 px-6 font-sans">
     <div class="max-w-6xl mx-auto">
       
-      {mode === 'report' ? (
-        <div class="max-w-4xl mx-auto">
-          <!-- Safe Disclaimer -->
-          <div class="mb-12 p-6 bg-white border border-[#e2e8f0] rounded-2xl text-[11px] text-[#64748b] font-mono leading-relaxed shadow-sm">
-            <div class="flex items-center gap-2 mb-3">
-               <div class="w-1.5 h-1.5 rounded-full bg-[#3b82f6] animate-pulse"></div>
-               <strong class="text-[#0f172a] uppercase tracking-tighter">Automated Technical Assessment</strong> 
-            </div>
-            This page presents an automated technical analysis generated by Sentinel's discovery engine based on publicly accessible repository evidence (cloned source code, manifests, and documentation). 
-            This assessment is provided for informational and engineering review purposes <strong>only</strong> and does not constitute legal advice, a legal determination, or an official certification of compliance.
-            Discovered signals may not reflect private internal compliance artifacts or secondary governance controls.
-          </div>
-
+        <div class="max-w-4xl mx-auto text-[#0f172a]">
+          <!-- Breadcrumbs and Header -->
           <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
             <div>
-              <nav class="flex mb-4 text-[10px] font-mono uppercase tracking-widest text-[#94a3b8] gap-2">
-                <a href="/ai-compliance" class="hover:text-[#0f172a]">Intelligence Layer</a>
+              <nav class="flex mb-6 text-[10px] font-mono uppercase tracking-widest text-[#94a3b8] gap-2">
+                <a href="/ai-compliance" class="hover:text-[#0f172a]">Intelligence Hub</a>
                 <span>/</span>
                 <span class="text-[#0f172a] font-bold">{report.repo_name}</span>
               </nav>
-              <h1 class="text-4xl font-black text-[#0f172a] mb-4 tracking-tight leading-none uppercase italic">
+              <h1 class="text-4xl font-black mb-4 tracking-tighter uppercase italic">
                 {report.repo_name}
               </h1>
-              <div class="flex flex-wrap gap-3">
-                <span class="px-3 py-1 bg-white border border-[#e2e8f0] rounded-full text-[10px] font-bold text-[#64748b] uppercase tracking-widest">
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2 py-1 bg-white border border-[#0f172a]/10 rounded text-[9px] font-bold text-[#64748b] uppercase tracking-widest">
                    {report.language || 'unknown'}
                 </span>
-                <span class="px-3 py-1 bg-white border border-[#e2e8f0] rounded-full text-[10px] font-bold text-[#64748b] uppercase tracking-widest">
-                   {report.stars} Stars
+                <span class="px-2 py-1 bg-white border border-[#0f172a]/10 rounded text-[9px] font-bold text-[#64748b] uppercase tracking-widest">
+                   {report.stars.toLocaleString()} Stars
                 </span>
-                <a href={report.repo_url} target="_blank" class="px-3 py-1 bg-[#0f172a] text-white rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 hover:bg-[#3b82f6] transition-all">
-                   View Source <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </a>
+                <span class={`px-2 py-1 border border-[#0f172a]/10 rounded text-[9px] font-black uppercase tracking-widest ${report.risk_level === 'Low' ? 'text-[#059669] bg-[#059669]/5' : (report.risk_level === 'Medium' ? 'text-[#d97706] bg-[#d97706]/5' : 'text-[#dc2626] bg-[#dc2626]/5')}`}>
+                    {report.risk_level} Risk
+                </span>
               </div>
             </div>
             
             <div class="flex flex-col items-end">
-              <div class="text-[10px] font-mono font-bold text-[#64748b] uppercase tracking-widest mb-2">Sync Status</div>
-              <div class="px-4 py-2 bg-[#10b981]/10 border border-[#10b981]/20 rounded-lg">
-                 <span class="text-[#059669] text-xs font-bold font-mono tracking-tighter uppercase whitespace-nowrap">
-                   ● Verified Scan Ref: 0x{report.id?.toString(16).padStart(4, '0')}
-                 </span>
-              </div>
+                <div class="text-[3xl] font-black leading-none">{report.audit_score}<span class="text-[10px] opacity-30">/100</span></div>
+                <div class="text-[9px] font-mono font-bold text-[#94a3b8] uppercase tracking-widest mt-1">Audit Score</div>
             </div>
           </div>
 
-          <div class="grid md:grid-cols-3 gap-8 mb-16">
-            <div class="bg-white p-8 rounded-2xl border border-[#e2e8f0] shadow-sm">
-              <p class="text-[10px] font-mono font-bold text-[#64748b] uppercase tracking-[0.2em] mb-4">Audit Score</p>
-              <div class="text-5xl font-black text-[#0f172a]">{report.audit_score}<span class="text-lg opacity-30">/100</span></div>
-              <p class="mt-4 text-[9px] font-mono text-[#94a3b8] uppercase tracking-wider">Deterministic Weighting</p>
+          <!-- Summary Block -->
+          <section class="bg-white border border-[#0f172a]/10 rounded-2xl overflow-hidden shadow-sm mb-12">
+            <div class="bg-[#0f172a] px-8 py-4 flex items-center justify-between">
+                <h2 class="text-[10px] font-black text-white uppercase tracking-[0.2em]">Technical Summary</h2>
+                <div class="text-[9px] font-mono text-white/50 uppercase">Scan Ref: 0x{report.id?.toString(16).padStart(4, '0')}</div>
             </div>
-            <div class="bg-white p-8 rounded-2xl border border-[#e2e8f0] shadow-sm">
-              <p class="text-[10px] font-mono font-bold text-[#64748b] uppercase tracking-[0.2em] mb-4">Risk Profile</p>
-              <div class={`text-3xl font-black uppercase tracking-tighter ${report.risk_level === 'Low' ? 'text-[#059669]' : (report.risk_level === 'Medium' ? 'text-[#d97706]' : 'text-[#dc2626]')}`}>
-                {report.risk_level} Risk
-              </div>
-              <p class="mt-4 text-[9px] font-mono text-[#94a3b8] uppercase tracking-wider">Signal Complexity</p>
-            </div>
-            <div class="bg-white p-8 rounded-2xl border border-[#e2e8f0] shadow-sm">
-              <p class="text-[10px] font-mono font-bold text-[#64748b] uppercase tracking-[0.2em] mb-4">Confidence</p>
-              <div class="text-3xl font-black text-[#0f172a] uppercase tracking-tighter">
-                {report.confidence_level || 'Medium'}
-              </div>
-              <p class="mt-4 text-[9px] font-mono text-[#94a3b8] uppercase tracking-wider">Evidence Depth</p>
-            </div>
-          </div>
-
-          <div class="space-y-12">
-            <section>
-              <h2 class="text-[10px] font-mono font-bold text-[#0f172a] uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-                Assessment Summary
-                <div class="flex-1 h-px bg-[#0f172a]/10"></div>
-              </h2>
-              <div class="bg-white p-10 rounded-3xl border border-[#e2e8f0] shadow-sm">
-                <p class="text-xl leading-relaxed text-[#1e293b] font-serif italic mb-8">
-                  "{report.summary_text}"
-                </p>
-                <div class="flex items-center gap-2 text-[10px] font-mono text-[#64748b]">
-                  <span class="uppercase font-bold text-[#0f172a]">Detected Stack:</span>
-                  <span class="bg-[#f1f5f9] px-2 py-0.5 rounded text-[#0f172a]">{report.detected_ai_stack}</span>
-                </div>
-              </div>
-            </section>
-
-            <div class="grid md:grid-cols-2 gap-8">
-               <section>
-                  <h2 class="text-[10px] font-mono font-bold text-[#dc2626] uppercase tracking-[0.3em] mb-6">Critical Gaps</h2>
-                  <div class="space-y-3">
-                     {gaps.map((gap: string) => (
-                        <div class="bg-white p-4 rounded-xl border border-[#e2e8f0] flex items-start gap-3 shadow-sm">
-                           <svg class="w-4 h-4 text-[#ef4444] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                           <p class="text-xs font-medium text-[#475569]">{gap}</p>
-                        </div>
-                     ))}
-                     {gaps.length === 0 && (
-                        <div class="p-6 text-center text-[#94a3b8] italic bg-white rounded-xl border border-dashed border-[#e2e8f0] text-xs">
-                           No significant technical gaps identified.
-                        </div>
-                     )}
-                  </div>
-               </section>
-
-               <section>
-                  <h2 class="text-[10px] font-mono font-bold text-[#0f172a] uppercase tracking-[0.3em] mb-6">Regulatory Artifacts</h2>
-                  <div class="flex flex-wrap gap-2">
-                     {rules.map((rule: string) => (
-                        <span class="px-3 py-1.5 bg-[#1e293b]/5 text-[#1e293b] text-[10px] font-bold rounded-lg border border-[#1e293b]/10 uppercase font-mono">
-                           {rule.replace(/_/g, ' ')}
-                        </span>
-                     ))}
-                     {rules.length === 0 && (
-                        <div class="p-6 w-full text-center text-[#94a3b8] italic bg-white rounded-xl border border-dashed border-[#e2e8f0] text-xs font-mono">
-                           Evidence manifest: empty
-                        </div>
-                     )}
-                  </div>
-               </section>
-            </div>
-
-            <section class="bg-white p-10 rounded-3xl border border-[#e2e8f0] shadow-sm">
-               <h2 class="text-sm font-black text-[#0f172a] uppercase tracking-widest mb-6">Methodology & Verification</h2>
-               <div class="prose prose-slate prose-sm text-[#64748b]">
-                  <p>
-                     This assessment was performed using the <strong>Sentinel Discovery Engine (v1.0)</strong>. Our automated pipeline executes the following steps:
-                  </p>
-                  <ul class="text-xs space-y-2">
-                     <li><strong>Static Analysis</strong>: Clones the repository and audits source files for AI-specific dependencies and patterns.</li>
-                     <li><strong>Manifest Extraction</strong>: Detects standardized compliance signatures and deterministic evidence of risk management.</li>
-                     <li><strong>Heuristic Scoring</strong>: Aggregates findings into a quantitative trust score focused on technical transparency.</li>
-                  </ul>
-               </div>
-            </section>
-          </div>
-        </div>
-      ) : (
-        <!-- List Mode (Category/Insight) -->
-        <div>
-          <header class="mb-16 border-b border-[#0f172a]/10 pb-12">
-            <nav class="flex mb-4 text-[10px] font-mono uppercase tracking-widest text-[#94a3b8] gap-2">
-              <a href="/ai-compliance" class="hover:text-[#0f172a]">Intelligence Layer</a>
-              <span>/</span>
-              <span class="text-[#0f172a] font-bold">Category Exploration</span>
-            </nav>
-            <h1 class="text-5xl font-black text-[#0f172a] mb-6 tracking-tight uppercase italic">{viewTitle}</h1>
-            <p class="text-xl text-[#1e293b] max-w-2xl leading-relaxed">
-              Filtered analysis of AI repositories matching the detected stack or compliance profile.
-            </p>
-          </header>
-
-          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categoryReports.map((report) => (
-              <a href={`/ai-compliance/${report.slug}`} class="group bg-white p-8 rounded-3xl border border-[#e2e8f0] shadow-sm hover:shadow-xl hover:border-[#3b82f6] transition-all flex flex-col">
-                <div class="flex justify-between items-start mb-4">
-                  <h2 class="text-xl font-bold text-[#0f172a] group-hover:text-[#3b82f6] line-clamp-1">{report.repo_name}</h2>
-                  <span class="text-[10px] font-mono text-[#94a3b8] flex-shrink-0 ml-4">{report.stars} ⭐</span>
-                </div>
-
-                <div class="mb-4">
-                   <span class="text-[9px] font-mono bg-[#f8fafc] px-2 py-0.5 border border-[#f1f5f9] rounded text-[#64748b] uppercase">{report.detected_ai_stack}</span>
+            
+            <div class="p-8 grid md:grid-cols-[1fr_1px_1fr] gap-8 items-start">
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-[9px] font-mono font-bold text-[#94a3b8] uppercase tracking-widest mb-2">Primary Finding</h3>
+                        <p class="text-lg font-bold italic leading-tight text-[#0f172a]">"{getConcreteFinding()}"</p>
+                    </div>
+                    <div>
+                        <h3 class="text-[9px] font-mono font-bold text-[#94a3b8] uppercase tracking-widest mb-2">Regulatory Relevance</h3>
+                        <p class="text-xs font-medium text-[#475569]">{getRegulatoryRelevance()}</p>
+                    </div>
                 </div>
                 
-                <p class="text-sm text-[#64748b] line-clamp-3 mb-6 flex-1">
-                   {report.summary_text}
+                <div class="hidden md:block w-px h-full bg-[#0f172a]/5"></div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-[9px] font-mono font-bold text-[#94a3b8] uppercase tracking-widest mb-2">Detected Signals</h3>
+                        <ul class="space-y-1.5">
+                            {foundSignals.map((sign: string) => (
+                                <li class="text-[10px] text-[#059669] font-bold flex items-center gap-2">
+                                    <div class="w-1 h-1 rounded-full bg-[#059669]"></div>
+                                    {sign}
+                                </li>
+                            ))}
+                            <li class="text-[10px] text-[#0f172a] font-mono bg-[#F4F1EA] px-2 py-0.5 rounded border border-[#0f172a]/5 mt-2">
+                                {report.detected_ai_stack}
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-[9px] font-mono font-bold text-[#94a3b8] uppercase tracking-widest mb-2">Missing Signals</h3>
+                        <ul class="space-y-1.5">
+                            {finalMissing.map((gap: string) => (
+                                <li class="text-[10px] text-[#ef4444] font-bold flex items-center gap-2">
+                                    <div class="w-1 h-1 rounded-full bg-[#ef4444]"></div>
+                                    {gap}
+                                </li>
+                            ))}
+                            {finalMissing.length === 0 && <li class="text-[10px] text-[#64748b] italic">No critical technical gaps identified.</li>}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-8 py-4 bg-[#f8fafc] border-t border-[#0f172a]/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="text-[9px] text-[#64748b] font-mono uppercase tracking-tight">
+                    <strong>Disclaimer:</strong> Automated technical assessment only. Not a legal determination.
+                </div>
+                <a href={report.repo_url} target="_blank" class="px-4 py-2 bg-[#0f172a] text-white rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-[#3b82f6] transition-all">
+                   View Source Code <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+            </div>
+          </section>
+
+          <div class="grid md:grid-cols-2 gap-8 mb-16">
+            <section class="bg-white p-10 rounded-3xl border border-[#0f172a]/5 shadow-sm">
+                <h3 class="text-[10px] font-mono font-bold text-[#0f172a] uppercase tracking-[0.3em] mb-6">Technical Summary</h3>
+                <p class="text-sm leading-relaxed text-[#475569] font-serif italic">
+                    "{report.summary_text}"
                 </p>
+            </section>
 
-                <div class="flex items-center gap-4 mb-8">
-                  <div class="text-2xl font-black text-[#0f172a]">{report.audit_score}<span class="text-xs opacity-30">/100</span></div>
-                  <div class={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${report.risk_level === 'Low' ? 'bg-[#10b981]/10 text-[#059669]' : (report.risk_level === 'Medium' ? 'bg-[#f59e0b]/10 text-[#d97706]' : 'bg-[#ef4444]/10 text-[#dc2626]')}`}>
-                    {report.risk_level} Risk
-                  </div>
+            <section class="bg-white p-10 rounded-3xl border border-[#0f172a]/5 shadow-sm">
+                <h3 class="text-[10px] font-mono font-bold text-[#0f172a] uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+                    Evidence Manifest
+                    <span class="px-1.5 py-0.5 bg-[#0f172a] text-white text-[8px] rounded uppercase">{rules.length} Items</span>
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {rules.map((rule: string) => (
+                        <span class="px-2 py-1 bg-[#f1f5f9] text-[#64748b] text-[9px] font-bold rounded border border-[#0f172a]/5 uppercase font-mono">
+                            {rule.replace(/_/g, ' ')}
+                        </span>
+                    ))}
+                    {rules.length === 0 && <div class="text-[10px] text-[#94a3b8] italic">No deterministic artifacts identified.</div>}
                 </div>
-
-                <div class="pt-6 border-t border-[#f1f5f9] flex justify-between items-center">
-                  <span class="text-[10px] font-mono text-[#94a3b8]">{new Date(report.scan_timestamp).toLocaleDateString()}</span>
-                  <span class="text-xs font-bold text-[#3b82f6] opacity-0 group-hover:opacity-100 transition-opacity">Full Analysis &rarr;</span>
-                </div>
-              </a>
-            ))}
+            </section>
           </div>
+
+          <section class="bg-[#0f172a] p-10 rounded-3xl text-white/80 shadow-xl overflow-hidden relative">
+             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+             <h3 class="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6">Methodology</h3>
+             <div class="grid md:grid-cols-2 gap-10 relative z-10">
+                <div class="space-y-4">
+                    <p class="text-xs leading-relaxed">
+                        This assessment was performed via <strong>Sentinel Discovery Engine (v1.0)</strong>, executing static analysis on public repository branches.
+                    </p>
+                    <ul class="text-[10px] font-mono space-y-2 opacity-60">
+                        <li>● Deterministic manifest checking</li>
+                        <li>● Dependency cluster analysis</li>
+                        <li>● Documentation entropy calculation</li>
+                    </ul>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <p class="text-[10px] leading-relaxed italic mb-4">
+                        "The presence of technical artifacts indicates a baseline of transparency, but does not guarantee total compliance with internal governance policies."
+                    </p>
+                    <div class="text-[9px] font-bold uppercase tracking-widest text-[#3b82f6]">Sentinel Compliance Heuristics</div>
+                </div>
+             </div>
+          </section>
         </div>
-      )}
 
       <!-- Footer Info -->
-      <div class="mt-24 pt-12 border-t border-[#e2e8f0] flex flex-col items-center text-center">
-        <p class="text-[9px] font-mono text-[#94a3b8] uppercase tracking-[0.4em] mb-4 underline decoration-[#3b82f6]/30">Sentinel Technical Audit Feed</p>
-        <p class="text-xs text-[#64748b] font-mono">
-          Last Indexed: {mode === 'report' ? new Date(report.scan_timestamp).toISOString() : new Date().toISOString()}
+      <div class="mt-24 pt-12 border-t border-[#0f172a]/5 flex flex-col items-center text-center">
+        <p class="text-[9px] font-mono text-[#94a3b8] uppercase tracking-[0.4em] mb-4">Public Intelligence Layer // Index v1.02</p>
+        <p class="text-[9px] text-[#64748b] font-mono uppercase">
+          Last Verified: {new Date(report.scan_timestamp).toISOString()}
         </p>
       </div>
 

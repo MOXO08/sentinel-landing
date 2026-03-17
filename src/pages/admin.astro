@@ -2,269 +2,34 @@
 import SovereignLayout from '../layouts/SovereignLayout.astro';
 import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
 import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import { AdminDashboard } from '../components/react/sentinel/admin-dashboard';
 
 export const prerender = false;
 
-const env = (Astro.locals as any).runtime?.env;
+// Sentinel Authority Server-Side Check
+const cookie = Astro.request.headers.get('Cookie') || '';
+const match = cookie.match(/sentinel_session=([^;]+)/);
+const env = (Astro.locals as any).runtime.env;
 
-let metrics = {
-  totalAudits: 0,
-  uniqueEnvironments: 0,
-  projectsScanned: 0,
-  cliVersions: [] as { version: string, count: number }[],
-  executionContexts: [] as { context: string, count: number }[],
-  recentScans: [] as any[],
-  discoveryAudits: [] as any[]
-};
+let isAdmin = false;
 
-try {
-  if (env?.DB) {
-    // 1. Total Audits
-    const totalResult = await env.DB.prepare("SELECT COUNT(*) as count FROM audit_logs").first();
-    metrics.totalAudits = totalResult?.count || 0;
+if (match && env && env.CACHE) {
+    const sessionData = await env.CACHE.get(`session:${match[1]}`);
+    if (sessionData) {
+        const session = JSON.parse(sessionData);
+        if (session.email === 'office@gettingsentinel.com') {
+            isAdmin = true;
+        }
+    }
+}
 
-    // 2. Unique Environments (using client_id as requested)
-    const envResult = await env.DB.prepare("SELECT COUNT(DISTINCT client_id) as count FROM audit_logs").first();
-    metrics.uniqueEnvironments = envResult?.count || 0;
-
-    // 3. Projects Scanned
-    const projResult = await env.DB.prepare("SELECT COUNT(DISTINCT project_hash) as count FROM audit_logs").first();
-    metrics.projectsScanned = projResult?.count || 0;
-
-    // 4. CLI Versions Usage
-    const cliResult = await env.DB.prepare(`
-      SELECT cli_version, COUNT(*) as count 
-      FROM audit_logs 
-      WHERE cli_version IS NOT NULL 
-      GROUP BY cli_version 
-      ORDER BY count DESC
-    `).all();
-    metrics.cliVersions = cliResult.results || [];
-
-    // 5. Execution Context Breakdown
-    const contextResult = await env.DB.prepare(`
-      SELECT execution_context, COUNT(*) as count 
-      FROM audit_logs 
-      GROUP BY execution_context 
-      ORDER BY count DESC
-    `).all();
-    metrics.executionContexts = contextResult.results || [];
-
-    // 6. Last 20 Scans (Retrieved correctly now)
-    const recentResult = await env.DB.prepare(`
-      SELECT app_name, cli_version, status, created_at, client_id, project_hash
-      FROM audit_logs
-      ORDER BY created_at DESC
-      LIMIT 20
-    `).all();
-    metrics.recentScans = recentResult.results || [];
-
-    // 7. Discovery Audits (Added sorting support)
-    const sort = Astro.url.searchParams.get('sort') || 'scan_timestamp';
-    const order = Astro.url.searchParams.get('order') || 'DESC';
-    const validCols = ['stars', 'audit_score', 'scan_timestamp', 'risk_level'];
-    const safeSort = validCols.includes(sort) ? sort : 'scan_timestamp';
-    const safeOrder = order === 'ASC' ? 'ASC' : 'DESC';
-
-    const discoveryResult = await env.DB.prepare(`
-      SELECT repo_name, stars, detected_ai_stack, audit_score, risk_level, scan_timestamp
-      FROM discovery_audits
-      ORDER BY ${safeSort} ${safeOrder}
-      LIMIT 20
-    `).all();
-    metrics.discoveryAudits = discoveryResult.results || [];
-  }
-} catch (e) {
-  console.error("Dashboard Fetch Error:", e);
+if (!isAdmin) {
+    return Astro.redirect('/dashboard/login');
 }
 ---
 
-<SovereignLayout title="Sentinel Admin | Pulse Dashboard">
-  <SovereignHeader client:idle />
-  
-  <main class="bg-[#F4F1EA] pt-32 pb-24 px-6">
-    <div class="max-w-6xl mx-auto">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
-        <div>
-          <h1 class="text-4xl font-black text-[#0f172a] mb-2 tracking-tight">Sentinel Pulse</h1>
-          <p class="text-[#64748b] font-mono text-xs uppercase tracking-widest">Global AI Compliance Telemetry</p>
-        </div>
-        <div class="px-4 py-2 bg-[#10b981]/10 border border-[#10b981]/20 rounded-lg">
-          <span class="text-[#059669] text-xs font-bold font-mono uppercase tracking-tighter">● System Live</span>
-        </div>
-      </div>
-
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div class="bg-white p-8 rounded-2xl border border-[#e2e8f0] shadow-sm">
-          <p class="text-[10px] font-mono font-bold text-[#64748b] uppercase tracking-[0.2em] mb-4">Total Audits</p>
-          <div class="text-5xl font-black text-[#0f172a]">{metrics.totalAudits}</div>
-          <div class="mt-4 text-[10px] text-[#94a3b8] font-mono">LIFETIME SCANS</div>
-        </div>
-        <div class="bg-white p-8 rounded-2xl border border-[#e2e8f0] shadow-sm">
-          <p class="text-[10px] font-mono font-bold text-[#3b82f6] uppercase tracking-[0.2em] mb-4">Unique Environments</p>
-          <div class="text-5xl font-black text-[#0f172a]">{metrics.uniqueEnvironments}</div>
-          <div class="mt-4 text-[10px] text-[#94a3b8] font-mono">ACTIVE CLIENTS</div>
-        </div>
-        <div class="bg-white p-8 rounded-2xl border border-[#e2e8f0] shadow-sm">
-          <p class="text-[10px] font-mono font-bold text-[#10b981] uppercase tracking-[0.2em] mb-4">Projects Scanned</p>
-          <div class="text-5xl font-black text-[#0f172a]">{metrics.projectsScanned}</div>
-          <div class="mt-4 text-[10px] text-[#94a3b8] font-mono">UNIQUE REPOSITORIES</div>
-        </div>
-      </div>
-
-      <div class="grid lg:grid-cols-3 gap-8">
-        <!-- Main Activity Feed -->
-        <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden shadow-sm">
-            <div class="p-6 border-b border-[#e2e8f0] bg-[#f8fafc] flex justify-between items-center">
-              <h2 class="text-sm font-bold text-[#0f172a] uppercase tracking-wider">Recent Scans (Last 20)</h2>
-              <span class="text-[10px] font-mono text-[#64748b]">Real-time Feed</span>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm border-collapse">
-                <thead class="bg-[#f8fafc] text-[#64748b] font-mono text-[10px] uppercase tracking-widest border-b border-[#e2e8f0]">
-                  <tr>
-                    <th class="p-4">Project / App</th>
-                    <th class="p-4">Status</th>
-                    <th class="p-4">Client ID</th>
-                    <th class="p-4">Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-[#e2e8f0] font-mono text-[11px]">
-                  {metrics.recentScans.map((scan) => (
-                    <tr class="hover:bg-[#f8fafc] transition-colors">
-                      <td class="p-4">
-                        <div class="font-bold text-[#0f172a]">{scan.app_name || 'unknown'}</div>
-                        <div class="text-[9px] text-[#94a3b8]">CLI v{scan.cli_version || '?' }</div>
-                      </td>
-                      <td class="p-4">
-                        <span class={`px-2 py-0.5 rounded-full text-[9px] font-bold ${scan.status === 'COMPLIANT' ? 'bg-[#10b981]/10 text-[#059669]' : 'bg-[#ef4444]/10 text-[#dc2626]'}`}>
-                          {scan.status}
-                        </span>
-                      </td>
-                      <td class="p-4 text-[#64748b] font-mono">{scan.client_id ? scan.client_id.slice(0, 8) : 'N/A' }...</td>
-                      <td class="p-4 text-[#94a3b8]">{new Date(scan.created_at).toLocaleString()}</td>
-                    </tr>
-                  ))}
-                  {metrics.recentScans.length === 0 && (
-                    <tr>
-                      <td colspan="4" class="p-12 text-center text-[#94a3b8] italic">No scans recorded yet</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Discovery Audits Section -->
-          <div class="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden shadow-sm mt-8">
-            <div class="p-6 border-b border-[#e2e8f0] bg-[#f0fdf4] flex justify-between items-center">
-              <h2 class="text-sm font-bold text-[#166534] uppercase tracking-wider">Autonomous Discovery Hub</h2>
-              <div class="flex gap-4">
-                 <a href="/admin/discovery" class="text-[10px] font-bold text-[#166534] hover:underline uppercase tracking-widest">Inbox</a>
-                 <a href="/admin/discovery-runs" class="text-[10px] font-bold text-[#166534] hover:underline uppercase tracking-widest">Run History</a>
-              </div>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm border-collapse">
-                <thead class="bg-[#f8fafc] text-[#64748b] font-mono text-[10px] uppercase tracking-widest border-b border-[#e2e8f0]">
-                  <tr>
-                    <th class="p-4"><a href="?sort=repo_name" class="hover:underline">Repository</a></th>
-                    <th class="p-4">AI Stack</th>
-                    <th class="p-4"><a href="?sort=audit_score" class="hover:underline">Score</a></th>
-                    <th class="p-4"><a href="?sort=risk_level" class="hover:underline">Risk</a></th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-[#e2e8f0] font-mono text-[11px]">
-                  {metrics.discoveryAudits.map((scan) => (
-                    <tr class="hover:bg-[#f8fafc] transition-colors">
-                      <td class="p-4">
-                        <div class="font-bold text-[#0f172a]">{scan.repo_name}</div>
-                        <div class="text-[9px] text-[#94a3b8]">{scan.stars} ⭐ • {new Date(scan.scan_timestamp).toLocaleDateString()}</div>
-                      </td>
-                      <td class="p-4 text-[#64748b]">{scan.detected_ai_stack}</td>
-                      <td class="p-4 font-bold text-[#0f172a]">{scan.audit_score}/100</td>
-                      <td class="p-4">
-                        <span class={`px-2 py-0.5 rounded-full text-[9px] font-bold ${scan.risk_level === 'Low' ? 'bg-[#10b981]/10 text-[#059669]' : (scan.risk_level === 'Medium' ? 'bg-[#f59e0b]/10 text-[#d97706]' : 'bg-[#ef4444]/10 text-[#dc2626]')}`}>
-                          {scan.risk_level.toUpperCase()}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                  {metrics.discoveryAudits.length === 0 && (
-                    <tr>
-                      <td colspan="4" class="p-12 text-center text-[#94a3b8] italic">No discovery audits performed yet</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sidebar Metrics -->
-        <div class="space-y-6">
-          <div class="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden shadow-sm p-6">
-            <h2 class="text-xs font-bold text-[#0f172a] uppercase tracking-widest mb-6 pb-4 border-b border-[#f1f5f9]">CLI Version Adoption</h2>
-            <div class="space-y-4">
-              {metrics.cliVersions.map((v) => (
-                <div>
-                  <div class="flex justify-between text-[11px] font-mono mb-1">
-                    <span class="text-[#64748b]">v{v.cli_version}</span>
-                    <span class="text-[#0f172a] font-bold">{v.count} scans</span>
-                  </div>
-                  <div class="w-full bg-[#f1f5f9] h-1.5 rounded-full overflow-hidden">
-                    <div 
-                      class="bg-[#3b82f6] h-full rounded-full" 
-                      style={`width: ${Math.min(100, (v.count / metrics.totalAudits) * 100)}%`}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-              {metrics.cliVersions.length === 0 && (
-                <p class="text-[11px] text-[#94a3b8] italic text-center">No version data</p>
-              )}
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden shadow-sm p-6">
-            <h2 class="text-xs font-bold text-[#0f172a] uppercase tracking-widest mb-6 pb-4 border-b border-[#f1f5f9]">Execution Context</h2>
-            <div class="space-y-4">
-              {metrics.executionContexts.map((ctx) => (
-                <div>
-                  <div class="flex justify-between text-[11px] font-mono mb-1">
-                    <span class="text-[#64748b]">{ctx.execution_context}</span>
-                    <span class="text-[#0f172a] font-bold">{ctx.count} scans</span>
-                  </div>
-                  <div class="w-full bg-[#f1f5f9] h-1.5 rounded-full overflow-hidden">
-                    <div 
-                      class="bg-[#10b981] h-full rounded-full" 
-                      style={`width: ${Math.min(100, (ctx.count / metrics.totalAudits) * 100)}%`}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div class="bg-[#0f172a] rounded-2xl p-6 text-white shadow-lg shadow-[#0f172a]/20">
-            <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-4">Infrastructure Status</h2>
-            <div class="space-y-3">
-              <div class="flex items-center gap-3">
-                <div class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></div>
-                <span class="text-xs font-mono">D1 Matrix Online</span>
-              </div>
-              <div class="flex items-center gap-3 opacity-80">
-                <div class="w-2 h-2 rounded-full bg-[#10b981]"></div>
-                <span class="text-xs font-mono">Basic Auth Active</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <SovereignFooter client:visible />
+<SovereignLayout title="Sentinel HQ - Mission Control" description="Internal Administrator Dashboard">
+  <SovereignHeader client:load />
+  <AdminDashboard client:load />
+  <SovereignFooter client:idle />
 </SovereignLayout>

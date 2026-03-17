@@ -394,6 +394,8 @@ async function processRepository(repo) {
             detected_ai_stack: actualStack,
             audit_score: auditScore,
             rules_failed: violations,
+            rules_passed: repo._discoveryEvidence?.flags || [], // Explicitly detected flags
+            detected_artifacts: repo._discoveryEvidence?.files || [], // Explicitly detected files
             risk_level: risk_level,
             compliance_status: auditData.compliance_status || 'unknown',
             confidence_level: 'Medium',

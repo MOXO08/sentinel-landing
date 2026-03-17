@@ -64,10 +64,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
         await env.DB.prepare(`
             INSERT INTO discovery_audits (
                 repo_url, repo_name, repo_owner, slug, stars, language, 
-                detected_ai_stack, audit_score, rules_failed, risk_level, 
+                detected_ai_stack, audit_score, rules_failed, rules_passed,
+                detected_artifacts, risk_level, 
                 compliance_status, confidence_level, summary_text, 
                 visible_gaps, is_public, execution_context, categories, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(repo_url) DO UPDATE SET
                 repo_name = excluded.repo_name,
                 repo_owner = excluded.repo_owner,
@@ -76,6 +77,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
                 detected_ai_stack = excluded.detected_ai_stack,
                 audit_score = excluded.audit_score,
                 rules_failed = excluded.rules_failed,
+                rules_passed = excluded.rules_passed,
+                detected_artifacts = excluded.detected_artifacts,
                 risk_level = excluded.risk_level,
                 compliance_status = excluded.compliance_status,
                 confidence_level = excluded.confidence_level,
@@ -93,6 +96,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
             body.detected_ai_stack || "unknown", 
             body.audit_score || 0,
             JSON.stringify(body.rules_failed || []), 
+            JSON.stringify(body.rules_passed || []),
+            JSON.stringify(body.detected_artifacts || []),
             body.risk_level || "unknown",
             body.compliance_status || "unknown",
             body.confidence_level || "Medium", 
