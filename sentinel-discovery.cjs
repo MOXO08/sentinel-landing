@@ -1,5 +1,4 @@
 const https = require('https');
-const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,84 +7,25 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const SENTINEL_API_KEY = process.env.SENTINEL_API_KEY;
 const DAILY_LIMIT = 100;
 const BATCH_SIZE = 20;
-const TEMP_DIR = path.join(__dirname, 'discovery_temp');
-const REPO_SIZE_LIMIT_KB = 200 * 1024; // 200MB limit
 
 const RUN_ID = `run_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 const DEBUG = process.env.SENTINEL_DEBUG === 'true';
 
-// --- Helpers ---
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function getDirSize(dirPath) {
-    let size = 0;
-    const files = fs.readdirSync(dirPath);
-
-    for (const file of files) {
-        const filePath = path.join(dirPath, file);
-        const stats = fs.statSync(filePath);
-
-        if (stats.isDirectory()) {
-            size += getDirSize(filePath);
-        } else {
-            size += stats.size;
-        }
-    }
-
-    return size;
-}
-
-function getFileInventory(repoPath) {
-    const inventory = [];
-    const MAX_FILES = 2000;
-    
-    function walk(dir, currentPath = '') {
-        if (inventory.length >= MAX_FILES) return;
-        
-        try {
-            const files = fs.readdirSync(dir);
-            for (const file of files) {
-                if (file === '.git' || file === 'node_modules') continue;
-                
-                const fullPath = path.join(dir, file);
-                const relPath = path.join(currentPath, file).replace(/\\/g, '/');
-                const stats = fs.statSync(fullPath);
-                
-                if (stats.isDirectory()) {
-                    walk(fullPath, relPath);
-                } else if (stats.isFile()) {
-                    inventory.push({
-                        path: relPath,
-                        name: file.toLowerCase(),
-                        fullPath: fullPath,
-                        size: stats.size
-                    });
-                }
-            }
-        } catch (e) {
-            if (DEBUG) console.warn(`[Debug] Error walking ${dir}: ${e.message}`);
-        }
-    }
-
-    walk(repoPath);
-    if (DEBUG) console.log(`[Debug] Inventory built: ${inventory.length} files discovered.`);
-    return inventory;
-}
-
-async function githubApiRequest(apiPath) {
+// --- API Helpers ---
+async function githubApiRequest(apiPath, options = {}) {
     const url = `https://api.github.com${apiPath}`;
+    const token = GITHUB_TOKEN || process.env.GITHUB_TOKEN;
 
     return new Promise((resolve, reject) => {
-        const options = {
-            headers: {
-                'User-Agent': 'Sentinel-Discovery-Engine',
-                'Authorization': GITHUB_TOKEN ? `token ${GITHUB_TOKEN}` : undefined
-            }
+        const headers = {
+            'User-Agent': 'Sentinel-Discovery-Engine',
+            'Accept': options.accept || 'application/vnd.github.v3+json'
         };
+        if (token) headers['Authorization'] = `token ${token}`;
 
-        https.get(url, options, (res) => {
+        const reqOptions = { headers };
+
+        https.get(url, reqOptions, (res) => {
             const remaining = parseInt(res.headers['x-ratelimit-remaining'] || '100', 10);
             const resetTime = parseInt(res.headers['x-ratelimit-reset'] || '0', 10) * 1000;
 
@@ -95,6 +35,10 @@ async function githubApiRequest(apiPath) {
                 return resolve({ rateLimited: true, waitTime });
             }
 
+            if (res.statusCode === 404) {
+                return resolve({ notFound: true });
+            }
+
             let data = '';
             res.on('data', chunk => {
                 data += chunk;
@@ -102,7 +46,11 @@ async function githubApiRequest(apiPath) {
 
             res.on('end', () => {
                 if (res.statusCode !== 200) {
-                    return reject(new Error(`GitHub API error: ${res.statusCode} ${data}`));
+                    return reject(new Error(`GitHub API error: ${res.statusCode} (Path: ${apiPath})`));
+                }
+
+                if (options.json === false) {
+                    return resolve({ data });
                 }
 
                 try {
@@ -115,8 +63,68 @@ async function githubApiRequest(apiPath) {
     });
 }
 
-function detectEvidence(repoPath) {
-    const inventory = getFileInventory(repoPath);
+async function fetchRepoTree(owner, repo, branch = 'main') {
+    if (DEBUG) console.log(`[Debug] Fetching tree for ${owner}/${repo} (${branch})...`);
+    let res = await githubApiRequest(`/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
+    
+    if (res.notFound && branch === 'main') {
+        if (DEBUG) console.log(`[Debug] 'main' not found, falling back to 'master'...`);
+        res = await githubApiRequest(`/repos/${owner}/${repo}/git/trees/master?recursive=1`);
+    }
+
+    if (res.rateLimited) {
+        await sleep(res.waitTime);
+        return fetchRepoTree(owner, repo, branch);
+    }
+
+    if (!res.data || !res.data.tree) {
+        if (DEBUG) console.warn(`[Debug] Could not fetch tree for ${repo}. Status: ${res.notFound ? 'Not Found' : 'Error'}`);
+        return [];
+    }
+
+    return res.data.tree
+        .filter(item => item.type === 'blob')
+        .map(item => ({
+            path: item.path,
+            name: path.basename(item.path).toLowerCase(),
+            size: item.size,
+            sha: item.sha
+        }));
+}
+
+async function fetchRepoReadme(owner, repo) {
+    if (DEBUG) console.log(`[Debug] Fetching README for ${owner}/${repo}...`);
+    const res = await githubApiRequest(`/repos/${owner}/${repo}/readme`);
+    
+    if (res.rateLimited) {
+        await sleep(res.waitTime);
+        return fetchRepoReadme(owner, repo);
+    }
+
+    if (res.notFound || !res.data || !res.data.content) {
+        return '';
+    }
+
+    return Buffer.from(res.data.content, 'base64').toString('utf8');
+}
+
+async function fetchFileContent(owner, repo, filePath) {
+    if (DEBUG) console.log(`[Debug] Fetching file content: ${filePath}...`);
+    const res = await githubApiRequest(`/repos/${owner}/${repo}/contents/${filePath}`);
+
+    if (res.rateLimited) {
+        await sleep(res.waitTime);
+        return fetchFileContent(owner, repo, filePath);
+    }
+
+    if (res.notFound || !res.data || !res.data.content) {
+        return '';
+    }
+
+    return Buffer.from(res.data.content, 'base64').toString('utf8');
+}
+
+function detectEvidence(inventory, readmeContent, docsText) {
     const evidence = {
         files: inventory.map(f => f.path),
         dependencies: [],
@@ -127,32 +135,12 @@ function detectEvidence(repoPath) {
         inventory
     };
 
-    const readmeFile = inventory.find(f => 
-        ['readme.md', 'readme.rst', 'readme.txt', 'readme'].includes(f.name)
-    );
-    const readmeContent = readmeFile ? fs.readFileSync(readmeFile.fullPath, 'utf8').toLowerCase() : '';
-    
-    if (DEBUG && readmeFile) console.log(`[Debug] Found README: ${readmeFile.path} (${readmeContent.length} chars)`);
-
-    const docsText = inventory
-        .filter(f => f.path.toLowerCase().includes('doc/') || f.path.toLowerCase().includes('docs/'))
-        .filter(f => ['.md', '.rst', '.txt'].some(ext => f.name.endsWith(ext)))
-        .slice(0, 10)
-        .map(f => {
-            try { 
-                const content = fs.readFileSync(f.fullPath, 'utf8').toLowerCase();
-                if (DEBUG) console.log(`[Debug] Read doc file: ${f.path}`);
-                return content;
-            } catch(e) { return ''; }
-        })
-        .join(' ');
-
-    const fullBlob = (readmeContent + ' ' + docsText).slice(0, 100000);
+    const fullBlob = (readmeContent.toLowerCase() + ' ' + docsText.toLowerCase()).slice(0, 150000);
 
     // Helper: Pattern match in inventory or blob
     const hasPattern = (patterns, searchInBlob = true) => {
         const pathMatch = inventory.some(f => patterns.some(p => f.path.toLowerCase().includes(p)));
-        const blobMatch = searchInBlob && patterns.some(p => fullBlob.includes(p));
+        const blobMatch = searchInBlob && patterns.some(p => fullBlob.includes(p.toLowerCase()));
         
         if (DEBUG && (pathMatch || blobMatch)) {
             console.log(`[Debug] Pattern Match Found: [${patterns.join('|')}] (Path: ${pathMatch}, Blob: ${blobMatch})`);
@@ -239,16 +227,12 @@ function detectEvidence(repoPath) {
         evidence.detectedSignals.push('Technical Audit Artifact (SARIF)');
     }
 
-    // Dependency Analysis
-    const pkgFile = inventory.find(f => f.name === 'package.json');
-    if (pkgFile) {
-        try {
-            const pkg = JSON.parse(fs.readFileSync(pkgFile.fullPath, 'utf8'));
-            const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-            const aiLibs = ['openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 'anthropic', 'pinecone', 'llama-index'];
-            evidence.dependencies.push(...aiLibs.filter(lib => allDeps[lib]));
-        } catch (e) {}
-    }
+    // Dependency Analysis (Placeholder - requires additional API call per repo if needed)
+    // For now, we rely on the inventory paths and README/Docs content patterns.
+    const aiLibs = ['openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 'anthropic', 'pinecone', 'llama-index'];
+    aiLibs.forEach(lib => {
+        if (fullBlob.includes(lib)) evidence.dependencies.push(lib);
+    });
 
     return evidence;
 }
@@ -321,104 +305,37 @@ async function searchRepositories(query) {
 }
 
 async function processRepository(repo) {
-    if (repo.size > REPO_SIZE_LIMIT_KB) {
-        console.log(
-            `[Discovery] Skipping ${repo.full_name}: Too large (${repo.size}KB > ${REPO_SIZE_LIMIT_KB}KB)`
-        );
-        return;
-    }
-
-    const repoPath = path.join(TEMP_DIR, repo.name);
+    const owner = repo.owner.login;
+    const repoName = repo.name;
     console.log(`\n[Discovery] Processing: ${repo.full_name} (${repo.stargazers_count} stars)`);
 
     try {
-        if (fs.existsSync(repoPath)) {
-            fs.rmSync(repoPath, { recursive: true, force: true });
-        }
-
-        execSync(`git clone --depth=1 ${repo.clone_url} ${repoPath}`, { timeout: 60000 });
-
-        const manifestCandidates = [
-            'manifest.json',
-            'sentinel.manifest.json',
-            'ai-manifest.json'
-        ];
-
-        const foundManifest = manifestCandidates
-            .map(name => path.join(repoPath, name))
-            .find(candidatePath => fs.existsSync(candidatePath));
-
-        let scanTarget;
-
-        if (foundManifest) {
-            scanTarget = `"${foundManifest}"`;
-            console.log(`[Discovery] Found manifest for ${repo.name}: ${path.basename(foundManifest)}`);
-
-            const policyPath = path.join(repoPath, 'sentinel.policy.json');
-            if (!fs.existsSync(policyPath)) {
-                const policy = {
-                    policy_version: '1.0',
-                    mode: 'discovery',
-                    ruleset: 'baseline'
-                };
-                fs.writeFileSync(policyPath, JSON.stringify(policy, null, 2));
-                console.log(`[Discovery] Generated temporary policy for ${repo.name}.`);
-            }
-        } else {
-            console.log(`[Discovery] No supported manifest found for ${repo.name}. Generating auto manifest.`);
-
-            const evidence = detectEvidence(repoPath);
-            const autoManifestPath = path.join(repoPath, 'sentinel.auto.manifest.json');
-            
-            const autoManifest = {
-                project: repo.name,
-                discovery_mode: true,
-                repository: repo.html_url,
-                generated_by: 'sentinel-discovery-engine',
-                ai_stack_evidence: evidence.dependencies,
-                declared_flags: evidence.flags,
-                detected_artifacts: evidence.files
-            };
-            
-            fs.writeFileSync(autoManifestPath, JSON.stringify(autoManifest, null, 2));
-
-            const policyPath = path.join(repoPath, 'sentinel.policy.json');
-            const policy = {
-                policy_version: '1.0',
-                mode: 'discovery',
-                ruleset: 'baseline'
-            };
-            fs.writeFileSync(policyPath, JSON.stringify(policy, null, 2));
-
-            scanTarget = `"${autoManifestPath}"`;
-            repo._discoveryEvidence = evidence; // Store for later reporting
-        }
-
-        const scanCmd = `npx @radu_api/sentinel-scan ${scanTarget} --json --baseline`;
-
-        console.log(`[Discovery] Running Sentinel audit on ${repo.name}...`);
-        let output;
-
-        try {
-            output = execSync(scanCmd, {
-                encoding: 'utf8',
-                cwd: repoPath,
-                stdio: ['pipe', 'pipe', 'pipe']
-            });
-        } catch (err) {
-            output = err.stdout ? err.stdout.toString() : "";
-        }
-
-        let auditData;
-        try {
-            auditData = JSON.parse(output);
-        } catch (e) {
-            console.error(`[Discovery] Failed to parse scanner output: ${e.message}`);
+        // 1. Fetch Inventory via Tree API (Recursive)
+        const inventory = await fetchRepoTree(owner, repoName);
+        if (inventory.length === 0) {
+            console.warn(`[Discovery] Skipping ${repo.full_name}: Empty or inaccessible tree.`);
             return;
         }
 
-        // Final Evidence Aggregation
-        const finalEvidence = repo._discoveryEvidence || detectEvidence(repoPath);
+        // 2. Fetch README Content
+        const readmeContent = await fetchRepoReadme(owner, repoName);
+
+        // 3. Fetch Documentation Snippets
+        const docFiles = inventory
+            .filter(f => f.path.toLowerCase().includes('doc/') || f.path.toLowerCase().includes('docs/'))
+            .filter(f => ['.md', '.rst', '.txt'].some(ext => f.name.endsWith(ext)))
+            .slice(0, 5);
+        
+        let docsText = '';
+        for (const docFile of docFiles) {
+            const content = await fetchFileContent(owner, repoName, docFile.path);
+            docsText += content + '\n';
+        }
+
+        // 4. Run Evidence Detection
+        const finalEvidence = detectEvidence(inventory, readmeContent, docsText);
+
+        // 5. Scoring
         const { score, breakdown } = calculateScore(finalEvidence);
 
         const violations = finalEvidence.failedRules;
@@ -491,10 +408,6 @@ async function processRepository(repo) {
         console.log(`[Discovery] Audit recorded for ${repo.name} (Score: ${score})`);
     } catch (err) {
         console.error(`[Discovery] Failed to process ${repo.name}: ${err.message}`);
-    } finally {
-        if (fs.existsSync(repoPath)) {
-            fs.rmSync(repoPath, { recursive: true, force: true });
-        }
     }
 }
 
@@ -533,16 +446,10 @@ async function reportToSaaS(payload) {
     });
 }
 
-const DISK_QUOTA_BYTES = 2 * 1024 * 1024 * 1024; // 2GB
-
 async function main() {
     if (!SENTINEL_API_KEY) {
         console.error('Error: SENTINEL_API_KEY is required for discovery engine.');
         process.exit(1);
-    }
-
-    if (!fs.existsSync(TEMP_DIR)) {
-        fs.mkdirSync(TEMP_DIR);
     }
 
     const queries = [
@@ -575,13 +482,6 @@ async function main() {
         for (const repo of repos) {
             if (processed >= DAILY_LIMIT) {
                 break;
-            }
-
-            const currentDiskUsage = getDirSize(TEMP_DIR);
-            if (currentDiskUsage > DISK_QUOTA_BYTES) {
-                console.warn(`[Discovery] Disk quota exceeded (${currentDiskUsage} bytes). Cleaning up...`);
-                fs.rmSync(TEMP_DIR, { recursive: true, force: true });
-                fs.mkdirSync(TEMP_DIR);
             }
 
             try {
