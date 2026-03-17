@@ -53,12 +53,20 @@ if (!report) {
   return Astro.redirect('/404');
 }
 
-// Publishing Guardrail: Hide reports with score 0 or missing summary
+// Publishing Guardrail: Hide reports with zero technical evidence or generic fallout
+const hasPowerEvidence = 
+  report.detected_artifacts?.includes('AI-MANIFEST.json') || 
+  report.detected_artifacts?.includes('model-card.md') || 
+  report.detected_artifacts?.includes('.sentinel') ||
+  report.detected_signals?.includes('Art. ');
+
 const isReportPublishable = 
   report && 
+  hasPowerEvidence &&
+  !report.summary_text?.includes("Public technical evidence is limited") &&
   report.audit_score > 0 && 
   report.summary_text && 
-  report.summary_text.length > 20;
+  report.summary_text.length > 50;
 
 if (!isReportPublishable) {
   return Astro.redirect('/404');

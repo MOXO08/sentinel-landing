@@ -1,0 +1,89 @@
+---
+import { Search, Zap, ShieldCheck, ChevronRight } from "lucide-react";
+---
+
+<section class="bg-[#F4F1EA] py-24 border-t border-[#c5832b]/5">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-[10px] font-mono font-bold text-[#c5832b] uppercase tracking-[0.3em] mb-4">The Sentinel Trinity</h2>
+      <h3 class="text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] tracking-tight">Triple-Layer Strategy</h3>
+      <p class="text-lg text-[#475569] mt-6 max-w-2xl mx-auto font-light">
+        A unified technical framework to discover your AI footprint, verify it against regulatory patterns, and manage immutable evidence.
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      {/* Scout */}
+      <div class="bg-white/60 backdrop-blur-xl border border-[#cbd5e1] rounded-[40px] p-10 flex flex-col justify-between hover:shadow-2xl hover:border-[#c5832b]/20 transition-all group">
+        <div>
+          <div class="w-14 h-14 bg-[#0f172a] rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-[#0f172a]/10 group-hover:bg-[#c5832b] transition-colors">
+            <Search className="w-6 h-6 text-[#F4F1EA]" />
+          </div>
+          <h4 class="text-2xl font-bold text-[#0f172a] mb-4">01. Scout</h4>
+          <p class="text-[#475569] font-light leading-relaxed mb-6">
+            Autonomous discovery engine that crawls your repositories to identify AI signals, third-party LLM calls, and training data markers.
+          </p>
+          <ul class="space-y-3 mb-8">
+            {["AI Signal Inventory", "Automated Manifesting", "AST Traversal"].map((f) => (
+              <li class="flex items-center gap-2 text-xs font-mono text-[#64748b] bg-[#f1f5f9] px-3 py-1.5 rounded-full w-fit">
+                <span class="w-1 h-1 rounded-full bg-[#c5832b]"></span>
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <a href="/scout-vault" class="inline-flex items-center gap-2 text-xs font-bold text-[#0f172a] uppercase tracking-widest group-hover:text-[#c5832b] transition-colors">
+          Explore Discovery <ChevronRight className="w-4 h-4" />
+        </a>
+      </div>
+
+      {/* Engine */}
+      <div class="bg-white/60 backdrop-blur-xl border border-[#cbd5e1] rounded-[40px] p-10 flex flex-col justify-between hover:shadow-2xl hover:border-[#c5832b]/20 transition-all group border-t-2 border-t-[#c5832b]/30">
+        <div>
+          <div class="w-14 h-14 bg-[#c5832b] rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-[#c5832b]/20">
+            <Zap className="w-6 h-6 text-[#F4F1EA]" />
+          </div>
+          <h4 class="text-2xl font-bold text-[#0f172a] mb-4">02. Engine</h4>
+          <p class="text-[#475569] font-light leading-relaxed mb-6">
+            Deterministic WASM engine that verifies software technicalities against specific regulatory articles in real-time.
+          </p>
+          <ul class="space-y-3 mb-8">
+            {["Local Deterministic Scan", "Zero-Egress Processing", "WASM Isolation"].map((f) => (
+              <li class="flex items-center gap-2 text-xs font-mono text-[#64748b] bg-[#f1f5f9] px-3 py-1.5 rounded-full w-fit">
+                <span class="w-1 h-1 rounded-full bg-[#c5832b]"></span>
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <a href="/#quickstart" class="inline-flex items-center gap-2 text-xs font-bold text-[#0f172a] uppercase tracking-widest group-hover:text-[#c5832b] transition-colors">
+          View Specifications <ChevronRight className="w-4 h-4" />
+        </a>
+      </div>
+
+      {/* Hub */}
+      <div class="bg-white/60 backdrop-blur-xl border border-[#cbd5e1] rounded-[40px] p-10 flex flex-col justify-between hover:shadow-2xl hover:border-[#c5832b]/20 transition-all group">
+        <div>
+          <div class="w-14 h-14 bg-[#0f172a] rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-[#0f172a]/10 group-hover:bg-[#c5832b] transition-colors">
+            <ShieldCheck className="w-6 h-6 text-[#F4F1EA]" />
+          </div>
+          <h4 class="text-2xl font-bold text-[#0f172a] mb-4">03. Hub</h4>
+          <p class="text-[#475569] font-light leading-relaxed mb-6">
+            Immutable D1 ledger that provides technical evidence management, versioned snapshots, and automated Annex IV drafting.
+          </p>
+          <ul class="space-y-3 mb-8">
+            {["Audit Integrity Ledger", "Evidence Snapshots", "Draft Synthesis"].map((f) => (
+              <li class="flex items-center gap-2 text-xs font-mono text-[#64748b] bg-[#f1f5f9] px-3 py-1.5 rounded-full w-fit">
+                <span class="w-1 h-1 rounded-full bg-[#c5832b]"></span>
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <a href="/integrity-console" class="inline-flex items-center gap-2 text-xs font-bold text-[#0f172a] uppercase tracking-widest group-hover:text-[#c5832b] transition-colors">
+          Inspect Ledger <ChevronRight className="w-4 h-4" />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

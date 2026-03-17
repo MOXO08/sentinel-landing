@@ -34,10 +34,10 @@ export function SovereignFooter() {
             <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Product</h3>
             <ul className="flex flex-col gap-2.5">
               {[
-                { label: "Scanners", href: "/" },
-                { label: "Intelligence Layer", href: "/ai-compliance" },
+                { label: "Scout (Discovery)", href: "/scout-vault" },
+                { label: "Intelligence (Technical Hub)", href: "/ai-compliance" },
+                { label: "Integrity Console (Ledger)", href: "/integrity-console" },
                 { label: "Documentation", href: "/docs" },
-                { label: "API Reference", href: "/api" },
                 { label: "Pricing", href: "/pricing" },
               ].map((item) => (
                 <li key={item.label}>

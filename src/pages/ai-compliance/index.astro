@@ -28,8 +28,15 @@ try {
              detected_signals, missing_signals
       FROM discovery_audits 
       WHERE is_public = 1 
+      AND (
+        detected_artifacts LIKE '%AI-MANIFEST.json%' OR 
+        detected_artifacts LIKE '%model-card.md%' OR 
+        detected_artifacts LIKE '%.sentinel%' OR
+        detected_signals LIKE '%Art. %'
+      )
+      AND summary_text NOT LIKE '%Public technical evidence is limited%'
       AND audit_score > 0 
-      AND LENGTH(summary_text) > 20
+      AND LENGTH(summary_text) > 50
     `;
     let params: any[] = [];
 

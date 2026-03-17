@@ -99,14 +99,14 @@ export function IntegrityConsolePage({
       <div className="max-w-7xl mx-auto px-6">
         {/* Milestone Hero */}
         <div className="text-center mb-20 relative">
-          <div className="text-[10px] font-mono font-bold text-[#059669] uppercase tracking-[0.3em] mb-4">Cryptographic Audit Verification</div>
+          <div className="text-[10px] font-mono font-bold text-[#059669] uppercase tracking-[0.3em] mb-4">The Hub: Technical Evidence Management</div>
           <h1 className="text-5xl md:text-7xl font-bold text-[#0f172a] mb-8 tracking-tight leading-tight">
-            <span className="text-[#10b981]">{totalReads.toLocaleString()}+</span> Audit Reads <br />
-            Verified on D1
+            <span className="text-[#10b981]">{totalReads.toLocaleString()}+</span> Audit Hashes <br />
+            D1 Ledger Integrity
           </h1>
           <p className="max-w-3xl mx-auto text-lg text-[#475569] leading-relaxed font-light mb-10">
-            Every metric below is read directly from Cloudflare D1 with <code className="bg-[#f0fdf4] text-[#059669] px-2 py-0.5 rounded border border-[#10b981]/20 mono text-sm">no-store</code> headers. 
-            The milestone represents verified compliance queries secured across the EEUR-1 node.
+            Every technical marker below is synchronized with the Sentinel Hub. 
+            The ledger maintains an immutable path of discovery and verification queries processed via the EEUR-1 node.
           </p>
           
           <div className="inline-flex items-center gap-4 bg-white px-6 py-3 rounded-2xl border border-[#cbd5e1] shadow-sm">

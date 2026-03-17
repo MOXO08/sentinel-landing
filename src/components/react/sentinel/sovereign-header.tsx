@@ -5,10 +5,10 @@ import { useState, useEffect } from "react"
 import { Shield, Menu, X } from "lucide-react"
 
 const navItems = [
-  { label: "Scanners", href: "/#quickstart" },
+  { label: "Scout", href: "/scout-vault" },
+  { label: "Intelligence", href: "/ai-compliance" },
+  { label: "Integrity Console", href: "/integrity-console" },
   { label: "Docs", href: "/docs" },
-  { label: "API", href: "/api" },
-  { label: "Downloads", href: "/#quickstart" },
   { label: "GitHub", href: "https://github.com/MOXO08/sentinel", target: "_blank" },
 ]
 

@@ -60,8 +60,8 @@ export function PricingPage() {
             className="bg-white/80 border border-[#e2e8f0] rounded-3xl p-8 flex flex-col hover:border-[#cbd5e1] hover:shadow-xl transition-all"
           >
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-[#0f172a] mb-1">Community</h3>
-              <p className="text-[#64748b] text-sm font-light">For individual developers & evaluation.</p>
+              <h3 className="text-xl font-bold text-[#0f172a] mb-1">Technical Preview</h3>
+              <p className="text-[#64748b] text-sm font-light">Local signal mapping for developers.</p>
             </div>
             
             <div className="mb-8 pb-8 border-b border-[#f1f5f9]">
@@ -74,10 +74,10 @@ export function PricingPage() {
             
             <ul className="space-y-3.5 mb-10 flex-1">
               {[
-                "Unlimited Local CLI Scans",
-                "JSON / SARIF Mapping Output",
-                "Article mapping support",
-                "Distributed via npm",
+                "Unlimited Local Engine Scans",
+                "Autonomous AI Discovery (`sentinel discover`)",
+                "JSON / SARIF Technical Mapping",
+                "Article-specific Code Pattern ID",
                 "Community Documentation"
               ].map((feature, i) => (
                 <li key={i} className="flex items-start gap-3 text-[#475569] text-sm leading-snug">
@@ -107,8 +107,8 @@ export function PricingPage() {
               </span>
             </div>
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-[#0f172a] mb-1">Team</h3>
-              <p className="text-[#64748b] text-sm font-light font-medium text-[#059669]">CI/CD Enforcement Workflow</p>
+              <h3 className="text-xl font-bold text-[#0f172a] mb-1">Evidence Management</h3>
+              <p className="text-[#64748b] text-sm font-light font-medium text-[#059669]">Technical Governance & Pipeline Integrity</p>
             </div>
             
             <div className="mb-8 pb-8 border-b border-[#f1f5f9]">
@@ -121,11 +121,11 @@ export function PricingPage() {
             
             <ul className="space-y-3.5 mb-10 flex-1 relative z-10">
               {[
-                "Everything in Community",
-                "GitHub Action / CI Workflow",
-                "Automated PR compliance checks",
-                "Evidence artifact generation",
-                "Compliance evidence snapshots",
+                "Everything in Technical Preview",
+                "Audit Integrity Ledger (D1 Record)",
+                "CI/CD Watchtower: Automated Gates",
+                "Versioned Compliance Snapshots",
+                "Persistent Governance Logs",
                 "Priority Technical Support"
               ].map((feature, i) => (
                 <li key={i} className="flex items-start gap-3 text-[#0f172a] text-sm font-medium leading-snug">
@@ -151,8 +151,8 @@ export function PricingPage() {
           >
             <div className="mb-6 flex justify-between items-start">
               <div>
-                <h3 className="text-xl font-bold text-[#0f172a] mb-1">Enterprise</h3>
-                <p className="text-[#64748b] text-sm font-light">Regulated orgs & scale.</p>
+                <h3 className="text-xl font-bold text-[#0f172a] mb-1">Sovereign Framework</h3>
+                <p className="text-[#64748b] text-sm font-light">Multi-repo visibility & readiness.</p>
               </div>
               <Building2 className="w-5 h-5 text-[#94a3b8]" />
             </div>
@@ -166,12 +166,12 @@ export function PricingPage() {
             
             <ul className="space-y-3.5 mb-10 flex-1">
               {[
-                "Everything in Team",
-                "Implementation support",
-                "Technical onboarding",
-                "Architecture & policy review",
-                "Private distribution options",
-                "Custom industry policy packs"
+                "Everything in Management",
+                "Annex IV Document Synthesis (DRAFT)",
+                "Enterprise Scout Inventory Crawler",
+                "Sectoral Technical Policy Packs",
+                "Air-gap / On-prem Execution",
+                "Custom Architecture Review"
               ].map((feature, i) => (
                 <li key={i} className="flex items-start gap-3 text-[#475569] text-sm leading-snug">
                   <CheckCircle2 className="w-4.5 h-4.5 text-[#cbd5e1] shrink-0 mt-0.5" />
@@ -342,19 +342,19 @@ export function PricingPage() {
           {[
             { 
               q: "Is Sentinel a managed SaaS?", 
-              a: "Sentinel is developer-first infrastructure. You run the CLI locally or in your CI/CD environment. We provide the policy engine and logic updates, but we do not host your model data." 
+              a: "Sentinel is developer-first infrastructure. You run the Engine locally or in your CI/CD environment. We provide the technical evidence management layer through the Hub, but your source code remains in your perimeter." 
             },
             { 
               q: "Do I need to upload my model?", 
-              a: "No. Sentinel uses zero-egress scans. Only metadata and compliance signals required for article mapping are processed. Your model weights and code remain in your perimeter." 
+              a: "No. Sentinel uses zero-egress scans. Only technical markers and metadata required for mapping are processed. Your training data and model weights never exit your internal network." 
             },
             { 
-              q: "What does the Team plan unlock?", 
-              a: "The Team plan enables collaborative compliance workflows: automated GitHub Actions, PR compliance comments, and the full evidence snapshot system for audit readiness." 
+              q: "What does Evidence Management unlock?", 
+              a: "The Evidence Management plan enables versioned audit history: the Audit Integrity Ledger, automated PR gating via CI/CD Watchtower, and persistent technical governance snapshots." 
             },
             { 
-              q: "When should we choose Enterprise?", 
-              a: "Enterprise is designed for organizations requiring custom policy packs, technical implementation support, procurement-led auditing, and dedicated technical onboarding." 
+              q: "When should we choose the Sovereign Framework?", 
+              a: "The Sovereign Framework is designed for organizations requiring automated Annex IV documentation synthesis, portfolio-wide AI inventory tracking via Enterprise Scout, and air-gapped execution modes." 
             }
           ].map((item, idx) => (
             <div key={idx} className="bg-white/50 border border-[#e2e8f0] p-6 rounded-2xl shadow-sm">

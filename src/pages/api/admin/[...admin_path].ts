@@ -110,18 +110,34 @@ export const POST: APIRoute = async ({ request, locals, params }) => {
             return new Response(JSON.stringify({ success: true }));
         }
 
-        if (action === 'rescan_discovery') {
-            const { repo_url } = payload;
-            // Note: In production, this would trigger a GitHub Repository Dispatch
-            // or an internal queue. For MVP, we simulate or log the intent.
-            console.log(`[Admin] Manual rescan triggered for: ${repo_url}`);
+        if (action === 'auto_prune_system') {
+            // Permanently DELETE audits that have:
+            // 1. NO specific compliance artifacts (AI-MANIFEST, model-card, .sentinel)
+            // 2. AND 'detected_signals' is empty or just contains heuristic noise
+            // 3. AND NO Annex IV / Art. 13 markers in signals
             
-            // Optional: Trigger GitHub Action via API if GITHUB_TOKEN is available
-            // This requires the dispatch permission on the token.
-            
+            const pruneResult = await env.DB.prepare(`
+                DELETE FROM discovery_audits 
+                WHERE (
+                    (
+                        detected_artifacts NOT LIKE '%AI-MANIFEST.json%' AND 
+                        detected_artifacts NOT LIKE '%model-card.md%' AND 
+                        detected_artifacts NOT LIKE '%.sentinel%'
+                    )
+                    OR summary_text LIKE '%Public technical evidence is limited%'
+                    OR LENGTH(summary_text) < 50
+                )
+                AND (
+                    detected_signals IS NULL OR 
+                    detected_signals = '[]' OR 
+                    detected_signals NOT LIKE '%Art. %'
+                )
+                AND is_public = 1
+            `).run();
+
             return new Response(JSON.stringify({ 
                 success: true, 
-                message: 'Rescan request queued. Bot will execute on next cycle or immediate dispatch.' 
+                message: `System integrity restored. Removed ${pruneResult.meta.changes || 0} low-evidence audits.` 
             }));
         }
     }

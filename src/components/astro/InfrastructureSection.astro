@@ -5,73 +5,88 @@
 <section id="infrastructure" class="bg-white py-24 border-t border-[#e2e8f0]">
   <div class="max-w-7xl mx-auto px-6">
     <div class="text-center mb-16">
-      <h2 class="text-3xl md:text-5xl font-black text-[#0f172a] mb-6 tracking-tight">The infrastructure layer for AI compliance</h2>
+      <h2 class="text-3xl md:text-5xl font-black text-[#0f172a] mb-6 tracking-tight">The engineering layer for AI regulatory mapping</h2>
       <p class="text-lg text-[#475569] max-w-2xl mx-auto font-light">
-        Sentinel transforms regulatory requirements into deterministic engineering workflows.
+        Sentinel provides the technical infrastructure to map software signals to regulatory patterns.
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {/* Block 1: Developer Tooling */}
+      {/* Block 1: Scout */}
       <div class="bg-[#F8FAFC] p-8 rounded-3xl border border-[#e2e8f0] hover:border-[#cbd5e1] transition-all group">
         <div class="w-12 h-12 rounded-2xl bg-[#0f172a] flex items-center justify-center mb-8 group-hover:bg-[#c5832b] transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
         </div>
-        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Developer tooling</h3>
-        <ul class="space-y-4">
-          {[
-            "CLI scanning",
-            "GitHub Actions integration",
-            "CI templates and starter kits",
-            "Local compliance diagnostics"
-          ].map((item) => (
-            <li class="flex items-start gap-3 text-sm text-[#475569] font-mono">
-              <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
-              {item}
-            </li>
-          ))}
+        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Scout: Discovery</h3>
+        <ul class="space-y-4 text-sm text-[#475569] font-mono">
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Autonomous AI Signal Discovery
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Automated Manifest Synthesis
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            AST-level Pattern Recognition
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Continuous Inventory Crawling
+          </li>
         </ul>
       </div>
 
-      {/* Block 2: Policy Engine */}
+      {/* Block 2: Engine */}
       <div class="bg-[#F8FAFC] p-8 rounded-3xl border border-[#e2e8f0] hover:border-[#cbd5e1] transition-all group">
         <div class="w-12 h-12 rounded-2xl bg-[#0f172a] flex items-center justify-center mb-8 group-hover:bg-[#c5832b] transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><rect width="16" height="16" x="4" y="4" rx="2"></rect><rect width="6" height="6" x="9" y="9" rx="1"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path><path d="M9 20v2"></path><path d="M9 2v2"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </div>
-        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Deterministic policy engine</h3>
-        <ul class="space-y-4">
-          {[
-            "Rule-based AI Act validation",
-            "Technical compliance checks",
-            "Manifest schema validation",
-            "SARIF compliance reporting"
-          ].map((item) => (
-            <li class="flex items-start gap-3 text-sm text-[#475569] font-mono">
-              <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
-              {item}
-            </li>
-          ))}
+        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Engine: Verification</h3>
+        <ul class="space-y-4 text-sm text-[#475569] font-mono">
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Deterministic Rule Execution
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            WASM Sandbox Memory Isolation
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Zero-Egress Technical Scans
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            SARIF Verification Reports
+          </li>
         </ul>
       </div>
 
-      {/* Block 3: Evidence Infrastructure */}
+      {/* Block 3: Hub */}
       <div class="bg-[#F8FAFC] p-8 rounded-3xl border border-[#e2e8f0] hover:border-[#cbd5e1] transition-all group">
         <div class="w-12 h-12 rounded-2xl bg-[#0f172a] flex items-center justify-center mb-8 group-hover:bg-[#c5832b] transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="m9 15 2 2 4-4"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4F1EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
         </div>
-        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Compliance evidence infrastructure</h3>
-        <ul class="space-y-4">
-          {[
-            "Audit evidence generation",
-            "Technical documentation artifacts",
-            "Compliance traceability",
-            "Audit-ready compliance files"
-          ].map((item) => (
-            <li class="flex items-start gap-3 text-sm text-[#475569] font-mono">
-              <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
-              {item}
-            </li>
-          ))}
+        <h3 class="text-xl font-bold text-[#0f172a] mb-6">Hub: Governance</h3>
+        <ul class="space-y-4 text-sm text-[#475569] font-mono">
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Immutable Audit Ledger (D1)
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Cryptographic Evidence Fingerprints
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Annex IV Document Synthesis
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#c5832b] flex-shrink-0"></span>
+            Sovereign Data Residency
+          </li>
         </ul>
       </div>
     </div>

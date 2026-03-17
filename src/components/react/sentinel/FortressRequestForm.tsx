@@ -187,7 +187,7 @@ export function FortressRequestForm() {
                 <div className="flex items-start gap-3">
                   <Info className="w-4 h-4 text-[#10b981] mt-1 shrink-0" />
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    By submitting this form, you are requesting an **Isolated Edge Worker (WASM)** with guaranteed resources. A Sentinel security expert will generate the architectural blueprint in accordance with Art. 11 of the EU AI Act.
+                    By submitting this form, you are requesting an **Isolated Edge Worker (WASM)** with dedicated resources. A Sentinel security expert will generate the architectural blueprint in accordance with Art. 11 of the EU AI Act.
                   </p>
                 </div>
               </div>

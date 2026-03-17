@@ -106,6 +106,12 @@ try {
               {f.replace('_', ' ')}
             </a>
           ))}
+          <button 
+            id="auto-prune-btn"
+            class="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border border-[#ef4444]/20 bg-[#ef4444]/5 text-[#ef4444] hover:bg-[#ef4444] hover:text-white transition-all ml-4"
+          >
+            Auto-Prune (Evidence Only)
+          </button>
         </div>
 
         <div class="flex gap-4 w-full lg:w-auto">
@@ -296,6 +302,12 @@ try {
          alert('Network error');
        }
     };
+
+    document.getElementById('auto-prune-btn')?.addEventListener('click', () => {
+       if (confirm('Permanently delete all audits with ZERO technical evidence? This action is IRREVERSIBLE.')) {
+          handleAction('auto_prune_system', {});
+       }
+    });
 
     document.querySelectorAll('.toggle-public-btn').forEach(btn => {
        btn.addEventListener('click', () => {

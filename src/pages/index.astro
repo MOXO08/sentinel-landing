@@ -12,13 +12,14 @@ import ArchitectureDiagram from '../components/astro/ArchitectureDiagram.astro';
 import BuiltForEngineering from '../components/astro/BuiltForEngineering.astro';
 import { SovereignHeader } from '../components/react/sentinel/sovereign-header';
 import { SovereignFooter } from '../components/react/sentinel/sovereign-footer';
+import PillarStrategy from '../components/astro/PillarStrategy.astro';
 
 export const prerender = false;
 
 // LANDING PAGE CACHE: 1 minute
 Astro.response.headers.set('Cache-Control', 'public, max-age=60');
 
-const env = (Astro.locals as any).runtime?.env;
+const env = (Astro.locals as any).runtime?.env || (Astro.locals as any).cloudflare?.env;
 let metrics = {
   totalAudits: 0,
   uniqueClients: 0,
@@ -51,6 +52,7 @@ try {
   <main class="bg-[#F4F1EA]">
     <Hero totalAudits={metrics.totalAudits} />
     <WhySentinel />
+    <PillarStrategy />
     <Quickstart />
     <ArchitectureDiagram />
     <CiCdIntegration />

@@ -28,7 +28,7 @@ export function FortressVaultPage() {
           {
             icon: Server,
             title: "Sovereign R2 Vault",
-            desc: "Data resides in region-locked Cloudflare R2 buckets. Guaranteed Zero-Egress to jurisdictions outside the EU."
+            desc: "Data resides in region-locked Cloudflare R2 buckets. Zero-Egress Technical Constraint to jurisdictions outside the EU."
           },
           {
             icon: Shield,
