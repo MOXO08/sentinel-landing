@@ -12,6 +12,7 @@ const TEMP_DIR = path.join(__dirname, 'discovery_temp');
 const REPO_SIZE_LIMIT_KB = 200 * 1024; // 200MB limit
 
 const RUN_ID = `run_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+const DEBUG = process.env.SENTINEL_DEBUG === 'true';
 
 // --- Helpers ---
 function sleep(ms) {
@@ -38,28 +39,38 @@ function getDirSize(dirPath) {
 
 function getFileInventory(repoPath) {
     const inventory = [];
-    const scanDirs = ['', 'docs', '.github', 'config', 'policies', 'audit', 'governance'];
+    const MAX_FILES = 2000;
     
-    for (const subDir of scanDirs) {
-        const dirFullPath = path.join(repoPath, subDir);
-        if (fs.existsSync(dirFullPath) && fs.statSync(dirFullPath).isDirectory()) {
-            try {
-                const items = fs.readdirSync(dirFullPath);
-                for (const item of items) {
-                    const itemPath = path.join(dirFullPath, item);
-                    const stats = fs.statSync(itemPath);
-                    if (stats.isFile()) {
-                        const relativePath = path.join(subDir, item).replace(/\\/g, '/').replace(/^\//, '');
-                        inventory.push({
-                            path: relativePath,
-                            name: item.toLowerCase(),
-                            fullPath: itemPath
-                        });
-                    }
+    function walk(dir, currentPath = '') {
+        if (inventory.length >= MAX_FILES) return;
+        
+        try {
+            const files = fs.readdirSync(dir);
+            for (const file of files) {
+                if (file === '.git' || file === 'node_modules') continue;
+                
+                const fullPath = path.join(dir, file);
+                const relPath = path.join(currentPath, file).replace(/\\/g, '/');
+                const stats = fs.statSync(fullPath);
+                
+                if (stats.isDirectory()) {
+                    walk(fullPath, relPath);
+                } else if (stats.isFile()) {
+                    inventory.push({
+                        path: relPath,
+                        name: file.toLowerCase(),
+                        fullPath: fullPath,
+                        size: stats.size
+                    });
                 }
-            } catch (e) {}
+            }
+        } catch (e) {
+            if (DEBUG) console.warn(`[Debug] Error walking ${dir}: ${e.message}`);
         }
     }
+
+    walk(repoPath);
+    if (DEBUG) console.log(`[Debug] Inventory built: ${inventory.length} files discovered.`);
     return inventory;
 }
 
@@ -116,23 +127,37 @@ function detectEvidence(repoPath) {
         inventory
     };
 
-    const readmeFile = inventory.find(f => f.name === 'readme.md');
+    const readmeFile = inventory.find(f => 
+        ['readme.md', 'readme.rst', 'readme.txt', 'readme'].includes(f.name)
+    );
     const readmeContent = readmeFile ? fs.readFileSync(readmeFile.fullPath, 'utf8').toLowerCase() : '';
     
+    if (DEBUG && readmeFile) console.log(`[Debug] Found README: ${readmeFile.path} (${readmeContent.length} chars)`);
+
     const docsText = inventory
-        .filter(f => f.path.startsWith('docs/'))
-        .slice(0, 5)
+        .filter(f => f.path.toLowerCase().includes('doc/') || f.path.toLowerCase().includes('docs/'))
+        .filter(f => ['.md', '.rst', '.txt'].some(ext => f.name.endsWith(ext)))
+        .slice(0, 10)
         .map(f => {
-            try { return fs.readFileSync(f.fullPath, 'utf8').toLowerCase(); } catch(e) { return ''; }
+            try { 
+                const content = fs.readFileSync(f.fullPath, 'utf8').toLowerCase();
+                if (DEBUG) console.log(`[Debug] Read doc file: ${f.path}`);
+                return content;
+            } catch(e) { return ''; }
         })
         .join(' ');
 
-    const fullBlob = (readmeContent + ' ' + docsText).slice(0, 50000);
+    const fullBlob = (readmeContent + ' ' + docsText).slice(0, 100000);
 
     // Helper: Pattern match in inventory or blob
     const hasPattern = (patterns, searchInBlob = true) => {
         const pathMatch = inventory.some(f => patterns.some(p => f.path.toLowerCase().includes(p)));
         const blobMatch = searchInBlob && patterns.some(p => fullBlob.includes(p));
+        
+        if (DEBUG && (pathMatch || blobMatch)) {
+            console.log(`[Debug] Pattern Match Found: [${patterns.join('|')}] (Path: ${pathMatch}, Blob: ${blobMatch})`);
+        }
+        
         return pathMatch || blobMatch;
     };
 
