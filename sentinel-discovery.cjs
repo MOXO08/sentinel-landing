@@ -82,29 +82,97 @@ function detectEvidence(repoPath) {
         files: [],
         dependencies: [],
         keywords: [],
-        flags: []
+        flags: [],
+        passedRules: [],
+        failedRules: [],
+        detectedSignals: [],
+        missingSignals: []
     };
 
-    const complianceFiles = {
-        'LICENSE': 'audit_license_present',
-        'PRIVACY.md': 'transparency_policy_documented',
-        'SECURITY.md': 'security_policy_documented',
-        'GOVERNANCE.md': ['human_oversight_documented', 'data_governance_policy_documented'],
-        'CONTRIBUTING.md': 'developer_guidelines_present',
-        'model-card.md': 'model_card_present',
-        'dataset-card.md': 'dataset_card_present',
-        'POLICY.md': 'data_governance_policy_documented',
-        'CONFORMITY.md': 'conformity_assessment_completed',
-        'AUDIT.md': 'conformity_assessment_completed',
-        'Dockerfile': 'deployment_containerized'
-    };
+    const repoName = path.basename(repoPath);
+    const readmePath = path.join(repoPath, 'README.md');
+    const readmeContent = fs.existsSync(readmePath) ? fs.readFileSync(readmePath, 'utf8').toLowerCase() : '';
 
-    for (const [file, flags] of Object.entries(complianceFiles)) {
-        if (fs.existsSync(path.join(repoPath, file))) {
-            evidence.files.push(file);
-            const flagList = Array.isArray(flags) ? flags : [flags];
-            evidence.flags.push(...flagList);
-        }
+    // 1. Documentation & Transparency (EUAI-DOC)
+    const hasTechnicalDocs = fs.existsSync(path.join(repoPath, 'docs')) || readmeContent.length > 2000;
+    const hasUsageDisclosure = readmeContent.includes('usage') || readmeContent.includes('how to use') || readmeContent.includes('getting started');
+    const hasModelCard = fs.existsSync(path.join(repoPath, 'model-card.md')) || readmeContent.includes('model card');
+
+    if (hasModelCard) {
+        evidence.passedRules.push('EUAI-DOC-001');
+        evidence.detectedSignals.push('Model Card / Technical File (Art. 13)');
+    } else {
+        evidence.failedRules.push('EUAI-DOC-001');
+        evidence.missingSignals.push('Model Card / Technical File (Art. 13)');
+    }
+
+    if (hasUsageDisclosure) {
+        evidence.passedRules.push('EUAI-DOC-002');
+    } else {
+        evidence.failedRules.push('EUAI-DOC-002');
+        evidence.missingSignals.push('Technical Usage Disclosure');
+    }
+
+    // 2. Data & Provenance (EUAI-DATA)
+    const hasDatasetRefs = readmeContent.includes('dataset') || readmeContent.includes('data source') || fs.existsSync(path.join(repoPath, 'dataset-card.md'));
+    const hasProvenance = readmeContent.includes('provenance') || readmeContent.includes('curation') || readmeContent.includes('training data');
+
+    if (hasDatasetRefs || hasProvenance) {
+        evidence.passedRules.push('EUAI-DATA-001');
+        evidence.detectedSignals.push('Dataset Provenance / Training Logs (Art. 10)');
+    } else {
+        evidence.failedRules.push('EUAI-DATA-001');
+        evidence.missingSignals.push('Dataset Provenance / Training Logs (Art. 10)');
+    }
+
+    // 3. Risk & Governance (EUAI-RISK / EUAI-GOV)
+    const hasRiskDocs = readmeContent.includes('risk') || readmeContent.includes('mitigation') || fs.existsSync(path.join(repoPath, 'audit'));
+    const hasGovDocs = fs.existsSync(path.join(repoPath, 'GOVERNANCE.md')) || readmeContent.includes('governance') || readmeContent.includes('policy');
+
+    if (hasRiskDocs) {
+        evidence.passedRules.push('EUAI-RISK-001');
+        evidence.detectedSignals.push('Risk Assessment / Mitigation Policy (Art. 9)');
+    } else {
+        evidence.failedRules.push('EUAI-RISK-001');
+        evidence.missingSignals.push('Risk Assessment / Mitigation Policy (Art. 9)');
+    }
+
+    if (hasGovDocs) {
+        evidence.passedRules.push('EUAI-GOV-001');
+        evidence.detectedSignals.push('Governance Framework / Policy (Art. 10)');
+    } else {
+        evidence.failedRules.push('EUAI-GOV-001');
+        evidence.missingSignals.push('Governance Framework / Policy (Art. 10)');
+    }
+
+    // 4. Privacy (EUAI-PRIVACY)
+    const hasPrivacy = fs.existsSync(path.join(repoPath, 'PRIVACY.md')) || readmeContent.includes('privacy') || readmeContent.includes('data handling');
+    if (hasPrivacy) {
+        evidence.passedRules.push('EUAI-PRIVACY-001');
+        evidence.detectedSignals.push('Privacy Policy / Data Handling (GDPR)');
+    } else {
+        evidence.failedRules.push('EUAI-PRIVACY-001');
+        evidence.missingSignals.push('Privacy Policy / Data Handling (GDPR)');
+    }
+
+    // 5. Positive Evidence (EUAI-EVIDENCE)
+    if (fs.existsSync(path.join(repoPath, 'LICENSE'))) {
+        evidence.passedRules.push('EUAI-EVIDENCE-001');
+        evidence.detectedSignals.push('LICENSE');
+        evidence.files.push('LICENSE');
+    }
+
+    const ciPath = path.join(repoPath, '.github/workflows');
+    if (fs.existsSync(ciPath)) {
+        evidence.passedRules.push('EUAI-EVIDENCE-002');
+        evidence.detectedSignals.push('CI workflow');
+        evidence.files.push('.github/workflows');
+    }
+
+    const hasSarif = fs.readdirSync(repoPath).some(f => f.endsWith('.sarif'));
+    if (hasSarif) {
+        evidence.passedRules.push('EUAI-EVIDENCE-003');
+        evidence.detectedSignals.push('SARIF Artifact');
     }
 
     // Dependency Analysis
@@ -113,118 +181,49 @@ function detectEvidence(repoPath) {
         try {
             const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
             const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-            const aiLibs = [
-                'openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 
-                'anthropic', 'pinecone', 'llama-index', 'chromadb', 'milvus', 'weaviate',
-                'langgraph', 'crewai', 'autogpt', 'babyagi', 'bentoml', 'fastapi', 'streamlit'
-            ];
+            const aiLibs = ['openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 'anthropic', 'pinecone', 'llama-index'];
             evidence.dependencies.push(...aiLibs.filter(lib => allDeps[lib]));
         } catch (e) {}
     }
 
-    const pythonConfigs = ['requirements.txt', 'pyproject.toml', 'setup.py', 'Pipfile'];
-    for (const pyFile of pythonConfigs) {
-        const fullPath = path.join(repoPath, pyFile);
-        if (fs.existsSync(fullPath)) {
-            const content = fs.readFileSync(fullPath, 'utf8').toLowerCase();
-            const aiLibs = [
-                'openai', 'langchain', 'transformers', 'torch', 'tensorflow', 'scikit-learn', 
-                'anthropic', 'pinecone', 'llama-index', 'chromadb', 'milvus', 'weaviate',
-                'langgraph', 'crewai', 'autogpt', 'babyagi', 'bentoml', 'fastapi', 'streamlit'
-            ];
-            const found = aiLibs.filter(lib => content.includes(lib));
-            evidence.dependencies.push(...found);
-        }
-    }
-    evidence.dependencies = [...new Set(evidence.dependencies)];
-
-    // CI and Artifact Analysis
-    const ciPaths = [
-        '.github/workflows',
-        '.gitlab-ci.yml',
-        'sentinel-results',
-        'audit-results'
-    ];
-    for (const ciPath of ciPaths) {
-        if (fs.existsSync(path.join(repoPath, ciPath))) {
-            evidence.flags.push('ci_integration_detected');
-            evidence.files.push(ciPath);
-        }
-    }
-
-    const sarifFiles = fs.readdirSync(repoPath).filter(f => f.endsWith('.sarif'));
-    if (sarifFiles.length > 0) {
-        evidence.flags.push('static_analysis_artifacts_present');
-        evidence.files.push(sarifFiles[0]);
-    }
-
-    // Keyword Analysis (README)
-    const readmePath = path.join(repoPath, 'README.md');
-    if (fs.existsSync(readmePath)) {
-        const content = fs.readFileSync(readmePath, 'utf8').toLowerCase();
-        const keywords = {
-            'transparency': 'transparency_measures_declared',
-            'bias': 'bias_assessment_performed',
-            'fairness': 'bias_assessment_performed',
-            'human oversight': 'human_oversight_enabled',
-            'notification': 'user_notification_ai_interaction',
-            'transparent': 'user_notification_ai_interaction',
-            'safety': 'safety_protocols_mentioned',
-            'governance': 'data_governance_policy_documented',
-            'conformity': 'conformity_assessment_completed'
-        };
-        for (const [word, flag] of Object.entries(keywords)) {
-            if (content.includes(word)) {
-                evidence.keywords.push(word);
-                evidence.flags.push(flag);
-            }
-        }
-    }
-
-    evidence.flags = [...new Set(evidence.flags)];
+    evidence.flags = evidence.passedRules;
     return evidence;
 }
 
-function calculateScore(auditData, repo) {
-    const isCompliant =
-        auditData.verdict === 'COMPLIANT' || auditData.verdict === 'PASSED';
+function calculateScore(evidence) {
+    let score = 100;
+    let breakdown = {
+        base: 100,
+        deductions: [],
+        bonuses: []
+    };
 
-    // Hybrid scoring heuristic: Scanner Results + Raw Evidence Signals
-    let baseScore = isCompliant ? 100 : 90;
-    
-    // 1. Penalize based on scanner findings
-    if (auditData.summary) {
-        baseScore -= (auditData.summary.high || 0) * 15;
-        baseScore -= (auditData.summary.medium || 0) * 8;
-        baseScore -= (auditData.summary.low || 0) * 4;
-    }
-
-    // 2. Bonus for detected artifacts (differentiator)
-    const evidence = repo._discoveryEvidence || { flags: [], dependencies: [] };
-    const uniqueSignals = new Set(evidence.flags);
-    
-    // Critical compliance signals (5 points each)
-    const criticalFlags = [
-        'audit_license_present',
-        'transparency_policy_documented',
-        'security_policy_documented',
-        'human_oversight_enabled',
-        'bias_assessment_performed',
-        'conformity_assessment_completed',
-        'model_card_present'
-    ];
-    
-    criticalFlags.forEach(flag => {
-        if (uniqueSignals.has(flag)) baseScore += 5;
-        else if (!isCompliant) baseScore -= 3; // Penalty for missing expected discovery signals
+    const criticalAbsence = ['EUAI-DOC-001', 'EUAI-DATA-001', 'EUAI-RISK-001'];
+    criticalAbsence.forEach(rule => {
+        if (evidence.failedRules.includes(rule)) {
+            score -= 20;
+            breakdown.deductions.push({ rule, penalty: 20, reason: 'Missing critical compliance signal' });
+        } else if (evidence.passedRules.includes(rule)) {
+            breakdown.bonuses.push({ rule, bonus: 5, reason: 'Verified technical manifest' });
+            score += 5;
+        }
     });
 
-    // 3. Modifiers for stack and integration
-    if (evidence.dependencies.length > 0) baseScore += 2; // Real AI stack detected
-    if (uniqueSignals.has('ci_integration_detected')) baseScore += 3;
-    if (uniqueSignals.has('static_analysis_artifacts_present')) baseScore += 3;
+    const standardAbsence = ['EUAI-DOC-002', 'EUAI-GOV-001', 'EUAI-PRIVACY-001'];
+    standardAbsence.forEach(rule => {
+        if (evidence.failedRules.includes(rule)) {
+            score -= 10;
+            breakdown.deductions.push({ rule, penalty: 10, reason: 'Missing standard documentation' });
+        }
+    });
 
-    return Math.min(100, Math.max(10, baseScore));
+    if (evidence.passedRules.includes('EUAI-EVIDENCE-002')) {
+        score += 5;
+        breakdown.bonuses.push({ reason: 'CI/CD pipeline detected', bonus: 5 });
+    }
+
+    score = Math.min(100, Math.max(10, score));
+    return { score, breakdown };
 }
 
 // --- Implementation ---
@@ -338,20 +337,18 @@ async function processRepository(repo) {
             return;
         }
 
-        const isCompliant =
-            auditData.verdict === 'COMPLIANT' || auditData.verdict === 'PASSED';
+        // Final Evidence Aggregation
+        const finalEvidence = repo._discoveryEvidence || detectEvidence(repoPath);
+        const { score, breakdown } = calculateScore(finalEvidence);
 
-        const auditScore = calculateScore(auditData, repo);
-
-        const violations = Array.isArray(auditData.violations)
-            ? auditData.violations.map(v => v.rule_id)
-            : (isCompliant ? [] : ['AI-ACT-ART-10']);
+        const violations = finalEvidence.failedRules;
+        const passedRules = finalEvidence.passedRules;
 
         // Align risk level with compliance_status and score
         let risk_level = 'Low';
-        if (auditData.compliance_status === 'high_risk' || auditData.compliance_status === 'blocked' || auditScore < 60) {
+        if (score < 60) {
             risk_level = 'High';
-        } else if (auditScore < 85) {
+        } else if (score < 85) {
             risk_level = 'Medium';
         }
 
@@ -360,29 +357,28 @@ async function processRepository(repo) {
             '-' +
             Math.random().toString(36).substring(2, 5);
 
-        const summary_text = isCompliant
-            ? `Automated technical analysis identifies that ${repo.name} aligns with visible AI compliance patterns for its detected architecture.`
-            : `Automated technical analysis indicates that ${repo.name} may require additional technical documentation to align with specific framework requirements.`;
+        // Repo-specific technical summary generation
+        let summary_text = "";
+        if (finalEvidence.missingSignals.length === 0) {
+            summary_text = `Autonomous technical mapping identifies that ${repo.name} aligns with visible AI compliance patterns, including verified documentation and CI/CD artifacts.`;
+        } else if (finalEvidence.detectedSignals.length > 3) {
+            summary_text = `Technical evidence for ${repo.name} indicates a baseline of transparency with detected signals for ${finalEvidence.detectedSignals.slice(0, 2).join(' and ')}, though some governance gaps remain.`;
+        } else {
+            summary_text = `Technical assessment of ${repo.name} indicates limited public compliance artifacts. ${finalEvidence.missingSignals[0]} was not detected in the repository root.`;
+        }
 
-        const visible_gaps = auditData.violations?.map(v => v.description) ||
-            (isCompliant ? [] : ['Technical documentation artifacts not detected in public root']);
-
-        // Refine AI Stack and Gaps from evidence if available
-        const dependencies = repo._discoveryEvidence?.dependencies || [];
-        
         // Categorization logic
+        const dependencies = finalEvidence.dependencies || [];
         const categories = new Set();
         if (dependencies.includes('openai') || dependencies.includes('anthropic')) categories.add('openai');
-        if (dependencies.includes('langchain') || dependencies.includes('langgraph') || dependencies.includes('crewai')) categories.add('langchain');
-        if (dependencies.includes('llama-index') || dependencies.includes('pinecone') || dependencies.includes('chromadb') || dependencies.includes('milvus')) categories.add('rag');
-        if (dependencies.includes('autogpt') || dependencies.includes('babyagi') || dependencies.includes('crewai')) categories.add('agents');
-        if (dependencies.includes('transformers') || dependencies.includes('torch') || dependencies.includes('tensorflow')) categories.add('transformers');
+        if (dependencies.includes('langchain')) categories.add('langchain');
+        if (dependencies.includes('pinecone') || dependencies.includes('llama-index')) categories.add('rag');
         
         const actualStack = dependencies.length > 0 
             ? `AI Stack: ${dependencies.join(', ')}` 
             : 'Heuristic (Discovery Mode)';
 
-        const categoryArray = Array.isArray(auditData.categories) ? auditData.categories : [...categories];
+        const categoryArray = [...categories];
 
         await reportToSaaS({
             repo_url: repo.html_url,
@@ -392,15 +388,18 @@ async function processRepository(repo) {
             stars: repo.stargazers_count,
             language: repo.language || 'unknown',
             detected_ai_stack: actualStack,
-            audit_score: auditScore,
+            audit_score: score,
             rules_failed: violations,
-            rules_passed: repo._discoveryEvidence?.flags || [], // Explicitly detected flags
-            detected_artifacts: repo._discoveryEvidence?.files || [], // Explicitly detected files
+            rules_passed: passedRules,
+            detected_artifacts: finalEvidence.files,
+            detected_signals: finalEvidence.detectedSignals,
+            missing_signals: finalEvidence.missingSignals,
+            score_breakdown: breakdown,
             risk_level: risk_level,
-            compliance_status: auditData.compliance_status || 'unknown',
+            compliance_status: score > 80 ? 'compliant' : 'pending_review',
             confidence_level: 'Medium',
             summary_text: summary_text,
-            visible_gaps: visible_gaps.slice(0, 3),
+            visible_gaps: finalEvidence.missingSignals.slice(0, 3),
             is_public: true,
             execution_context: 'discovery',
             categories: JSON.stringify(categoryArray)

@@ -24,7 +24,8 @@ try {
   if (env?.DB) {
     let query = `
       SELECT repo_name, slug, stars, audit_score, risk_level, scan_timestamp, summary_text, 
-             detected_ai_stack, visible_gaps, rules_failed, rules_passed, detected_artifacts
+             detected_ai_stack, visible_gaps, rules_failed, rules_passed, detected_artifacts,
+             detected_signals, missing_signals
       FROM discovery_audits 
       WHERE is_public = 1 
       AND audit_score > 0 
@@ -82,27 +83,26 @@ function getFilterUrl(updates: Record<string, string | null>) {
 
 // Logic for Primary Signal Code (Standardized Taxonomy - No Articles)
 function getSignalCode(report: any) {
+    const detected = typeof report.detected_signals === 'string' ? JSON.parse(report.detected_signals) : (report.detected_signals || []);
+    const missing = typeof report.missing_signals === 'string' ? JSON.parse(report.missing_signals) : (report.missing_signals || []);
+    
+    // Prioritize persisted signal mapping
+    if (missing.some((s: string) => s.includes('Art. 10'))) return "DATA-PROVENANCE-MISSING";
+    if (missing.some((s: string) => s.includes('Art. 13'))) return "DOC-MODEL-MISSING";
+    if (missing.some((s: string) => s.includes('Art. 9'))) return "RISK-ASSESSMENT-MISSING";
+    if (missing.some((s: string) => s.includes('GDPR'))) return "PRIVACY-POLICY-MISSING";
+    
+    // Fallback to heuristic mapping for legacy rows
     const gaps = typeof report.visible_gaps === 'string' ? JSON.parse(report.visible_gaps) : (report.visible_gaps || []);
     const rules = typeof report.rules_failed === 'string' ? JSON.parse(report.rules_failed) : (report.rules_failed || []);
-    
     const allSignals = [...gaps.map((g: string) => g.toLowerCase()), ...rules.map((r: string) => r.toLowerCase())];
 
     if (allSignals.some(s => s.includes('dataset') || s.includes('provenance') || s.includes('art-10'))) return "DATA-PROVENANCE-MISSING";
-    if (allSignals.some(s => s.includes('training data') || s.includes('training_data'))) return "DATA-TRAINING-REF-MISSING";
     if (allSignals.some(s => s.includes('model card') || s.includes('art-13'))) return "DOC-MODEL-MISSING";
-    if (allSignals.some(s => s.includes('usage') || s.includes('how to use'))) return "DOC-USAGE-MISSING";
-    if (allSignals.some(s => s.includes('technical file') || s.includes('technical_file'))) return "DOC-GENERAL-MISSING";
     if (allSignals.some(s => s.includes('risk assessment') || s.includes('art-9'))) return "RISK-ASSESSMENT-MISSING";
-    if (allSignals.some(s => s.includes('risk policy') || s.includes('risk_management'))) return "RISK-POLICY-MISSING";
     if (allSignals.some(s => s.includes('privacy'))) return "PRIVACY-POLICY-MISSING";
-    if (allSignals.some(s => s.includes('governance'))) return "GOV-DOCS-MISSING";
 
-    const passed = typeof report.rules_passed === 'string' ? JSON.parse(report.rules_passed) : (report.rules_passed || []);
-    if (passed.some((p: string) => p.includes('ci_integration'))) return "CI-EVIDENCE-PRESENT";
-    if (passed.some((p: string) => p.includes('license'))) return "LICENSE-PRESENT";
-
-    // Dynamic recovery for existing records
-    if (report.audit_score > 90) return "CI-EVIDENCE-PRESENT";
+    if (detected.length > 0) return "TECHNICAL-SIGNALS-FOUND";
 
     return "SIGNAL-PENDING";
 }
@@ -141,30 +141,31 @@ function getConcreteFinding(report: any) {
 
 // Missing vs Found Signals (Strict Artifact-Backed)
 function getEvidenceSignals(report: any) {
+    const detected = typeof report.detected_signals === 'string' ? JSON.parse(report.detected_signals) : (report.detected_signals || []);
+    const missing = typeof report.missing_signals === 'string' ? JSON.parse(report.missing_signals) : (report.missing_signals || []);
+    
+    if (detected.length > 0 || missing.length > 0) {
+        return { 
+            found: detected.map((s: string) => s.split(' (')[0]).slice(0, 3), 
+            missing: missing.map((s: string) => s.split(' (')[0]).slice(0, 3) 
+        };
+    }
+
+    // Legacy Fallback
     const gaps = typeof report.visible_gaps === 'string' ? JSON.parse(report.visible_gaps) : (report.visible_gaps || []);
     const rules = typeof report.rules_failed === 'string' ? JSON.parse(report.rules_failed) : (report.rules_failed || []);
     const passed = typeof report.rules_passed === 'string' ? JSON.parse(report.rules_passed) : (report.rules_passed || []);
     const artifacts = typeof report.detected_artifacts === 'string' ? JSON.parse(report.detected_artifacts) : (report.detected_artifacts || []);
     
-    const missing = [];
-    if (gaps.some((g: string) => g.toLowerCase().includes('model')) || rules.some((r: string) => r.toLowerCase().includes('model'))) missing.push('model card');
-    if (gaps.some((g: string) => g.toLowerCase().includes('data')) || rules.some((r: string) => r.toLowerCase().includes('data'))) missing.push('dataset provenance');
-    if (gaps.some((g: string) => g.toLowerCase().includes('privacy')) || rules.some((r: string) => r.toLowerCase().includes('privacy'))) missing.push('privacy policy');
-    if (gaps.some((g: string) => g.toLowerCase().includes('risk')) || rules.some((r: string) => r.toLowerCase().includes('risk'))) missing.push('risk assessment');
-    if (gaps.some((g: string) => g.toLowerCase().includes('governance')) || rules.some((r: string) => r.toLowerCase().includes('governance'))) missing.push('governance docs');
+    const legacyMissing = [];
+    if (gaps.some((g: string) => g.toLowerCase().includes('model'))) legacyMissing.push('model card');
+    if (gaps.some((g: string) => g.toLowerCase().includes('data'))) legacyMissing.push('dataset provenance');
 
-    const found = [];
-    // Only from passed rules or detected artifacts
-    if (passed.some((p: string) => p.includes('license')) || artifacts.includes('LICENSE')) found.push('LICENSE');
-    if (passed.some((p: string) => p.includes('ci_integration')) || artifacts.some((a: string) => a.includes('workflows'))) found.push('CI workflow');
-    if (artifacts.some((a: string) => a.toLowerCase().endsWith('.sarif'))) found.push('SARIF');
-    if (passed.some((p: string) => p.includes('model_card')) || artifacts.includes('model-card.md')) found.push('Model Card');
+    const legacyFound = [];
+    if (passed.some((p: string) => p.includes('license')) || artifacts.includes('LICENSE')) legacyFound.push('LICENSE');
+    if (passed.some((p: string) => p.includes('ci_integration'))) legacyFound.push('CI workflow');
 
-    // Fallbacks for existing records
-    if (found.length === 0 && report.audit_score > 85) found.push('LICENSE');
-    if (found.length === 1 && (report.detected_ai_stack || '').toLowerCase().includes('github')) found.push('CI workflow');
-
-    return { missing: missing.slice(0, 3), found: found.slice(0, 3) };
+    return { missing: legacyMissing.slice(0, 3), found: legacyFound.slice(0, 3) };
 }
 
 function getCompactStack(stack: string) {

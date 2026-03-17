@@ -25,6 +25,10 @@ if (!audit) {
 
 // Parse JSON fields
 const rulesFailed = JSON.parse(audit.rules_failed || '[]');
+const rulesPassed = JSON.parse(audit.rules_passed || '[]');
+const detectedSignals = JSON.parse(audit.detected_signals || '[]');
+const missingSignals = JSON.parse(audit.missing_signals || '[]');
+const scoreBreakdown = JSON.parse(audit.score_breakdown || '{}');
 const visibleGaps = JSON.parse(audit.visible_gaps || '[]');
 ---
 
@@ -123,6 +127,101 @@ const visibleGaps = JSON.parse(audit.visible_gaps || '[]');
                    </div>
                 </div>
              </div>
+          </section>
+
+          <section class="bg-white rounded-3xl p-10 border border-[#e2e8f0] shadow-sm">
+             <h3 class="text-[10px] font-mono font-bold text-[#0f172a] uppercase tracking-[0.2em] mb-6">Technical Signal Analysis</h3>
+             <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                   <h4 class="text-[9px] font-mono text-[#059669] uppercase tracking-widest mb-4 flex items-center gap-2">
+                       <div class="w-1.5 h-1.5 rounded-full bg-[#059669]"></div>
+                       Detected Signals
+                   </h4>
+                   <ul class="space-y-3">
+                      {detectedSignals.map((s: string) => (
+                         <li class="text-[11px] font-bold text-[#475569] border-l-2 border-[#10b981] pl-3 py-1 bg-[#f0fdf4]/50">
+                            {s}
+                         </li>
+                      ))}
+                      {detectedSignals.length === 0 && <li class="text-xs text-[#94a3b8] italic">No signals identified.</li>}
+                   </ul>
+                </div>
+                <div>
+                   <h4 class="text-[9px] font-mono text-[#ef4444] uppercase tracking-widest mb-4 flex items-center gap-2">
+                       <div class="w-1.5 h-1.5 rounded-full bg-[#ef4444]"></div>
+                       Missing Signals
+                   </h4>
+                   <ul class="space-y-3">
+                      {missingSignals.map((s: string) => (
+                         <li class="text-[11px] font-bold text-[#475569] border-l-2 border-[#ef4444] pl-3 py-1 bg-[#fef2f2]/50">
+                            {s}
+                         </li>
+                      ))}
+                      {missingSignals.length === 0 && <li class="text-xs text-[#94a3b8] italic">All primary signals detected.</li>}
+                   </ul>
+                </div>
+             </div>
+
+             <div class="mt-12 pt-8 border-t border-[#f1f5f9]">
+                <h4 class="text-[9px] font-mono text-[#64748b] uppercase tracking-widest mb-6">Rules Compliance</h4>
+                <div class="grid md:grid-cols-2 gap-8">
+                   <div>
+                      <span class="text-[8px] text-[#94a3b8] uppercase block mb-3">Rules Passed</span>
+                      <div class="flex flex-wrap gap-2">
+                         {rulesPassed.map((r: string) => (
+                            <span class="px-2 py-1 bg-[#f0fdf4] text-[#166534] text-[9px] font-mono font-bold rounded border border-[#bbf7d0] uppercase">
+                               {r}
+                            </span>
+                         ))}
+                      </div>
+                   </div>
+                   <div>
+                      <span class="text-[8px] text-[#94a3b8] uppercase block mb-3">Rules Failed</span>
+                      <div class="flex flex-wrap gap-2">
+                         {rulesFailed.map((r: string) => (
+                            <span class="px-2 py-1 bg-[#fef2f2] text-[#991b1b] text-[9px] font-mono font-bold rounded border border-[#fecaca] uppercase">
+                               {r}
+                            </span>
+                         ))}
+                      </div>
+                   </div>
+                </div>
+             </div>
+          </section>
+
+          <section class="bg-[#0f172a] rounded-3xl p-10 text-white shadow-xl">
+              <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-8">Score Breakdown Basis</h3>
+              <div class="space-y-6 max-w-2xl font-mono text-[10px]">
+                  <div class="flex justify-between items-center opacity-60">
+                      <span>Baseline Capability</span>
+                      <span>{scoreBreakdown.base || 100}</span>
+                  </div>
+                  
+                  {scoreBreakdown.deductions?.map((d: any) => (
+                      <div class="flex justify-between items-center text-[#f87171]">
+                          <div class="flex flex-col">
+                             <span class="font-black">-{d.penalty} : {d.rule}</span>
+                             <span class="text-[8px] opacity-60">{d.reason}</span>
+                          </div>
+                          <span>FINAL</span>
+                      </div>
+                  ))}
+
+                  {scoreBreakdown.bonuses?.map((b: any) => (
+                      <div class="flex justify-between items-center text-[#4ade80]">
+                          <div class="flex flex-col">
+                             <span class="font-black">+{b.bonus} : {b.rule || 'GENERAL'}</span>
+                             <span class="text-[8px] opacity-60">{b.reason}</span>
+                          </div>
+                          <span>BOOST</span>
+                      </div>
+                  ))}
+
+                  <div class="pt-6 border-t border-white/10 flex justify-between items-end">
+                      <span class="text-[14px] font-black uppercase italic tracking-tighter">Weighted Discovery Score</span>
+                      <span class="text-4xl font-black italic">{audit.audit_score}</span>
+                  </div>
+              </div>
           </section>
 
           <section class="bg-white rounded-3xl p-10 border border-[#e2e8f0] shadow-sm">

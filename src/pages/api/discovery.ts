@@ -67,8 +67,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
                 detected_ai_stack, audit_score, rules_failed, rules_passed,
                 detected_artifacts, risk_level, 
                 compliance_status, confidence_level, summary_text, 
-                visible_gaps, is_public, execution_context, categories, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                visible_gaps, is_public, execution_context, categories,
+                detected_signals, missing_signals, score_breakdown, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(repo_url) DO UPDATE SET
                 repo_name = excluded.repo_name,
                 repo_owner = excluded.repo_owner,
@@ -85,6 +86,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
                 summary_text = excluded.summary_text,
                 visible_gaps = excluded.visible_gaps,
                 categories = excluded.categories,
+                detected_signals = excluded.detected_signals,
+                missing_signals = excluded.missing_signals,
+                score_breakdown = excluded.score_breakdown,
                 updated_at = CURRENT_TIMESTAMP
         `).bind(
             repo_url, 
@@ -105,7 +109,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
             JSON.stringify(body.visible_gaps || []), 
             (body.is_public ? 1 : 0),
             body.execution_context || "discovery",
-            body.categories || "[]"
+            body.categories || "[]",
+            JSON.stringify(body.detected_signals || []),
+            JSON.stringify(body.missing_signals || []),
+            JSON.stringify(body.score_breakdown || {}),
         ).run();
 
         return new Response(JSON.stringify({ status: "recorded" }), { status: 200 });

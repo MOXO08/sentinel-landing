@@ -41,7 +41,7 @@ let report = null;
 try {
   if (env?.DB) {
     report = await env.DB.prepare(`
-      SELECT *, rules_passed, detected_artifacts FROM discovery_audits 
+      SELECT *, rules_passed, detected_artifacts, detected_signals, missing_signals FROM discovery_audits 
       WHERE slug = ? AND is_public = 1
     `).bind(slug).first();
   }
@@ -85,23 +85,24 @@ const rules = parseJSON(report.rules_failed);
 const passed = parseJSON(report.rules_passed);
 const artifacts = parseJSON(report.detected_artifacts);
 
+const detectedSignalsTable = parseJSON(report.detected_signals);
+const missingSignalsTable = parseJSON(report.missing_signals);
+
 // Signal Logic (Standardized Taxonomy - No Articles)
 function getSignalCode() {
+    if (missingSignalsTable.some((s: string) => s.includes('Art. 10'))) return "DATA-PROVENANCE-MISSING";
+    if (missingSignalsTable.some((s: string) => s.includes('Art. 13'))) return "DOC-MODEL-MISSING";
+    if (missingSignalsTable.some((s: string) => s.includes('Art. 9'))) return "RISK-ASSESSMENT-MISSING";
+    if (missingSignalsTable.some((s: string) => s.includes('GDPR'))) return "PRIVACY-POLICY-MISSING";
+
     const allSignals = [...gaps.map((g: string) => g.toLowerCase()), ...rules.map((r: string) => r.toLowerCase())];
     
     if (allSignals.some(s => s.includes('dataset') || s.includes('provenance') || s.includes('art-10'))) return "DATA-PROVENANCE-MISSING";
-    if (allSignals.some(s => s.includes('training data') || s.includes('training_data'))) return "DATA-TRAINING-REF-MISSING";
     if (allSignals.some(s => s.includes('model card') || s.includes('art-13'))) return "DOC-MODEL-MISSING";
-    if (allSignals.some(s => s.includes('usage') || s.includes('how to use'))) return "DOC-USAGE-MISSING";
-    if (allSignals.some(s => s.includes('technical file') || s.includes('technical_file'))) return "DOC-GENERAL-MISSING";
     if (allSignals.some(s => s.includes('risk assessment') || s.includes('art-9'))) return "RISK-ASSESSMENT-MISSING";
-    if (allSignals.some(s => s.includes('risk policy') || s.includes('risk_management'))) return "RISK-POLICY-MISSING";
     if (allSignals.some(s => s.includes('privacy'))) return "PRIVACY-POLICY-MISSING";
-    if (allSignals.some(s => s.includes('governance'))) return "GOV-DOCS-MISSING";
 
-    if (passed.some((p: string) => p.includes('ci_integration'))) return "CI-EVIDENCE-PRESENT";
-    if (passed.some((p: string) => p.includes('license'))) return "LICENSE-PRESENT";
-
+    if (detectedSignalsTable.length > 0) return "TECHNICAL-SIGNALS-FOUND";
     return null;
 }
 
@@ -135,24 +136,28 @@ function getConcreteFinding() {
 }
 
 // Found Signals (Strict Artifact-Backed)
-const foundSignals = [];
-if (passed.some((p: string) => p.includes('license')) || artifacts.includes('LICENSE')) foundSignals.push('LICENSE');
-if (passed.some((p: string) => p.includes('ci_integration')) || artifacts.some((a: string) => a.includes('workflows'))) foundSignals.push('CI workflow');
-if (artifacts.some((a: string) => a.toLowerCase().endsWith('.sarif'))) foundSignals.push('SARIF');
-if (passed.some((p: string) => p.includes('model_card')) || artifacts.includes('model-card.md')) foundSignals.push('Model Card');
+const foundSignals = detectedSignalsTable.length > 0 
+    ? detectedSignalsTable.map((s: string) => s.split(' (')[0])
+    : [];
 
-// Fallbacks for existing records
-if (foundSignals.length === 0 && report.audit_score > 85) foundSignals.push('LICENSE');
-if (foundSignals.length === 1 && (report.detected_ai_stack || '').toLowerCase().includes('github')) foundSignals.push('CI workflow');
+if (foundSignals.length === 0) {
+    if (passed.some((p: string) => p.includes('license')) || artifacts.includes('LICENSE')) foundSignals.push('LICENSE');
+    if (passed.some((p: string) => p.includes('ci_integration')) || artifacts.some((a: string) => a.includes('workflows'))) foundSignals.push('CI workflow');
+    if (artifacts.some((a: string) => a.toLowerCase().endsWith('.sarif'))) foundSignals.push('SARIF');
+    if (passed.some((p: string) => p.includes('model_card')) || artifacts.includes('model-card.md')) foundSignals.push('Model Card');
+}
 
 // Missing Signals (Strict Derivation)
-const missingSignals = [];
-if (gaps.some((g: string) => g.toLowerCase().includes('model')) || rules.some((r: string) => r.toLowerCase().includes('model'))) missingSignals.push('Model Card / Technical File (Art. 13)');
-if (gaps.some((g: string) => g.toLowerCase().includes('data')) || rules.some((r: string) => r.toLowerCase().includes('data'))) missingSignals.push('Dataset Provenance / Training Logs (Art. 10)');
-if (gaps.some((g: string) => g.toLowerCase().includes('privacy')) || rules.some((r: string) => r.toLowerCase().includes('privacy'))) missingSignals.push('Privacy Policy / Data Handling (GDPR)');
-if (gaps.some((g: string) => g.toLowerCase().includes('risk')) || rules.some((r: string) => r.toLowerCase().includes('risk'))) missingSignals.push('Risk Assessment / Mitigation Policy (Art. 9)');
-if (gaps.some((g: string) => g.toLowerCase().includes('governance')) || rules.some((r: string) => r.toLowerCase().includes('governance'))) missingSignals.push('Governance Framework / Policy (Art. 10)');
-const finalMissing = missingSignals.slice(0, 3);
+const finalMissing = missingSignalsTable.length > 0 
+    ? missingSignalsTable.map((s: string) => s.split(' (')[0]).slice(0, 3)
+    : [];
+
+if (finalMissing.length === 0) {
+    const legacyMissing = [];
+    if (gaps.some((g: string) => g.toLowerCase().includes('model'))) legacyMissing.push('Model Card / Technical File (Art. 13)');
+    if (gaps.some((g: string) => g.toLowerCase().includes('data'))) legacyMissing.push('Dataset Provenance / Training Logs (Art. 10)');
+    finalMissing.push(...legacyMissing.slice(0, 3));
+}
 ---
 
 <SovereignLayout title={title} description={description}>
