@@ -23,4 +23,9 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-.wrangler
+.wrangler/
+build_log*.txt
+temp_report*.html
+validation_results*.json
+sentinel-evidence/
+build_error.log
