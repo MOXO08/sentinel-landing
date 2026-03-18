@@ -31,6 +31,59 @@ export function ScoutVaultPage() {
   const [results, setResults] = useState<RiskCard[]>([])
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [selectedResult, setSelectedResult] = useState<RiskCard | null>(null)
+  const [syncing, setSyncing] = useState<string | null>(null)
+
+  // Multi-tier Risk Theme Engine
+  const getRiskTheme = (score: number) => {
+    if (score === 100) return { label: 'Sovereign', rating: 'AAA', color: 'text-[#059669]', bg: 'bg-[#059669]/5', border: 'border-[#059669]/20' };
+    if (score >= 90) return { label: 'High Integrity', rating: 'AA', color: 'text-[#10b981]', bg: 'bg-[#10b981]/5', border: 'border-[#10b981]/20' };
+    if (score >= 75) return { label: 'Compliant', rating: 'A', color: 'text-[#84cc16]', bg: 'bg-[#84cc16]/5', border: 'border-[#84cc16]/20' };
+    if (score >= 50) return { label: 'Elevated Risk', rating: 'B', color: 'text-[#f59e0b]', bg: 'bg-[#f59e0b]/5', border: 'border-[#f59e0b]/20' };
+    if (score >= 25) return { label: 'High Risk', rating: 'C', color: 'text-[#f97316]', bg: 'bg-[#f97316]/5', border: 'border-[#f97316]/20' };
+    return { label: 'Critical', rating: 'F', color: 'text-[#dc2626]', bg: 'bg-[#dc2626]/5', border: 'border-[#dc2626]/20' };
+  }
+
+  // Escape key handler
+  React.useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedResult(null)
+    }
+    window.addEventListener('keydown', handleEsc)
+    return () => window.removeEventListener('keydown', handleEsc)
+  }, [])
+
+  const handleSyncToHub = async (card: RiskCard) => {
+    setSyncing(card.repoName)
+    try {
+      const response = await fetch('/api/discovery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          repo_name: card.repoName,
+          repo_url: card.url,
+          audit_score: card.score,
+          risk_level: getRiskTheme(card.score).label,
+          compliance_status: 'pending_review',
+          summary_text: card.verdict,
+          detected_signals: JSON.stringify(card.foundSignals),
+          missing_signals: JSON.stringify(card.missingSignals),
+          is_public: false, // Always private by default for review
+          execution_context: 'scout-vault'
+        })
+      })
+      
+      if (response.ok) {
+        alert("Synced to Discovery Inbox for manual review.")
+        setSelectedResult(null)
+      } else {
+        alert("Sync failed. Check connection.")
+      }
+    } catch (err) {
+      console.error("Sync Error:", err)
+    } finally {
+      setSyncing(null)
+    }
+  }
 
   const handleScout = async () => {
     const targets = urls.split('\n').filter(u => u.trim() !== '')
@@ -166,25 +219,35 @@ export function ScoutVaultPage() {
                   <p className="text-[10px] font-mono text-[#64748b] font-bold">{selectedResult.url}</p>
                 </div>
               </div>
-              <button onClick={() => setSelectedResult(null)} className="p-3 hover:bg-[#F4F1EA] rounded-full transition-colors border border-[#0f172a]/5">
-                <RefreshCw className="w-5 h-5 text-[#64748b] rotate-45" />
+              <button onClick={() => setSelectedResult(null)} className="p-3 hover:bg-[#dc2626]/10 rounded-full transition-colors border border-[#0f172a]/5 group">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#64748b] group-hover:text-[#dc2626]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
               </button>
             </header>
 
             <div className="flex-1 overflow-y-auto p-10 space-y-12">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-3xl border border-[#cbd5e1] shadow-sm text-center">
-                  <div className="text-[9px] font-mono font-bold text-[#94a3b8] uppercase mb-1 tracking-widest">Audit Score</div>
-                  <div className={`text-4xl font-black ${selectedResult.score >= 80 ? 'text-[#059669]' : 'text-[#dc2626]'}`}>{selectedResult.score}/100</div>
-                </div>
-                <div className="bg-white p-6 rounded-3xl border border-[#cbd5e1] shadow-sm text-center">
-                  <div className="text-[9px] font-mono font-bold text-[#94a3b8] uppercase mb-1 tracking-widest">Confidence</div>
-                  <div className="text-4xl font-black text-[#0f172a]">MEDIUM</div>
-                </div>
-                <div className="bg-white p-6 rounded-3xl border border-[#cbd5e1] shadow-sm text-center">
-                  <div className="text-[9px] font-mono font-bold text-[#94a3b8] uppercase mb-1 tracking-widest">Risk Level</div>
-                  <div className={`text-4xl font-black uppercase ${selectedResult.score >= 80 ? 'text-[#059669]' : 'text-[#dc2626]'}`}>{selectedResult.score >= 80 ? 'Low' : 'Medium'}</div>
-                </div>
+                {(() => {
+                  const theme = getRiskTheme(selectedResult.score);
+                  return (
+                    <>
+                      <div className="bg-white p-6 rounded-3xl border border-[#cbd5e1] shadow-sm text-center">
+                        <div className="text-[9px] font-mono font-bold text-[#94a3b8] uppercase mb-1 tracking-widest">Audit Score</div>
+                        <div className={`text-4xl font-black ${theme.color}`}>{selectedResult.score}/100</div>
+                      </div>
+                      <div className="bg-white p-6 rounded-3xl border border-[#cbd5e1] shadow-sm text-center">
+                        <div className="text-[9px] font-mono font-bold text-[#94a3b8] uppercase mb-1 tracking-widest">Grade</div>
+                        <div className={`text-4xl font-black ${theme.color}`}>{theme.rating}</div>
+                      </div>
+                      <div className="bg-white p-6 rounded-3xl border border-[#cbd5e1] shadow-sm text-center">
+                        <div className="text-[9px] font-mono font-bold text-[#94a3b8] uppercase mb-1 tracking-widest">Risk Tier</div>
+                        <div className={`text-xl font-black uppercase ${theme.color}`}>{theme.label}</div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
 
               <section>
@@ -239,9 +302,13 @@ export function ScoutVaultPage() {
                   <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></div>
                   <p className="text-[10px] font-mono font-bold text-[#94a3b8] uppercase tracking-widest">Full immutable report (Annex IV) ready for Hub Sync.</p>
                </div>
-               <button className="w-full md:w-auto px-10 py-5 bg-[#0f172a] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-[#f59e0b] hover:text-[#0f172a] transition-all shadow-xl">
-                 Sync to Hub Ledger →
-               </button>
+                <button 
+                  onClick={() => handleSyncToHub(selectedResult)}
+                  disabled={syncing !== null}
+                  className="w-full md:w-auto px-10 py-5 bg-[#0f172a] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-[#f59e0b] hover:text-[#0f172a] transition-all shadow-xl disabled:opacity-50"
+                >
+                  {syncing === selectedResult.repoName ? 'Syncing...' : 'Sync to Hub Ledger →'}
+                </button>
             </footer>
           </div>
         </div>
@@ -399,14 +466,17 @@ export function ScoutVaultPage() {
 
                     <div className="font-black text-[#0f172a] flex flex-col">
                       <span>{card.score}<span className="text-[8px] opacity-30">/100</span></span>
-                      {card.repoName.toLowerCase().includes('arifosmcp') && (
-                        <span className="text-[7px] font-mono font-bold text-[#f59e0b] uppercase tracking-tighter mt-0.5">Medium Confidence</span>
-                      )}
+                      <span className="text-[7px] font-mono font-bold text-[#94a3b8] uppercase tracking-tighter mt-0.5">Rating: {getRiskTheme(card.score).rating}</span>
                     </div>
 
-                    <div className={`text-[9px] font-black uppercase tracking-widest ${card.score >= 80 ? 'text-[#059669]' : 'text-[#dc2626]'}`}>
-                      {card.score >= 80 ? 'Low' : 'High'}
-                    </div>
+                    {(() => {
+                      const theme = getRiskTheme(card.score);
+                      return (
+                        <div className={`text-[9px] font-black uppercase tracking-widest ${theme.color}`}>
+                          {theme.label}
+                        </div>
+                      );
+                    })()}
 
                     <div>
                       <div className="flex flex-col gap-1">

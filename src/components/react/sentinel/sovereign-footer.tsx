@@ -4,9 +4,9 @@ export function SovereignFooter() {
   return (
     <footer className="border-t border-[#e2e8f0] bg-[#F4F1EA] mt-24">
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-          {/* Brand */}
-          <div className="md:col-span-1">
+        <div className="flex flex-wrap md:flex-nowrap justify-between gap-x-8 gap-y-12">
+          {/* Brand & Contact */}
+          <div className="w-full md:w-auto md:min-w-[240px] md:mr-12">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-6 h-6 border border-[#10b981] rounded-sm flex items-center justify-center">
                 <Shield className="w-3.5 h-3.5 text-[#10b981]" />
@@ -15,35 +15,46 @@ export function SovereignFooter() {
                 Sentinel
               </span>
             </div>
-            <p className="text-sm text-[#475569] leading-relaxed mb-4">
+            <p className="text-xs text-[#475569] leading-relaxed mb-6 max-w-xs">
               Compliance Infrastructure.<br />
               Deterministic AI Compliance for CI/CD.<br />
-              High-end compliance infrastructure<br />
-              for AI engineering teams.
+              High-end compliance infrastructure for AI engineering teams.
             </p>
+            
+            <div className="mb-8 p-4 bg-[#0f172a]/5 border border-[#0f172a]/5 rounded-xl">
+                <h3 className="text-[9px] font-black uppercase text-[#94a3b8] mb-2 tracking-[0.1em]">Technical Contact</h3>
+                <a
+                  href="mailto:office@gettingsentinel.com"
+                  className="flex items-center gap-2 text-xs text-[#0f172a] hover:text-[#10b981] transition-colors cursor-pointer font-mono font-bold"
+                >
+                  <Mail className="w-3.5 h-3.5 opacity-60" />
+                  office@gettingsentinel.com
+                </a>
+            </div>
+
             <a href="/compliance" className="flex items-center gap-1.5 group">
               <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
-              <span className="text-xs text-[#64748b] group-hover:text-[#10b981] transition-colors">
+              <span className="text-[10px] text-[#64748b] group-hover:text-[#10b981] transition-colors font-mono uppercase tracking-tighter">
                 EU AI Act — Compliant Infrastructure
               </span>
             </a>
           </div>
 
           {/* Product */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Product</h3>
-            <ul className="flex flex-col gap-2.5">
+          <div className="flex-1 min-w-[120px]">
+            <h3 className="text-[10px] font-black uppercase text-[#0f172a] mb-5 tracking-[0.2em] opacity-50">Product</h3>
+            <ul className="flex flex-col gap-3">
               {[
                 { label: "Scout (Discovery)", href: "/scout-vault" },
-                { label: "Intelligence (Technical Hub)", href: "/ai-compliance" },
-                { label: "Integrity Console (Ledger)", href: "/integrity-console" },
+                { label: "Intelligence (Hub)", href: "/ai-compliance" },
+                { label: "Integrity (Ledger)", href: "/integrity-console" },
                 { label: "Documentation", href: "/docs" },
                 { label: "Pricing", href: "/pricing" },
               ].map((item) => (
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="text-xs font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-wide"
+                    className="text-[11px] font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-tight"
                   >
                     {item.label}
                   </a>
@@ -53,22 +64,22 @@ export function SovereignFooter() {
           </div>
 
           {/* Resources */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Resources</h3>
-            <ul className="flex flex-col gap-2.5">
+          <div className="flex-1 min-w-[120px]">
+            <h3 className="text-[10px] font-black uppercase text-[#0f172a] mb-5 tracking-[0.2em] opacity-50">Resources</h3>
+            <ul className="flex flex-col gap-3">
               {[
                 { label: "CLI on npm", href: "https://www.npmjs.com/package/@radu_api/sentinel-scan", target: "_blank" },
-                { label: "GitHub Repository", href: "https://github.com/MOXO08/sentinel", target: "_blank" },
-                { label: "AI Compliance Tools", href: "/ai-compliance-tools" },
-                { label: "AI Compliance FAQ", href: "/ai-compliance-faq" },
-                { label: "Sentinel vs AI Governance Tools", href: "/sentinel-vs-governance-tools" },
+                { label: "GitHub Repo", href: "https://github.com/MOXO08/sentinel", target: "_blank" },
+                { label: "Compliance Tools", href: "/ai-compliance-tools" },
+                { label: "Compliance FAQ", href: "/ai-compliance-faq" },
+                { label: "Governance Fix", href: "/sentinel-vs-governance-tools" },
               ].map((item) => (
                 <li key={item.label}>
                   <a
                     href={item.href}
                     target={item.target}
                     rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
-                    className="text-xs font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-wide"
+                    className="text-[11px] font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-tight"
                   >
                     {item.label}
                   </a>
@@ -78,21 +89,20 @@ export function SovereignFooter() {
           </div>
 
           {/* Trust */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Trust</h3>
-            <ul className="flex flex-col gap-2.5">
+          <div className="flex-1 min-w-[120px]">
+            <h3 className="text-[10px] font-black uppercase text-[#0f172a] mb-5 tracking-[0.2em] opacity-50">Trust</h3>
+            <ul className="flex flex-col gap-3">
               {[
                 { label: "Privacy Policy", href: "/legal/privacy" },
                 { label: "Terms of Service", href: "/legal/terms" },
-                { label: "Sovereignty Model", href: "/legal/sovereignty" },
-                { label: "Security Policy", href: "/security" },
+                { label: "Sovereignty", href: "/legal/sovereignty" },
+                { label: "Security", href: "/security" },
                 { label: "Data Residency", href: "/legal/data-residency" },
-                { label: "Compliance Mapping", href: "/compliance" },
               ].map((item) => (
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="text-xs font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-wide"
+                    className="text-[11px] font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-tight"
                   >
                     {item.label}
                   </a>
@@ -101,38 +111,24 @@ export function SovereignFooter() {
             </ul>
           </div>
 
-          {/* Use Cases & Contact */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase text-[#0f172a] mb-4 tracking-[0.1em]">Use Cases</h3>
-            <ul className="flex flex-col gap-4">
-              <li>
-                <ul className="flex flex-col gap-2.5">
-                  {[
-                    { label: "Finance", href: "/use-cases/finance" },
-                    { label: "Healthcare", href: "/use-cases/healthcare" },
-                    { label: "SaaS & Engineering", href: "/use-cases/saas" },
-                  ].map((item) => (
-                    <li key={item.label}>
-                      <a
-                        href={item.href}
-                        className="text-xs font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-wide"
-                      >
-                        {item.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-              <li className="pt-4 border-t border-[#e2e8f0]">
-                <h3 className="text-[10px] font-semibold uppercase text-[#94a3b8] mb-3 tracking-[0.1em]">Contact</h3>
-                <a
-                  href="mailto:office@gettingsentinel.com"
-                  className="flex items-center gap-2 text-xs text-[#64748b] hover:text-[#10b981] transition-colors cursor-pointer font-mono"
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  office@gettingsentinel.com
-                </a>
-              </li>
+          {/* Use Cases */}
+          <div className="flex-1 min-w-[120px]">
+            <h3 className="text-[10px] font-black uppercase text-[#0f172a] mb-5 tracking-[0.2em] opacity-50">Use Cases</h3>
+            <ul className="flex flex-col gap-3">
+              {[
+                { label: "Finance", href: "/use-cases/finance" },
+                { label: "Healthcare", href: "/use-cases/healthcare" },
+                { label: "Engineering", href: "/use-cases/saas" },
+              ].map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    className="text-[11px] font-mono text-[#64748b] hover:text-[#10b981] transition-colors tracking-tight"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

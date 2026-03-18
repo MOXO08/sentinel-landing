@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { AIDisclosureBanner } from '../components/react/sentinel/ai-disclosure-banner';
 
 interface Props {
   title: string;
@@ -164,6 +165,7 @@ const schemaBreadcrumb = {
     <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
   </head>
   <body class="bg-space text-slate-200 antialiased overflow-x-hidden">
+    <AIDisclosureBanner client:load />
 
     <!-- ── US BANNER ───────────────────────────────── -->
     {isUS && (

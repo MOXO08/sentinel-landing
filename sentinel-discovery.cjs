@@ -341,12 +341,28 @@ async function processRepository(repo) {
         const violations = finalEvidence.failedRules;
         const passedRules = finalEvidence.passedRules;
 
-        // Align risk level with compliance_status and score
-        let risk_level = 'Low';
-        if (score < 60) {
-            risk_level = 'High';
-        } else if (score < 85) {
-            risk_level = 'Medium';
+        // Align risk level with compliance_status and score (6-Tier System)
+        let risk_level = 'Sovereign';
+        let rating = 'AAA';
+        
+        if (score === 100) {
+            risk_level = 'Sovereign';
+            rating = 'AAA';
+        } else if (score >= 90) {
+            risk_level = 'High Integrity';
+            rating = 'AA';
+        } else if (score >= 75) {
+            risk_level = 'Compliant';
+            rating = 'A';
+        } else if (score >= 50) {
+            risk_level = 'Elevated Risk';
+            rating = 'B';
+        } else if (score >= 25) {
+            risk_level = 'High Risk';
+            rating = 'C';
+        } else {
+            risk_level = 'Critical';
+            rating = 'F';
         }
 
         const slug =
@@ -396,11 +412,11 @@ async function processRepository(repo) {
             missing_signals: finalEvidence.missingSignals,
             score_breakdown: breakdown,
             risk_level: risk_level,
-            compliance_status: score > 80 ? 'compliant' : 'pending_review',
+            compliance_status: score === 100 ? 'compliant' : 'pending_review',
             confidence_level: 'Medium',
             summary_text: summary_text,
             visible_gaps: finalEvidence.missingSignals.slice(0, 3),
-            is_public: true,
+            is_public: false,
             execution_context: 'discovery',
             categories: JSON.stringify(categoryArray)
         });

@@ -58,15 +58,17 @@ const hasPowerEvidence =
   report.detected_artifacts?.includes('AI-MANIFEST.json') || 
   report.detected_artifacts?.includes('model-card.md') || 
   report.detected_artifacts?.includes('.sentinel') ||
-  report.detected_signals?.includes('Art. ');
+  report.detected_artifacts?.includes('privacy-policy.md') ||
+  report.detected_signals?.includes('Art. ') ||
+  report.detected_signals?.includes('Found');
 
 const isReportPublishable = 
   report && 
-  hasPowerEvidence &&
+  (hasPowerEvidence || report.risk_level === 'High') &&
   !report.summary_text?.includes("Public technical evidence is limited") &&
   report.audit_score > 0 && 
   report.summary_text && 
-  report.summary_text.length > 50;
+  report.summary_text.length > 20;
 
 if (!isReportPublishable) {
   return Astro.redirect('/404');
@@ -172,6 +174,18 @@ if (finalMissing.length === 0) {
     if (gaps.some((g: string) => g.toLowerCase().includes('data'))) legacyMissing.push('Dataset Provenance / Training Logs (Art. 10)');
     finalMissing.push(...legacyMissing.slice(0, 3));
 }
+
+// Multi-tier Risk Theme Engine
+function getRiskTheme(score: number) {
+    if (score === 100) return { label: 'Sovereign', rating: 'AAA', color: 'text-[#059669]', bg: 'bg-[#059669]/5', border: 'border-[#059669]/20' };
+    if (score >= 90) return { label: 'High Integrity', rating: 'AA', color: 'text-[#10b981]', bg: 'bg-[#10b981]/5', border: 'border-[#10b981]/20' };
+    if (score >= 75) return { label: 'Compliant', rating: 'A', color: 'text-[#84cc16]', bg: 'bg-[#84cc16]/5', border: 'border-[#84cc16]/20' };
+    if (score >= 50) return { label: 'Elevated Risk', rating: 'B', color: 'text-[#f59e0b]', bg: 'bg-[#f59e0b]/5', border: 'border-[#f59e0b]/20' };
+    if (score >= 25) return { label: 'High Risk', rating: 'C', color: 'text-[#f97316]', bg: 'bg-[#f97316]/5', border: 'border-[#f97316]/20' };
+    return { label: 'Critical', rating: 'F', color: 'text-[#dc2626]', bg: 'bg-[#dc2626]/5', border: 'border-[#dc2626]/20' };
+}
+
+const theme = getRiskTheme(report.audit_score);
 ---
 
 <SovereignLayout title={title} description={description}>
@@ -182,8 +196,22 @@ if (finalMissing.length === 0) {
     <div class="max-w-6xl mx-auto">
       
         <div class="max-w-4xl mx-auto text-[#0f172a]">
-          <!-- Breadcrumbs and Header -->
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+          {report.risk_level === 'High' && !hasPowerEvidence && (
+            <div class="mb-12 p-6 bg-[#dc2626]/5 border border-[#dc2626]/20 rounded-2xl flex items-start gap-4">
+              <div class="w-10 h-10 rounded-full bg-[#dc2626]/10 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[#dc2626]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 17c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-black uppercase tracking-tight text-[#dc2626] mb-1">Verifiable Evidence Missing</h3>
+                <p class="text-xs text-[#dc2626]/80 leading-relaxed font-medium">
+                  This repository has been flagged as <strong>High Risk</strong> due to a lack of public AI compliance artifacts (e.g., AI-MANIFEST.json, Model Cards, or explicit Article 13 disclosures). The current score reflects a critical deficiency in technical transparency.
+                </p>
+              </div>
+            </div>
+          )}
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
             <div>
               <nav class="flex mb-6 text-[10px] font-mono uppercase tracking-widest text-[#94a3b8] gap-2">
                 <a href="/ai-compliance" class="hover:text-[#0f172a]">Intelligence Hub</a>
@@ -200,8 +228,8 @@ if (finalMissing.length === 0) {
                 <span class="px-2 py-1 bg-white border border-[#0f172a]/10 rounded text-[9px] font-bold text-[#64748b] uppercase tracking-widest">
                    {report.stars.toLocaleString()} Stars
                 </span>
-                <span class={`px-2 py-1 border border-[#0f172a]/10 rounded text-[9px] font-black uppercase tracking-widest ${report.risk_level === 'Low' ? 'text-[#059669] bg-[#059669]/5' : (report.risk_level === 'Medium' ? 'text-[#d97706] bg-[#d97706]/5' : 'text-[#dc2626] bg-[#dc2626]/5')}`}>
-                    {report.risk_level} Risk
+                <span class={`px-2 py-1 border border-[#0f172a]/10 rounded text-[9px] font-black uppercase tracking-widest ${theme.color} ${theme.bg}`}>
+                    {theme.label} — {theme.rating}
                 </span>
               </div>
             </div>

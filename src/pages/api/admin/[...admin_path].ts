@@ -122,17 +122,19 @@ export const POST: APIRoute = async ({ request, locals, params }) => {
                     (
                         detected_artifacts NOT LIKE '%AI-MANIFEST.json%' AND 
                         detected_artifacts NOT LIKE '%model-card.md%' AND 
-                        detected_artifacts NOT LIKE '%.sentinel%'
+                        detected_artifacts NOT LIKE '%.sentinel%' AND
+                        detected_artifacts NOT LIKE '%privacy-policy.md%'
                     )
                     OR summary_text LIKE '%Public technical evidence is limited%'
-                    OR LENGTH(summary_text) < 50
+                    OR LENGTH(summary_text) < 30
                 )
                 AND (
                     detected_signals IS NULL OR 
                     detected_signals = '[]' OR 
-                    detected_signals NOT LIKE '%Art. %'
+                    (detected_signals NOT LIKE '%Art. %' AND detected_signals NOT LIKE '%Found%')
                 )
                 AND is_public = 1
+                AND repo_name NOT IN ('Skyscanner', 'Amazon', 'Booking.com', 'OpenAI') -- Whitelist curated defaults
             `).run();
 
             return new Response(JSON.stringify({ 

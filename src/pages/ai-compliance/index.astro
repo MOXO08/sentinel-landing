@@ -15,6 +15,7 @@ const order = Astro.url.searchParams.get('order') || 'DESC';
 const riskFilter = Astro.url.searchParams.get('risk') || 'all';
 const category = Astro.url.searchParams.get('category') || null;
 const view = Astro.url.searchParams.get('view') || null;
+const search = Astro.url.searchParams.get('search') || '';
 
 const validCols = ['stars', 'audit_score', 'scan_timestamp'];
 const safeSort = validCols.includes(sort) ? sort : 'scan_timestamp';
@@ -29,16 +30,32 @@ try {
       FROM discovery_audits 
       WHERE is_public = 1 
       AND (
-        detected_artifacts LIKE '%AI-MANIFEST.json%' OR 
-        detected_artifacts LIKE '%model-card.md%' OR 
-        detected_artifacts LIKE '%.sentinel%' OR
-        detected_signals LIKE '%Art. %'
+        (
+          detected_artifacts LIKE '%AI-MANIFEST.json%' OR 
+          detected_artifacts LIKE '%model-card.md%' OR 
+          detected_artifacts LIKE '%.sentinel%' OR
+          detected_artifacts LIKE '%privacy-policy.md%' OR
+          detected_signals LIKE '%Art. %' OR
+          detected_signals LIKE '%Found%'
+        )
+        OR (
+          risk_level IN ('High Risk', 'Critical') 
+          AND (
+            detected_signals NOT LIKE '[]' OR
+            missing_signals NOT LIKE '[]'
+          )
+        )
       )
       AND summary_text NOT LIKE '%Public technical evidence is limited%'
       AND audit_score > 0 
-      AND LENGTH(summary_text) > 50
+      AND LENGTH(summary_text) > 35
     `;
     let params: any[] = [];
+
+    if (search) {
+      query += ` AND (repo_name LIKE ? OR detected_ai_stack LIKE ?)`;
+      params.push(`%${search}%`, `%${search}%`);
+    }
 
     // Category Filter
     if (category) {
@@ -63,7 +80,7 @@ try {
         orderByClause = `ORDER BY scan_timestamp DESC`;
     }
 
-    query += ` ${orderByClause} LIMIT 100`;
+    query += ` ${orderByClause} LIMIT 25`;
     
     const result = await env.DB.prepare(query).bind(...params).all();
     reports = result.results || [];
@@ -150,6 +167,16 @@ function getConcreteFinding(report: any) {
     return "Public technical evidence is limited for this repository.";
 }
 
+// Multi-tier Risk Theme Engine
+function getRiskTheme(score: number) {
+    if (score === 100) return { label: 'Sovereign', rating: 'AAA', color: 'text-[#059669]', bg: 'bg-[#059669]/5', border: 'border-[#059669]/20' };
+    if (score >= 90) return { label: 'High Integrity', rating: 'AA', color: 'text-[#10b981]', bg: 'bg-[#10b981]/5', border: 'border-[#10b981]/20' };
+    if (score >= 75) return { label: 'Compliant', rating: 'A', color: 'text-[#84cc16]', bg: 'bg-[#84cc16]/5', border: 'border-[#84cc16]/20' };
+    if (score >= 50) return { label: 'Elevated Risk', rating: 'B', color: 'text-[#f59e0b]', bg: 'bg-[#f59e0b]/5', border: 'border-[#f59e0b]/20' };
+    if (score >= 25) return { label: 'High Risk', rating: 'C', color: 'text-[#f97316]', bg: 'bg-[#f97316]/5', border: 'border-[#f97316]/20' };
+    return { label: 'Critical', rating: 'F', color: 'text-[#dc2626]', bg: 'bg-[#dc2626]/5', border: 'border-[#dc2626]/20' };
+}
+
 // Missing vs Found Signals (Strict Artifact-Backed)
 function getEvidenceSignals(report: any) {
     const detected = typeof report.detected_signals === 'string' ? JSON.parse(report.detected_signals) : (report.detected_signals || []);
@@ -211,13 +238,31 @@ function getCompactStack(stack: string) {
             </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-[#0f172a]/5">
-            <div class="flex gap-4">
-                {['all risks', 'low', 'medium', 'high'].map(r => (
-                    <a href={getFilterUrl({ risk: r === 'all risks' ? null : r.charAt(0).toUpperCase() + r.slice(1) })} class={`text-[10px] font-bold uppercase tracking-widest ${ (riskFilter === null && r === 'all risks') || (riskFilter === (r.charAt(0).toUpperCase() + r.slice(1))) ? 'text-[#0f172a] border-b-2 border-[#0f172a]' : 'text-[#94a3b8] hover:text-[#0f172a]'}`}>
-                        {r}
-                    </a>
-                ))}
+        <div class="flex flex-wrap items-center justify-between gap-6 pt-6 border-t border-[#0f172a]/5">
+            <div class="flex items-center gap-6">
+                <div class="flex gap-4">
+                    {['all risks', 'low', 'medium', 'high'].map(r => (
+                        <a href={getFilterUrl({ risk: r === 'all risks' ? null : r.charAt(0).toUpperCase() + r.slice(1) })} class={`text-[10px] font-bold uppercase tracking-widest ${ (riskFilter === null && r === 'all risks') || (riskFilter === (r.charAt(0).toUpperCase() + r.slice(1))) ? 'text-[#0f172a] border-b-2 border-[#0f172a]' : 'text-[#94a3b8] hover:text-[#0f172a]'}`}>
+                            {r}
+                        </a>
+                    ))}
+                </div>
+
+                <!-- Search Input -->
+                <form class="relative group">
+                    <input 
+                        type="text" 
+                        name="search"
+                        placeholder="Search Intelligence..." 
+                        value={search}
+                        class="bg-white/50 border border-[#0f172a]/5 rounded-lg pl-8 pr-4 py-1.5 text-[10px] font-mono focus:bg-white focus:border-[#0f172a]/20 outline-none transition-all w-48 md:w-64"
+                    />
+                    <svg class="absolute left-2.5 top-2 w-3.5 h-3.5 text-[#94a3b8] group-focus-within:text-[#0f172a] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    {riskFilter !== 'all' && <input type="hidden" name="risk" value={riskFilter} />}
+                    {category && <input type="hidden" name="category" value={category} />}
+                </form>
             </div>
             
             <div class="flex items-center gap-2">
@@ -252,16 +297,17 @@ function getCompactStack(stack: string) {
             const signalCode = getSignalCode(report);
             const concreteFinding = getConcreteFinding(report);
             const { missing, found } = getEvidenceSignals(report);
+            const theme = getRiskTheme(report.audit_score);
             
             return (
                 <a href={`/ai-compliance/${report.slug}`} class="grid grid-cols-2 md:grid-cols-[1.5fr_0.6fr_1fr_0.6fr_0.6fr_1.2fr_2fr_0.3fr] gap-4 px-6 py-5 bg-white items-center hover:bg-[#F8FAFC] transition-colors group relative border-b border-[#0f172a]/5 last:border-0">
                     <div class="col-span-2 md:col-span-1">
-                        <div class="text-xs font-black text-[#0f172a] uppercase tracking-tight truncate">
+                        <div class={`text-xs font-black uppercase tracking-tight truncate ${theme.color}`}>
                             {report.repo_name}
                         </div>
                     </div>
                     
-                    <div class="text-[10px] font-mono text-[#64748b]">
+                    <div class={`text-[10px] font-mono ${theme.color}`}>
                         ★ {report.stars.toLocaleString()}
                     </div>
                     
@@ -271,12 +317,12 @@ function getCompactStack(stack: string) {
                         </span>
                     </div>
 
-                    <div class="text-xs font-black text-[#0f172a]">
+                    <div class={`text-xs font-black ${theme.color}`}>
                         {report.audit_score}<span class="text-[8px] opacity-30">/100</span>
                     </div>
 
-                    <div class={`text-[9px] font-black uppercase tracking-widest ${report.risk_level === 'Low' ? 'text-[#059669]' : (report.risk_level === 'Medium' ? 'text-[#d97706]' : 'text-[#dc2626]')}`}>
-                        {report.risk_level}
+                    <div class={`text-[9px] font-black uppercase tracking-widest ${theme.color}`}>
+                        {theme.label}
                     </div>
 
                     <div>
