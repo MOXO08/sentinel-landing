@@ -161,13 +161,22 @@ export function ScoutVaultPage() {
                               "Detected implicit AI interaction signals without mandatory disclosure (Art 52)."))))))));
 
         try {
-          const res = await fetch('https://api.gettingsentinel.com/v1', {
+          const res = await fetch(`https://api.gettingsentinel.com/v1?cache_bust=${Date.now()}`, {
             method: 'POST',
+            cache: 'no-store',
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': 'Bearer internal_audit_key'
+              'Authorization': 'Bearer internal_audit_key',
+              'X-Sentinel-Protocol': 'v1.0.2',
+              'X-Sentinel-Force-Audit': 'true'
             },
-            body: JSON.stringify({ app_name: repoName, repo_url: url, target_type: targetType })
+            body: JSON.stringify({ 
+              app_name: repoName, 
+              repo_url: url, 
+              target_type: targetType,
+              force_refresh: true,
+              audit_scan_mode: 'live_dom'
+            })
           })
           if (res.ok) {
             const data = await res.json()
