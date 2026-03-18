@@ -13,7 +13,7 @@ export default function AIDisclosureBanner() {
         zIndex: 99999
       }}
     >
-      This system uses AI (Sentinel Engine) to process and analyze requests.
+      This system utilizes AI (Sentinel-Engine) to process requests.
     </div>
   );
 }

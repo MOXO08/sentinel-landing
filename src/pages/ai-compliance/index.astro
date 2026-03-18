@@ -300,7 +300,12 @@ function getCompactStack(stack: string) {
             const theme = getRiskTheme(report.audit_score);
             
             return (
-                <a href={`/ai-compliance/${report.slug}`} class="grid grid-cols-2 md:grid-cols-[1.5fr_0.6fr_1fr_0.6fr_0.6fr_1.2fr_2fr_0.3fr] gap-4 px-6 py-5 bg-white items-center hover:bg-[#F8FAFC] transition-colors group relative border-b border-[#0f172a]/5 last:border-0">
+                <a 
+                    href={`/ai-compliance/${report.slug}`} 
+                    class="grid grid-cols-2 md:grid-cols-[1.5fr_0.6fr_1fr_0.6fr_0.6fr_1.2fr_2fr_0.3fr] gap-4 px-6 py-5 bg-white items-center hover:bg-[#F8FAFC] transition-colors group relative border-b border-[#0f172a]/5 last:border-0"
+                    data-ai-generated="true"
+                    data-ai-system="sentinel-engine"
+                >
                     <div class="col-span-2 md:col-span-1">
                         <div class={`text-xs font-black uppercase tracking-tight truncate ${theme.color}`}>
                             {report.repo_name}
@@ -349,17 +354,22 @@ function getCompactStack(stack: string) {
                         <div class="text-[10px] font-bold italic text-[#0f172a] leading-tight line-clamp-1">
                             "{concreteFinding}"
                         </div>
-                        <div class="flex flex-wrap gap-x-3 gap-y-1">
-                            {missing.length > 0 && (
-                                <div class="text-[8px] font-mono text-[#ef4444] uppercase flex items-center gap-1">
-                                   <span class="opacity-50 font-bold">Missing:</span> {missing.join(', ')}
-                                </div>
-                            )}
-                            {found.length > 0 && (
-                                <div class="text-[8px] font-mono text-[#059669] uppercase flex items-center gap-1">
-                                   <span class="opacity-50 font-bold">Found:</span> {found.join(', ')}
-                                </div>
-                            )}
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap gap-x-3 gap-y-1">
+                                {missing.length > 0 && (
+                                    <div class="text-[8px] font-mono text-[#ef4444] uppercase flex items-center gap-1">
+                                    <span class="opacity-50 font-bold">Missing:</span> {missing.join(', ')}
+                                    </div>
+                                )}
+                                {found.length > 0 && (
+                                    <div class="text-[8px] font-mono text-[#059669] uppercase flex items-center gap-1">
+                                    <span class="opacity-50 font-bold">Found:</span> {found.join(', ')}
+                                    </div>
+                                )}
+                            </div>
+                            <div class="text-[7px] font-mono font-bold text-[#f59e0b] uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                                AI-assisted regulatory mapping
+                            </div>
                         </div>
                     </div>
 

@@ -209,7 +209,10 @@ export function ScoutVaultPage() {
       {selectedResult && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#0f172a]/40 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-[#F4F1EA] w-full max-w-4xl max-h-[90vh] rounded-[40px] border border-[#cbd5e1] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
-            <header className="p-8 border-b border-[#0f172a]/5 flex justify-between items-center bg-white">
+            <header className="p-8 border-b border-[#0f172a]/5 flex justify-between items-center bg-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 px-4 py-1 bg-[#f59e0b] text-[#0f172a] text-[8px] font-black uppercase tracking-widest rounded-bl-xl shadow-sm z-10">
+                AI-Generated Technical Audit
+              </div>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#0f172a] rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
                   {selectedResult.repoName.charAt(0).toUpperCase()}
@@ -255,8 +258,16 @@ export function ScoutVaultPage() {
                   <div className="w-1.5 h-6 bg-[#f59e0b] rounded-full"></div>
                   <h3 className="text-[11px] font-black text-[#0f172a] uppercase tracking-[0.3em]">Neural Assessment Summary</h3>
                 </div>
-                <div className="p-8 bg-white border border-[#0f172a]/5 rounded-[32px] text-[13px] leading-relaxed text-[#475569] italic shadow-inner border-l-4 border-l-[#f59e0b]">
+                <div 
+                  className="p-8 bg-white border border-[#0f172a]/5 rounded-[32px] text-[13px] leading-relaxed text-[#475569] italic shadow-inner border-l-4 border-l-[#f59e0b]"
+                  data-ai-generated="true"
+                  data-ai-system="sentinel-engine"
+                >
                   {selectedResult.verdict} Technical signals suggest active behavioral tracking and recommender loops. Regulatory mapping against EU AI Act Articles 10, 13 & 52 initiated. Verified via zero-egress hardware-attested scanners.
+                  <div className="mt-4 pt-4 border-t border-[#0f172a]/5 text-[9px] font-mono font-bold text-[#94a3b8] uppercase flex items-center gap-2">
+                    <Zap className="w-3 h-3 text-[#f59e0b]" /> 
+                    AI-assisted regulatory mapping by Sentinel Engine
+                  </div>
                 </div>
               </section>
 
@@ -355,23 +366,29 @@ export function ScoutVaultPage() {
             </div>
           </div>
           
-          <button 
-            onClick={handleScout}
-            disabled={scouting}
-            className={`px-10 py-5 bg-[#0f172a] text-[#F4F1EA] font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3 ${scouting ? 'opacity-70 cursor-not-allowed' : ''}`}
-          >
-            {scouting ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                Analyzing Technical Signals...
-              </>
-            ) : (
-              <>
-                <Target className="w-4 h-4" />
-                {results.length > 0 ? 'Add New Targets to Feed →' : 'Begin Technical Scouting →'}
-              </>
-            )}
-          </button>
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <button 
+              onClick={handleScout}
+              disabled={scouting}
+              className={`px-10 py-5 bg-[#0f172a] text-[#F4F1EA] font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3 ${scouting ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
+              {scouting ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Analyzing Technical Signals...
+                </>
+              ) : (
+                <>
+                  <Target className="w-4 h-4" />
+                  {results.length > 0 ? 'Add New Targets to Feed →' : 'Begin Technical Scouting →'}
+                </>
+              )}
+            </button>
+            <div className="text-[10px] font-mono font-bold text-[#94a3b8] uppercase flex items-center gap-2">
+              <ShieldAlert className="w-3.5 h-3.5 text-[#f59e0b]" />
+              This feature uses AI (Sentinel Engine) to analyze targets
+            </div>
+          </div>
         </div>
 
         {/* Intelligence Ledger View (The "Inbox" Feel) */}
@@ -439,7 +456,12 @@ export function ScoutVaultPage() {
                 </div>
 
                 {results.map((card, i) => (
-                  <div key={i} className="grid grid-cols-2 md:grid-cols-[1.5fr_0.6fr_1fr_0.6fr_0.6fr_1.2fr_2fr] gap-4 px-6 py-5 bg-white items-center hover:bg-[#f8fafc] transition-colors group border-b border-[#0f172a]/5 last:border-0 text-xs text-black">
+                  <div 
+                    key={i} 
+                    className="grid grid-cols-2 md:grid-cols-[1.5fr_0.6fr_1fr_0.6fr_0.6fr_1.2fr_2fr] gap-4 px-6 py-5 bg-white items-center hover:bg-[#f8fafc] transition-colors group border-b border-[#0f172a]/5 last:border-0 text-xs text-black"
+                    data-ai-generated="true"
+                    data-ai-system="sentinel-engine"
+                  >
                     <div className="col-span-2 md:col-span-1 flex items-center gap-4">
                       <button 
                         onClick={() => setSelectedResult(card)}
@@ -502,6 +524,9 @@ export function ScoutVaultPage() {
                           <div className="text-[10px] font-bold italic text-[#64748b] leading-tight flex items-center gap-1.5 mt-0.5">
                             <ShieldAlert className="w-2.5 h-2.5 text-[#f59e0b]" />
                             "{card.violation}"
+                          </div>
+                          <div className="mt-2 text-[8px] font-mono font-bold text-[#f59e0b] uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                            AI-generated technical assessment
                           </div>
                         </div>
                         <button 

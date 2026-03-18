@@ -247,7 +247,17 @@ const theme = getRiskTheme(report.audit_score);
                 <div class="text-[9px] font-mono text-white/50 uppercase">Scan Ref: 0x{report.id?.toString(16).padStart(4, '0')}</div>
             </div>
             
-            <div class="p-8 grid md:grid-cols-[1fr_1px_1fr] gap-8 items-start">
+            <div 
+              class="p-8 grid md:grid-cols-[1fr_1px_1fr] gap-8 items-start"
+              data-ai-generated="true"
+              data-ai-system="sentinel-engine"
+            >
+                <div class="col-span-full mb-2 pb-4 border-b border-[#0f172a]/5 flex items-center gap-2">
+                    <div class="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-pulse"></div>
+                    <span class="text-[9px] font-mono font-bold text-[#f59e0b] uppercase tracking-widest">
+                        AI-assisted regulatory mapping by Sentinel Engine (Art. 52 Compliance active)
+                    </span>
+                </div>
                 <div class="space-y-6">
                     <div>
                         <h3 class="text-[9px] font-mono font-bold text-[#94a3b8] uppercase tracking-widest mb-2">Primary Finding</h3>
