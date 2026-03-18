@@ -161,7 +161,7 @@ export function ScoutVaultPage() {
                               "Detected implicit AI interaction signals without mandatory disclosure (Art 52)."))))))));
 
         try {
-          const res = await fetch('https://api.gettingsentinel.com/', {
+          const res = await fetch('https://api.gettingsentinel.com/v1', {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -207,8 +207,16 @@ export function ScoutVaultPage() {
     <div className="bg-[#F4F1EA] pt-32 pb-24 text-[#0f172a] relative">
       {/* Detail Overlay (Modal) */}
       {selectedResult && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#0f172a]/40 backdrop-blur-sm animate-in fade-in duration-300">
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#0f172a]/40 backdrop-blur-sm animate-in fade-in duration-300"
+          data-ai-generated="true"
+          data-ai-system="sentinel-engine"
+          data-ai-disclosure="article-52"
+        >
           <div className="bg-[#F4F1EA] w-full max-w-4xl max-h-[90vh] rounded-[40px] border border-[#cbd5e1] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 bg-[#0f172a] text-white text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-widest z-[110] opacity-80 pointer-events-none">
+              Transparency Notice: This audit contains AI-assisted technical analysis and regulatory mapping.
+            </div>
             <header className="p-8 border-b border-[#0f172a]/5 flex justify-between items-center bg-white relative overflow-hidden">
               <div className="absolute top-0 right-0 px-4 py-1 bg-[#f59e0b] text-[#0f172a] text-[8px] font-black uppercase tracking-widest rounded-bl-xl shadow-sm z-10">
                 AI-Generated Technical Audit
@@ -259,10 +267,14 @@ export function ScoutVaultPage() {
                   <h3 className="text-[11px] font-black text-[#0f172a] uppercase tracking-[0.3em]">Neural Assessment Summary</h3>
                 </div>
                 <div 
-                  className="p-8 bg-white border border-[#0f172a]/5 rounded-[32px] text-[13px] leading-relaxed text-[#475569] italic shadow-inner border-l-4 border-l-[#f59e0b]"
+                  className="p-8 bg-white border border-[#0f172a]/5 rounded-[32px] text-[13px] leading-relaxed text-[#475569] italic shadow-inner border-l-4 border-l-[#f59e0b] relative group"
                   data-ai-generated="true"
                   data-ai-system="sentinel-engine"
+                  data-ai-disclosure="article-52"
                 >
+                  <div className="absolute -top-3 left-6 bg-[#f59e0b] text-[#0f172a] text-[9px] font-black px-2 py-0.5 rounded shadow-sm">
+                    AI-generated technical assessment by Sentinel Engine (Art. 52)
+                  </div>
                   {selectedResult.verdict} Technical signals suggest active behavioral tracking and recommender loops. Regulatory mapping against EU AI Act Articles 10, 13 & 52 initiated. Verified via zero-egress hardware-attested scanners.
                   <div className="mt-4 pt-4 border-t border-[#0f172a]/5 text-[9px] font-mono font-bold text-[#94a3b8] uppercase flex items-center gap-2">
                     <Zap className="w-3 h-3 text-[#f59e0b]" /> 
@@ -272,7 +284,15 @@ export function ScoutVaultPage() {
               </section>
 
               <div className="grid md:grid-cols-2 gap-8">
-                <section>
+                <section 
+                  className="relative"
+                  data-ai-generated="true"
+                  data-ai-system="sentinel-engine"
+                  data-ai-disclosure="article-52"
+                >
+                  <div className="absolute -top-3 right-0 bg-[#dc2626] text-white text-[7px] font-black px-1.5 py-0.5 rounded shadow-sm z-10">
+                    AI-AUDITED COMPLIANCE GAP
+                  </div>
                   <h3 className="text-[10px] font-black text-[#dc2626] uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
                      <ShieldAlert className="w-4 h-4" /> Critical Technical Gaps
                   </h3>
@@ -461,6 +481,7 @@ export function ScoutVaultPage() {
                     className="grid grid-cols-2 md:grid-cols-[1.5fr_0.6fr_1fr_0.6fr_0.6fr_1.2fr_2fr] gap-4 px-6 py-5 bg-white items-center hover:bg-[#f8fafc] transition-colors group border-b border-[#0f172a]/5 last:border-0 text-xs text-black"
                     data-ai-generated="true"
                     data-ai-system="sentinel-engine"
+                    data-ai-disclosure="article-52"
                   >
                     <div className="col-span-2 md:col-span-1 flex items-center gap-4">
                       <button 
@@ -525,8 +546,8 @@ export function ScoutVaultPage() {
                             <ShieldAlert className="w-2.5 h-2.5 text-[#f59e0b]" />
                             "{card.violation}"
                           </div>
-                          <div className="mt-2 text-[8px] font-mono font-bold text-[#f59e0b] uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
-                            AI-generated technical assessment
+                          <div className="mt-2 text-[8px] font-mono font-bold text-[#f59e0b] uppercase tracking-tighter">
+                            AI-assisted assessment (Art. 52)
                           </div>
                         </div>
                         <button 
