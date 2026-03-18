@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { AIDisclosureBanner } from '../components/react/sentinel/ai-disclosure-banner';
+import AIDisclosureBanner from '../components/AIDisclosureBanner';
 
 interface Props {
   title: string;
@@ -71,6 +71,9 @@ const schemaOrg = {
     <link rel="canonical" href={Astro.url} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
+    <meta name="ai-system" content="true" />
+    <meta name="ai-disclosure" content="sentinel-engine" />
+
     <!-- Google Fonts: Outfit (UI) + JetBrains Mono (DATA) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,7 +102,7 @@ const schemaOrg = {
     </script>
   </head>
   <body class="bg-background text-foreground antialiased overflow-x-hidden selection:bg-[#10b981]/20">
-    <AIDisclosureBanner client:load />
+    <AIDisclosureBanner />
     {isUS && (
       <div class="bg-emerald-500/10 backdrop-blur-md border-b border-emerald-500/20 text-center py-3 px-4 relative z-[9000]">
         <div class="max-w-4xl mx-auto flex items-center justify-center gap-2">

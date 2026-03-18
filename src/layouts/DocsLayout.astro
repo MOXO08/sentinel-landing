@@ -1,6 +1,6 @@
 ---
 import { SEO_DEFAULTS, getCanonicalURL } from "../lib/seo";
-import { AIDisclosureBanner } from "../components/react/sentinel/ai-disclosure-banner";
+import AIDisclosureBanner from "../components/AIDisclosureBanner";
 import { SITE_CONFIG } from "../lib/site";
 import { ROUTES } from "../lib/routes";
 
@@ -25,6 +25,9 @@ const canonicalURL = getCanonicalURL(ROUTES.docs);
   <title>{title} | {SITE_CONFIG.brandName}</title>
   <meta name="description" content={description}>
   <link rel="canonical" href={canonicalURL}>
+
+  <meta name="ai-system" content="true" />
+  <meta name="ai-disclosure" content="sentinel-engine" />
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +38,7 @@ const canonicalURL = getCanonicalURL(ROUTES.docs);
   <link rel="stylesheet" href="/docs.css">
 </head>
 <body>
-  <AIDisclosureBanner client:load />
+  <AIDisclosureBanner />
   <nav>
     <a href={ROUTES.home} class="logo">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
