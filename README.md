@@ -1,43 +1,122 @@
-# Astro Starter Kit: Minimal
+# Sentinel — AI Act Compliance Infrastructure
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Sentinel is a deterministic compliance infrastructure designed to help engineering teams verify AI systems against the EU AI Act.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+This repository contains the official Sentinel landing platform, including public audit reports, compliance documentation, and developer onboarding.
 
-## 🚀 Project Structure
+---
 
-Inside of your Astro project, you'll see the following folders and files:
+## 🌐 Live Platform
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+👉 https://gettingsentinel.com
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+---
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## ⚙️ What Sentinel Does
 
-Any static assets, like images, can be placed in the `public/` directory.
+Sentinel analyzes AI systems and repositories to detect compliance gaps related to:
 
-## 🧞 Commands
+- Technical documentation (Annex IV)
+- Risk classification (high-risk systems)
+- Dataset provenance
+- Model transparency
+- Human oversight requirements
 
-All commands are run from the root of the project, from a terminal:
+It produces:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+- Deterministic compliance reports
+- Evidence-backed findings
+- CI/CD enforcement signals
+- Public audit pages (optional)
 
-## 👀 Want to learn more?
+---
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## 🧱 System Components
+
+Sentinel is composed of multiple parts:
+
+### 1. CLI Scanner
+
+Offline deterministic scanner for developers
+
+npx @radu_api/sentinel-scan@latest check --manifest sentinel.manifest.json
+
+### 2. GitHub Action
+
+Automated compliance checks in CI/CD
+
+https://github.com/MOXO08/sentinel-scan-action
+
+### 3. Public Audit Platform (this repo)
+
+- Displays audit reports
+- Hosts compliance pages
+- Enables discovery and indexing
+
+---
+
+## 🧪 Example Integration
+
+Minimal GitHub Action setup:
+
+name: AI Compliance Audit
+
+on: [pull_request]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Sentinel Scan
+        uses: MOXO08/sentinel-scan-action@v1
+        with:
+          enforce: "true"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+---
+
+## 📊 What This Repo Contains
+
+- /src — frontend application (Astro)
+- /public — static assets and audit pages
+- /compliance-docs — structured documentation
+- /migrations — database schema evolution
+- /real_validation — validation datasets and checks
+
+---
+
+## 🔐 Philosophy
+
+Sentinel is built on:
+
+- Deterministic analysis (no black-box AI scoring)
+- Verifiable evidence, not assumptions
+- Developer-first experience
+- Compliance as infrastructure, not consulting
+
+---
+
+## ⚠️ Disclaimer
+
+Sentinel provides automated technical assessments aligned with the EU AI Act.
+
+It does not replace formal legal review or certification by regulatory authorities.
+
+---
+
+## 🚀 Status
+
+- CLI: active
+- GitHub Action: active
+- Discovery & audit platform: in development
+
+---
+
+## 📬 Contact
+
+For partnerships, audits, or enterprise use:
+
+office@gettingsentinel.com
